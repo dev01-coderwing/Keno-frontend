@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api"; // axios instance
 
-// 🔹 Update Profile API
+//  Update Profile API
 export const updateUserProfile = createAsyncThunk(
   "profile/updateUserProfile",
   async ({ userId, fullName, email, dob }, { rejectWithValue }) => {
@@ -10,7 +10,7 @@ export const updateUserProfile = createAsyncThunk(
 
       const res = await api.put(
         `/profile/user/update/${userId}`,
-        body5
+        body
       );
 
       return res.data.data || res.data;
@@ -47,7 +47,11 @@ const profileSlice = createSlice({
         state.loading = false;
         state.user = action.payload;
         state.successMessage = "Profile updated successfully!";
+        state.error = null;
+
+        localStorage.setItem("user", JSON.stringify(action.payload));
       })
+
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

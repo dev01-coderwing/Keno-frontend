@@ -13,8 +13,8 @@ const horseLogo =
 
 const AuthPage = () => {
   const [currentForm, setCurrentForm] = useState("login");
-  const [userEmail, setUserEmail] = useState("" );
-    const [otpValue, setOtpValue] = useState(""); // <-- Add this state
+  const [userEmail, setUserEmail] = useState("");
+  const [otpValue, setOtpValue] = useState(""); 
 
   const renderForm = () => {
     switch (currentForm) {
@@ -52,7 +52,7 @@ const AuthPage = () => {
         return (
           <ResetPasswordForm
             userEmail={userEmail}
-            otpValue={otpValue} 
+            otpValue={otpValue}
             onSwitchForm={setCurrentForm}
           />
         );

@@ -5,6 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUserProfile, clearMessage } from "../../redux/profileSlice";
 import ChangePasswordForm from "./ChangePasswordForm";
+import { Link } from "react-router-dom";
 
 const CustomDateInput = React.forwardRef(
   ({ value, onClick, className, ...rest }, ref) => (
@@ -22,29 +23,28 @@ const CustomDateInput = React.forwardRef(
 
 const UpdateUserProfile = () => {
   const [dob, setDob] = useState(null);
+  const [isEditMode, setIsEditMode] = useState(false); //  NEW
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     dob: "",
   });
+
   const [showChangePw, setShowChangePw] = useState(false);
 
-const storedUser = JSON.parse(localStorage.getItem("user"));
-const userId =
-  storedUser?._id ||
-  storedUser?.id ||
-  localStorage.getItem("userId");
-
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const userId =
+    storedUser?._id ||
+    storedUser?.id ||
+    localStorage.getItem("userId");
 
   const dispatch = useDispatch();
   const { loading, error, successMessage } = useSelector(
     (state) => state.profile
   );
 
-  // 🔹 Fetch existing user profile from localStorage
+  // Fetch existing user data
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-
     if (storedUser) {
       setFormData({
         fullName: storedUser.fullName || "",
@@ -56,15 +56,20 @@ const userId =
     }
   }, []);
 
-  // 🔹 Input handler
+  // Input handler
   const handleChange = (e) => {
+    if (!isEditMode) return; // disable typing in view mode
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 🔹 Submit handler (Redux)
+  // Save Profile
   const handleProfileSubmit = (e) => {
     e.preventDefault();
+    if (!isEditMode) {
+      setIsEditMode(true); // enable edit
+      return;
+    }
 
     dispatch(clearMessage());
 
@@ -75,7 +80,9 @@ const userId =
         email: formData.email,
         dob: dob ? dob.toISOString().split("T")[0] : "",
       })
-    );
+    ).then(() => {
+      setIsEditMode(false); // disable edit after saving
+    });
   };
 
   return (
@@ -84,11 +91,30 @@ const userId =
         <h2 className="text-3xl font-bold mb-6 text-center text-white">
           Update Profile
         </h2>
-        <p className="text-center text-sm text-gray-400 mb-6">
-          Manage your personal information and password securely.
-        </p>
+        {/* --- EXTRA BUTTONS ADDED HERE --- */}
+{/* --- EXTRA BUTTONS ADDED WITH LINK --- */}
+<div className="mt-6 flex flex-col gap-3">
+  
+  {/* Keno Result Button */}
+  <Link
+    to="/"
+    className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg py-3 transition shadow text-center block"
+  >
+    Keno Result
+  </Link>
 
-        {/* Profile Form */}
+  {/* TrackSide Result Button */}
+  <Link
+    to="/TrackSideHome"
+    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg py-3 transition shadow text-center block"
+  >
+    TrackSide Result
+  </Link>
+
+</div>
+
+
+
         <form onSubmit={handleProfileSubmit} className="space-y-5">
           {/* Name */}
           <div>
@@ -100,9 +126,9 @@ const userId =
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="Enter your full name"
-              className="w-full border border-gray-600 rounded-lg px-4 py-2.5 bg-[#0C0C0C] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-              required
+              disabled={!isEditMode}
+              className={`w-full border border-gray-600 rounded-lg px-4 py-2.5 bg-[#0C0C0C] text-white 
+                ${!isEditMode && "opacity-50 cursor-not-allowed"}`}
             />
           </div>
 
@@ -116,9 +142,9 @@ const userId =
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="Enter your email"
-              className="w-full border border-gray-600 rounded-lg px-4 py-2.5 bg-[#0C0C0C] text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-              required
+              disabled={!isEditMode}
+              className={`w-full border border-gray-600 rounded-lg px-4 py-2.5 bg-[#0C0C0C] text-white 
+                ${!isEditMode && "opacity-50 cursor-not-allowed"}`}
             />
           </div>
 
@@ -130,21 +156,22 @@ const userId =
 
             <DatePicker
               selected={dob}
-              onChange={(date) => setDob(date)}
+              onChange={(date) => isEditMode && setDob(date)}
+              disabled={!isEditMode}
               dateFormat="dd/MM/yyyy"
               showMonthDropdown
               showYearDropdown
               dropdownMode="scroll"
               maxDate={new Date()}
-              yearDropdownItemNumber={100}
-              scrollableYearDropdown
-              calendarClassName="custom-datepicker"
-              wrapperClassName="w-full"
-              customInput={<CustomDateInput className="w-full" />}
+              customInput={
+                <CustomDateInput
+                  className={`${!isEditMode && "opacity-50 cursor-not-allowed"}`}
+                />
+              }
             />
           </div>
 
-          {/* Error / Success message */}
+          {/* Errors */}
           {error && (
             <p className="text-red-400 text-center text-sm">{error}</p>
           )}
@@ -154,29 +181,31 @@ const userId =
             </p>
           )}
 
-          {/* Submit */}
+          {/* EDIT ↔ SAVE Button */}
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg py-3 transition duration-300 ease-in-out transform shadow-lg"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-3 transition duration-300 shadow-lg"
           >
-            {loading ? "Updating..." : "Update Profile"}
+            {loading
+              ? "Updating..."
+              : isEditMode
+              ? "Save Changes"
+              : "Edit Profile"}
           </button>
         </form>
 
-        {/* Change Password */}
+        {/* Change Password Section */}
         <div className="mt-6">
           <button
             onClick={() => setShowChangePw((prev) => !prev)}
-            className="w-full border border-gray-600 hover:bg-gray-800 text-gray-300 font-semibold rounded-lg py-3 transition duration-300 ease-in-out"
+            className="w-full border border-gray-600 hover:bg-gray-800 text-gray-300 font-semibold rounded-lg py-3 transition"
           >
             {showChangePw ? "Hide Password Section" : "Change Password"}
           </button>
         </div>
 
-        {/* Password Section */}
         <div
-          className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          className={`overflow-hidden transition-all duration-500 ${
             showChangePw ? "max-h-96 opacity-100 mt-4" : "max-h-0 opacity-0"
           }`}
         >

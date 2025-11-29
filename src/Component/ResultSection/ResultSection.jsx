@@ -291,7 +291,7 @@ const ResultSection = () => {
           >
             Search
           </button>
-           <div className="flex gap-3 ">
+           {/* <div className="flex gap-3 ">
         <button
           onClick={() => setSelectedGame("keno")}
           className={`px-4 py-2 rounded-xl text-sm ${
@@ -309,7 +309,7 @@ const ResultSection = () => {
         >
           Trackside
         </button>
-      </div>
+      </div> */}
         </div>
       </div>
      

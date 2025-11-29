@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOverdueCombos } from "../../redux/overdueSlice";
-import StatsCard from "../Cards/StatsCard";
-import DrawCard from "../Cards/DrawCard";
-import Comparison from "../Cards/Comparison";
-import RaceCard from "../Cards/RaceCard";
-import StatsSection from "../StateTable/StatsSection";
-import ChoiceSelector from "../Cards/ChoiceSelector"; 
+import TrackSideLayout from "../TrackSideLayout/TrackSideLayout";
 
-const cards = [                                                                            
+import StatsCard from "../../Component/Cards/StatsCard";
+import DrawCard from "../../Component/Cards/DrawCard";
+import Comparison from "../../Component/Cards/Comparison";
+import RaceCard from "../../Component/Cards/RaceCard";
+import StatsSection from "../../Component/StateTable/StatsSection";
+import ChoiceSelector from "../../Component/Cards/ChoiceSelector";
+
+const cards = [
   {
     stats: [
       { label: "Win", value: 6 },
@@ -60,20 +62,22 @@ const data = [
 ];
 
 const repeatCount = 4;
+function TrackSideAnalyticsSection() {
+      const [showChoices, setShowChoices] = useState(false);
 
-const AnalyticsSection = () => {
-  const [showChoices, setShowChoices] = useState(false);
-
-  
+  // ---------------------------
+  // 🔥 REDUX: OVERDUE API DATA
+  // ---------------------------
   const dispatch = useDispatch();
   const { combos, loading, error } = useSelector((state) => state.overdue);
 
   useEffect(() => {
     dispatch(fetchOverdueCombos());
   }, [dispatch]);
-
   return (
-    <div className="flex flex-col bg-[#262626] my-4 py-4 px-4 sm:px-6 md:px-8 gap-4 rounded-lg font-poppins">
+    <>
+    <TrackSideLayout>
+        <div className="flex flex-col bg-[#262626] my-4 py-4 px-4 sm:px-6 md:px-8 gap-4 rounded-lg font-poppins">
 
       {/* TOP CARDS SECTION */}
       <div className="rounded my-4 flex flex-col lg:flex-row gap-8 justify-center">
@@ -210,7 +214,9 @@ const AnalyticsSection = () => {
         <StatsSection columns={columns} data={data} />
       </div>
     </div>
-  );
-};
+    </TrackSideLayout>
+    </>
+  )
+}
 
-export default AnalyticsSection;
+export default TrackSideAnalyticsSection

@@ -84,10 +84,7 @@
 
 
 
-
- 
-
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";   // ⭐ useState added
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOverdueCombos } from "../../redux/overdueSlice";
 import RaceCard from "../Cards/RaceCard";
@@ -96,6 +93,10 @@ const WinningCombos = () => {
   const dispatch = useDispatch();
   const scrollRef = useRef(null);
   const { combos, loading, error } = useSelector((state) => state.overdue);
+
+  const [showAll, setShowAll] = useState(false);   // ⭐ NEW
+
+  const visibleCombos = showAll ? combos : combos.slice(0, 4); // ⭐ NEW
 
   const scrollLeft = () => {
     scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
@@ -106,7 +107,7 @@ const WinningCombos = () => {
   };
 
   useEffect(() => {
-    dispatch(fetchOverdueCombos()); 
+    dispatch(fetchOverdueCombos());
   }, [dispatch]);
 
   return (
@@ -136,12 +137,13 @@ const WinningCombos = () => {
           &#10095;
         </button>
 
+        {/* ⭐ IMPORTANT: combos → visibleCombos */}
         <div
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto scroll-smooth sm:grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 sm:overflow-visible"
         >
-          {combos.length > 0 ? (
-            combos.map((combo, index) => (
+          {visibleCombos.length > 0 ? (
+            visibleCombos.map((combo, index) => (
               <div key={index} className="flex-shrink-0 w-72 sm:w-full">
                 <RaceCard
                   stats={[
@@ -156,6 +158,18 @@ const WinningCombos = () => {
           )}
         </div>
       </div>
+
+      {/* ⭐ NEW Show More / Show Less */}
+      {combos.length > 4 && (
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+          >
+            {showAll ? "Show Less" : "Show More"}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

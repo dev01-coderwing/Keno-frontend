@@ -179,7 +179,7 @@ const LoginForm = ({ onSwitchForm }) => {
       setTimeout(() => {
         console.log(`This is the user role ${user.role}`);
         if (user.role === "admin") navigate("/dashboard");
-        else navigate("/");
+        else navigate("/update-profile");
       }, 1000);
     }
   }, [user, navigate]);
