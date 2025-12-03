@@ -1,70 +1,69 @@
 import React, { useState, useMemo } from "react";
-import Layout from "../../../Layout/Layout";
+import TrackSideLayout from "../../TrackSideLayout/TrackSideLayout";
 
+function TrackSideArbitrage() {
 
-export default function ArbitrageCalculator() {
- const [outcomes, setOutcomes] = useState(2);
-const [odds, setOdds] = useState(["", "", ""]);
-const [totalStake, setTotalStake] = useState("");
-const [labels, setLabels] = useState(["", "", ""]);
-
-
-    function updateOdd(index, value) {
-        const next = [...odds];
-        next[index] = Number(value || 0);
-        setOdds(next);
-    }
-
-    function updateLabel(index, value) {
-        const next = [...labels];
-        next[index] = value;
-        setLabels(next);
-    }
-
-    const effectiveOdds = useMemo(() => odds.slice(0, outcomes), [odds, outcomes]);
-
-    const impliedProbabilities = useMemo(() => {
-        return effectiveOdds.map((o) => (o > 0 ? 1 / o : 0));
-    }, [effectiveOdds]);
-
-    const sumImplied = useMemo(() => {
-        return impliedProbabilities.reduce((a, b) => a + b, 0);
-    }, [impliedProbabilities]);
-
-    const isArb = sumImplied > 0 && sumImplied < 1;
-
-    // Recommended stakes proportionally: stake_i = ( (1/odd_i) / sumImplied ) * totalStake
-    const recommendedStakes = useMemo(() => {
-        if (!totalStake || totalStake <= 0) return effectiveOdds.map(() => 0);
-        const stakes = impliedProbabilities.map((p) => (p / sumImplied) * Number(totalStake || 0));
-        return stakes;
-    }, [impliedProbabilities, sumImplied, totalStake]);
-
-    // Profit calculation: For each outcome, payout = stake_i * odd_i. Profit = payout - totalStake
-    const payouts = useMemo(() => {
-        return recommendedStakes.map((s, i) => s * effectiveOdds[i]);
-    }, [recommendedStakes, effectiveOdds]);
-
-    const profits = useMemo(() => {
-        return payouts.map((p) => p - Number(totalStake || 0));
-    }, [payouts, totalStake]);
-
-    const minProfit = useMemo(() => {
-        if (profits.length === 0) return 0;
-        return Math.min(...profits);
-    }, [profits]);
-
-    function reset() {
-        setOutcomes(2);
-        setOdds([1.8, 2.2, 0]);
-        setTotalStake(100);
-        setLabels(["Outcome A", "Outcome B", "Outcome C"]);
-    }
-
-    return (
-        <>
-         <Layout >
-                <div className="bg-[#262626] min-h-screen">
+     const [outcomes, setOutcomes] = useState(2);
+    const [odds, setOdds] = useState(["", "", ""]);
+    const [totalStake, setTotalStake] = useState("");
+    const [labels, setLabels] = useState(["", "", ""]);
+    
+    
+        function updateOdd(index, value) {
+            const next = [...odds];
+            next[index] = Number(value || 0);
+            setOdds(next);
+        }
+    
+        function updateLabel(index, value) {
+            const next = [...labels];
+            next[index] = value;
+            setLabels(next);
+        }
+    
+        const effectiveOdds = useMemo(() => odds.slice(0, outcomes), [odds, outcomes]);
+    
+        const impliedProbabilities = useMemo(() => {
+            return effectiveOdds.map((o) => (o > 0 ? 1 / o : 0));
+        }, [effectiveOdds]);
+    
+        const sumImplied = useMemo(() => {
+            return impliedProbabilities.reduce((a, b) => a + b, 0);
+        }, [impliedProbabilities]);
+    
+        const isArb = sumImplied > 0 && sumImplied < 1;
+    
+        // Recommended stakes proportionally: stake_i = ( (1/odd_i) / sumImplied ) * totalStake
+        const recommendedStakes = useMemo(() => {
+            if (!totalStake || totalStake <= 0) return effectiveOdds.map(() => 0);
+            const stakes = impliedProbabilities.map((p) => (p / sumImplied) * Number(totalStake || 0));
+            return stakes;
+        }, [impliedProbabilities, sumImplied, totalStake]);
+    
+        // Profit calculation: For each outcome, payout = stake_i * odd_i. Profit = payout - totalStake
+        const payouts = useMemo(() => {
+            return recommendedStakes.map((s, i) => s * effectiveOdds[i]);
+        }, [recommendedStakes, effectiveOdds]);
+    
+        const profits = useMemo(() => {
+            return payouts.map((p) => p - Number(totalStake || 0));
+        }, [payouts, totalStake]);
+    
+        const minProfit = useMemo(() => {
+            if (profits.length === 0) return 0;
+            return Math.min(...profits);
+        }, [profits]);
+    
+        function reset() {
+            setOutcomes(2);
+            setOdds([1.8, 2.2, 0]);
+            setTotalStake(100);
+            setLabels(["Outcome A", "Outcome B", "Outcome C"]);
+        }
+  return (
+    <>
+    <TrackSideLayout>
+          <div className="bg-[#262626] min-h-screen">
             <div className="max-w-6xl mx-auto p-6">
                 <div className="bg-black text-gray-100 rounded-2xl shadow-lg p-6 ring-1 ring-white/5">
                     <h2 className="text-2xl font-semibold mb-2">Arbitrage Calculator</h2>
@@ -234,7 +233,9 @@ const [labels, setLabels] = useState(["", "", ""]);
             </div>
             
        </div>    
-</Layout>
-        </>
-    );
+       </TrackSideLayout>
+    </>
+  )
 }
+
+export default TrackSideArbitrage

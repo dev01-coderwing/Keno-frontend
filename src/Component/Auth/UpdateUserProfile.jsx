@@ -118,7 +118,7 @@ const UpdateUserProfile = () => {
         <form onSubmit={handleProfileSubmit} className="space-y-5">
           {/* Name */}
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-300">
+            <label className="block text-sm font-medium mb-1 text-gray-300 pt-5">
               Full Name
             </label>
             <input

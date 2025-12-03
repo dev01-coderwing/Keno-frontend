@@ -1,5 +1,5 @@
-import userProfile1 from "../../assets/AdminImg/user-Profile.png"
-import userProfile2 from "../../assets/AdminImg/user-Profile2.png"
+import userProfile1 from "../../assets/AdminImg/userProfile.png"
+import userProfile2 from "../../assets/AdminImg/userProfile2.png"
 
 export const metricData = [
   {

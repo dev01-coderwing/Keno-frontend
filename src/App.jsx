@@ -100,6 +100,10 @@ import BonusHedgeCalculator from './Component/Calculator/Bouns/BonusHedgeCalcula
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import ArbitrageCalculator from './Component/Calculator/Arbitrage/ArbitrageCalculator';
 import BackLayCalculator from './Component/Calculator/Matched/BackLayCalculator';
+import TrackSideArbitrage from './TrackSide/TrackSideCalculator/TrackSideArbitrage/TrackSideArbitrage';
+import TrackSideBouns from './TrackSide/TrackSideCalculator/TrackSideBouns/TrackSideBouns';
+import TrackSideMatched from './TrackSide/TrackSideCalculator/TrackSideMatched/TrackSideMatched';
+import UserProfile from './Component/UserProfile/UserProfile';
 
 const App = () => {
   return (
@@ -120,6 +124,10 @@ const App = () => {
         <Route path='/calculator/bonus-bet' element={<BonusHedgeCalculator />} />
         <Route path='/calculator/arbitrage' element={<ArbitrageCalculator />} />
         <Route path='/calculator/matched-betting' element={<BackLayCalculator />} />
+         <Route path='/calculator/TrackSideArbitrage' element={<TrackSideArbitrage />} />
+              <Route path='/calculator/TrackSideBouns' element={<TrackSideBouns />} />
+              <Route path='/calculator/TrackSideMatched' element={<TrackSideMatched />} />
+              <Route path='/UserProfile' element={<UserProfile />} />
         {/* Protected Pages (Login Required) */}
         <Route path='/predictor' element={
           <ProtectedRoute><ExoticPredictor /></ProtectedRoute>

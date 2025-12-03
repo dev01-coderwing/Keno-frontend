@@ -57,11 +57,16 @@ const Header = () => {
               <FaRegBell />
             </div>
 
-            <img
-              src={userImage || "https://res.cloudinary.com/dqacezsc5/image/upload/v1754648053/user_ciq5pr.jpg"}
-              alt="user-img"
-              className="h-10 w-10 rounded-2xl object-cover"
-            />
+        <Link to="/UserProfile">
+  <img
+    src={
+      userImage ||
+      "https://res.cloudinary.com/dqacezsc5/image/upload/v1754648053/user_ciq5pr.jpg"
+    }
+    alt="user-img"
+    className="h-10 w-10 rounded-2xl object-cover cursor-pointer"
+  />
+</Link>
             <div className="relative">
               <div
                 onClick={toggleDropdown}

@@ -1,71 +1,70 @@
 import React, { useState, useMemo } from "react";
-import Layout from "../../../Layout/Layout";
+import TrackSideLayout from "../../TrackSideLayout/TrackSideLayout";
 
-export default function MatchedBettingCalculator() {
-    // defaults mirror your example
-    const [betType, setBetType] = useState("freebet"); // "qualifying" | "freebet"
-    const [backStake, setBackStake] = useState("");
-    const [backOdds, setBackOdds] = useState("");
-    const [layOdds, setLayOdds] = useState("");
-    const [layCommission, setLayCommission] = useState(""); // percent
-
-    const c = useMemo(() => layCommission / 100, [layCommission]);
-
-    // Lay stake formulas:
-    // freebet (SNR): L = (BS * (BO - 1)) / (LO - c)
-    // qualifying (stake returned): L = (BS * BO) / (LO - c)
-    const layStake = useMemo(() => {
-        if (!layOdds || (layOdds - c) === 0) return 0;
-        const denom = layOdds - c;
-        if (betType === "freebet") {
-            return (backStake * (backOdds - 1)) / denom;
-        } else {
-            return (backStake * backOdds) / denom;
-        }
-    }, [betType, backStake, backOdds, layOdds, c]);
-
-    // Outcome values (rounded only for display)
-    // If Bookmaker Bet Wins:
-    //   - freebet: bookmaker = BS*(BO-1)
-    //   - qualifying: bookmaker = BS*(BO-1)
-    // exchange side loses liability = L * (LO - 1)
-    const bookmakerIfBackWins = useMemo(() => {
-        if (betType === "freebet") return backStake * (backOdds - 1);
-        return backStake * (backOdds - 1);
-    }, [betType, backStake, backOdds]);
-
-    const exchangeIfBackWins = useMemo(() => {
-        return -layStake * (layOdds - 1);
-    }, [layStake, layOdds]);
-
-    const totalIfBackWins = useMemo(() => {
-        return bookmakerIfBackWins + exchangeIfBackWins;
-    }, [bookmakerIfBackWins, exchangeIfBackWins]);
-
-    // If Exchange Bet Wins:
-    //   - bookmaker: qualifying -> -BS (you lose the qualifying stake)
-    //                freebet -> 0 (you lose free bet, stake was not your cash)
-    //   - exchange: you win lay stake minus commission on winnings => L * (1 - c)
-    const bookmakerIfExchangeWins = useMemo(() => {
-        return betType === "freebet" ? 0 : -backStake;
-    }, [betType, backStake]);
-
-    const exchangeIfExchangeWins = useMemo(() => {
-        return layStake * (1 - c);
-    }, [layStake, c]);
-
-    const totalIfExchangeWins = useMemo(() => {
-        return bookmakerIfExchangeWins + exchangeIfExchangeWins;
-    }, [bookmakerIfExchangeWins, exchangeIfExchangeWins]);
-
-    // safe display helpers
-    const fmt = (v) =>
-        typeof v === "number" && !isNaN(v) ? v.toFixed(2) : "0.00";
-
-    return (
-        <>
-            <Layout >
-                <div className="min-h-screen bg-[#262626] text-gray-100 px-6 py-8">
+function TrackSideMatched() {
+   // defaults mirror your example
+      const [betType, setBetType] = useState("freebet"); // "qualifying" | "freebet"
+      const [backStake, setBackStake] = useState("");
+      const [backOdds, setBackOdds] = useState("");
+      const [layOdds, setLayOdds] = useState("");
+      const [layCommission, setLayCommission] = useState(""); // percent
+  
+      const c = useMemo(() => layCommission / 100, [layCommission]);
+  
+      // Lay stake formulas:
+      // freebet (SNR): L = (BS * (BO - 1)) / (LO - c)
+      // qualifying (stake returned): L = (BS * BO) / (LO - c)
+      const layStake = useMemo(() => {
+          if (!layOdds || (layOdds - c) === 0) return 0;
+          const denom = layOdds - c;
+          if (betType === "freebet") {
+              return (backStake * (backOdds - 1)) / denom;
+          } else {
+              return (backStake * backOdds) / denom;
+          }
+      }, [betType, backStake, backOdds, layOdds, c]);
+  
+      // Outcome values (rounded only for display)
+      // If Bookmaker Bet Wins:
+      //   - freebet: bookmaker = BS*(BO-1)
+      //   - qualifying: bookmaker = BS*(BO-1)
+      // exchange side loses liability = L * (LO - 1)
+      const bookmakerIfBackWins = useMemo(() => {
+          if (betType === "freebet") return backStake * (backOdds - 1);
+          return backStake * (backOdds - 1);
+      }, [betType, backStake, backOdds]);
+  
+      const exchangeIfBackWins = useMemo(() => {
+          return -layStake * (layOdds - 1);
+      }, [layStake, layOdds]);
+  
+      const totalIfBackWins = useMemo(() => {
+          return bookmakerIfBackWins + exchangeIfBackWins;
+      }, [bookmakerIfBackWins, exchangeIfBackWins]);
+  
+      // If Exchange Bet Wins:
+      //   - bookmaker: qualifying -> -BS (you lose the qualifying stake)
+      //                freebet -> 0 (you lose free bet, stake was not your cash)
+      //   - exchange: you win lay stake minus commission on winnings => L * (1 - c)
+      const bookmakerIfExchangeWins = useMemo(() => {
+          return betType === "freebet" ? 0 : -backStake;
+      }, [betType, backStake]);
+  
+      const exchangeIfExchangeWins = useMemo(() => {
+          return layStake * (1 - c);
+      }, [layStake, c]);
+  
+      const totalIfExchangeWins = useMemo(() => {
+          return bookmakerIfExchangeWins + exchangeIfExchangeWins;
+      }, [bookmakerIfExchangeWins, exchangeIfExchangeWins]);
+  
+      // safe display helpers
+      const fmt = (v) =>
+          typeof v === "number" && !isNaN(v) ? v.toFixed(2) : "0.00";
+  return (
+    <>
+         <TrackSideLayout>
+     <div className="min-h-screen bg-[#262626] text-gray-100 px-6 py-8">
                     <div className="max-w-6xl mx-auto">
                         {/* Header */}
                         <div className="text-center mb-8">
@@ -262,19 +261,9 @@ export default function MatchedBettingCalculator() {
 
                     </div>
                 </div>
-            </Layout>
-        </>
-    );
+                </TrackSideLayout>
+    </>
+  )
 }
 
-
-
-
-// app.get('/users', async (req, res) => {
-//   try {
-//     const users = await User.find(); // all users
-//     res.json(users);
-//   } catch (err) {
-//     res.status(500).json({ error: 'Database error' });
-//   }
-// });
+export default TrackSideMatched

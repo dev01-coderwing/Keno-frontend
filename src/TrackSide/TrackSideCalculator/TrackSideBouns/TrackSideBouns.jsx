@@ -1,65 +1,60 @@
 import React, { useState, useEffect } from 'react';
-import Layout from "../../../Layout/Layout";
+import TrackSideLayout from "../../TrackSideLayout/TrackSideLayout";
 
-// Default export React component (single-file). Built with Tailwind CSS classes for styling.
-// Drop this file into a Vite + React project (src/components/BonusHedgeCalculator.jsx)
-// Note: This implements the common *free-bet (stake not returned)* hedge formula.
-// If you want a version without Tailwind (vanilla CSS) tell me and I'll convert it.
+function TrackSideBouns() {
+    const [backOdds, setBackOdds] = useState("");
+    const [layOdds, setLayOdds] = useState("");
+    const [commission, setCommission] = useState("");
+    const [bonusStake, setBonusStake] = useState("");
 
-export default function BonusHedgeCalculator() {
-  const [bonusStake, setBonusStake] = useState("");
-const [backOdds, setBackOdds] = useState("");
-const [layOdds, setLayOdds] = useState("");
-const [commission, setCommission] = useState("");
-
-    const [layStake, setLayStake] = useState(0);
-    const [profit, setProfit] = useState(0);
-    const [liability, setLiability] = useState(0);
-    const [retentionPct, setRetentionPct] = useState(0);
-    const [oddsFormat, setOddsFormat] = useState('decimal');
-
-    // Helper: clamp inputs
-    const toNum = v => {
-        const n = Number(v);
-        return Number.isFinite(n) ? n : 0;
-    };
-
-    useEffect(() => {
-        // For now we support Decimal odds only. If user selects fractional or american, we try a best-effort conversion from input.
-        let decBack = toNum(backOdds);
-        let decLay = toNum(layOdds);
-
-        // Prevent division by zero or negative
-        const c = toNum(commission) / 100;
-        const B = toNum(bonusStake);
-
-        if (decLay <= c + 0.0000001) {
-            setLayStake(0);
-            setProfit(0);
-            setLiability(0);
-            setRetentionPct(0);
-            return;
-        }
-
-        // Formula derived for FREE BET (stake not returned):
-        // LayStake = (BonusStake * (BackOdds - 1)) / (LayOdds - commission)
-        // commission is a decimal fraction (e.g. 0.05)
-        const L = (B * (decBack - 1)) / (decLay - c);
-        const liabilityCalc = L * (decLay - 1);
-        // Profit (either outcome) = LayStake * (1 - commission)
-        const profitCalc = L * (1 - c);
-        const retention = B > 0 ? (profitCalc / B) * 100 : 0;
-
-        setLayStake(Number.isFinite(L) && L > 0 ? +L.toFixed(2) : 0);
-        setLiability(Number.isFinite(liabilityCalc) ? +liabilityCalc.toFixed(2) : 0);
-        setProfit(Number.isFinite(profitCalc) ? +profitCalc.toFixed(2) : 0);
-        setRetentionPct(Number.isFinite(retention) ? +retention.toFixed(1) : 0);
-    }, [bonusStake, backOdds, layOdds, commission, oddsFormat]);
-
-    return (
-        <>
-            <Layout>
-            <div className="min-h-screen flex items-center justify-center bg-[#262626] p-6 text-gray-100">
+        const [layStake, setLayStake] = useState(0);
+        const [profit, setProfit] = useState(0);
+        const [liability, setLiability] = useState(0);
+        const [retentionPct, setRetentionPct] = useState(0);
+        const [oddsFormat, setOddsFormat] = useState('decimal');
+    
+        // Helper: clamp inputs
+        const toNum = v => {
+            const n = Number(v);
+            return Number.isFinite(n) ? n : 0;
+        };
+    
+        useEffect(() => {
+            // For now we support Decimal odds only. If user selects fractional or american, we try a best-effort conversion from input.
+            let decBack = toNum(backOdds);
+            let decLay = toNum(layOdds);
+    
+            // Prevent division by zero or negative
+            const c = toNum(commission) / 100;
+            const B = toNum(bonusStake);
+    
+            if (decLay <= c + 0.0000001) {
+                setLayStake(0);
+                setProfit(0);
+                setLiability(0);
+                setRetentionPct(0);
+                return;
+            }
+    
+            // Formula derived for FREE BET (stake not returned):
+            // LayStake = (BonusStake * (BackOdds - 1)) / (LayOdds - commission)
+            // commission is a decimal fraction (e.g. 0.05)
+            const L = (B * (decBack - 1)) / (decLay - c);
+            const liabilityCalc = L * (decLay - 1);
+            // Profit (either outcome) = LayStake * (1 - commission)
+            const profitCalc = L * (1 - c);
+            const retention = B > 0 ? (profitCalc / B) * 100 : 0;
+    
+            setLayStake(Number.isFinite(L) && L > 0 ? +L.toFixed(2) : 0);
+            setLiability(Number.isFinite(liabilityCalc) ? +liabilityCalc.toFixed(2) : 0);
+            setProfit(Number.isFinite(profitCalc) ? +profitCalc.toFixed(2) : 0);
+            setRetentionPct(Number.isFinite(retention) ? +retention.toFixed(1) : 0);
+        }, [bonusStake, backOdds, layOdds, commission, oddsFormat]);
+    
+  return (
+    <>
+    <TrackSideLayout>
+       <div className="min-h-screen flex items-center justify-center bg-[#262626] p-6 text-gray-100">
                 <div className="max-w-6xl w-full bg-black rounded-2xl shadow-2xl p-6">
                     <h1 className="text-xl font-bold mb-3">Bonus Bet Hedge Calculator</h1>
                     <p className="text-sm text-gray-400 mb-6">Dark theme — enter your free-bet details and this calculator will give the lay stake, liability, guaranteed profit and retention % (for free bets where the stake is not returned).</p>
@@ -211,10 +206,9 @@ const [commission, setCommission] = useState("");
                 </div>
 
             </div>
-</Layout>
-        </>
-    );
+            </TrackSideLayout>
+    </>
+  )
 }
 
-
-
+export default TrackSideBouns

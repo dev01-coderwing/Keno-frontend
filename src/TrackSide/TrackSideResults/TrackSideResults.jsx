@@ -82,7 +82,7 @@ function TrackSideResults() {
     <TrackSideLayout>
       <div className="flex flex-col bg-[#262626] px-4 sm:px-8 py-4 my-4 rounded font-poppins w-full">
       <div className="flex flex-col sm:flex-row sm:justify-between gap-4 w-full">
-        <h3 className="text-xl font-semibold text-white">Results:</h3>
+        <h3 className="text-xl font-semibold text-white">TrackSide Results:</h3>
         <div className="flex flex-wrap gap-3 items-center">
           <ResultInput placeholder={"First Game No."} width="w-[130px]" />
           <ResultInput placeholder={"Last Game No."} width="w-[130px]" />
@@ -90,7 +90,7 @@ function TrackSideResults() {
             placeholder={"Search by combinations"}
             width="w-[220px]"
             showSearchIcon={true}
-          />
+          /> 
           <div className="relative inline-block">
             <button
               onClick={() => setOpen(!open)}

@@ -111,7 +111,7 @@ function TrackSideNavigation() {
             {showCalc && (
               <div className="absolute left-0 mt-2 w-48 bg-[#333] border border-gray-600 rounded-md shadow-lg z-50">
                 <NavLink
-                  to="/calculator/bonus-bet"
+                  to="/calculator/TrackSideBouns"
                   onClick={() => setShowCalc(false)}
                   className="block px-4 py-2 hover:bg-[#444]"
                 >
@@ -119,7 +119,7 @@ function TrackSideNavigation() {
                 </NavLink>
 
                 <NavLink
-                  to="/calculator/arbitrage"
+                  to="/calculator/TrackSideArbitrage"
                   onClick={() => setShowCalc(false)}
                   className="block px-4 py-2 hover:bg-[#444]"
                 >
@@ -127,7 +127,7 @@ function TrackSideNavigation() {
                 </NavLink>
 
                 <NavLink
-                  to="/calculator/matched-betting"
+                  to="/calculator/TrackSideMatched"
                   onClick={() => setShowCalc(false)}
                   className="block px-4 py-2 hover:bg-[#444]"
                 >
@@ -136,7 +136,6 @@ function TrackSideNavigation() {
               </div>
             )}
           </li>
-        
         </ul>
       </nav>
     </>
