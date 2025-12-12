@@ -2,263 +2,154 @@ import React, { useState, useMemo } from "react";
 import Layout from "../../../Layout/Layout";
 
 export default function MatchedBettingCalculator() {
-    // defaults mirror your example
-    const [betType, setBetType] = useState("freebet"); // "qualifying" | "freebet"
-    const [backStake, setBackStake] = useState("");
+
     const [backOdds, setBackOdds] = useState("");
-    const [layOdds, setLayOdds] = useState("");
-    const [layCommission, setLayCommission] = useState(""); // percent
+    const [hedgeOdds, setHedgeOdds] = useState("");
+    const [stake, setStake] = useState("");
 
-    const c = useMemo(() => layCommission / 100, [layCommission]);
+    // Hedge Stake Formula
+    const hedgeStake = useMemo(() => {
+        if (!backOdds || !hedgeOdds || !stake) return 0;
+        return (stake * backOdds) / hedgeOdds;
+    }, [backOdds, hedgeOdds, stake]);
 
-    // Lay stake formulas:
-    // freebet (SNR): L = (BS * (BO - 1)) / (LO - c)
-    // qualifying (stake returned): L = (BS * BO) / (LO - c)
-    const layStake = useMemo(() => {
-        if (!layOdds || (layOdds - c) === 0) return 0;
-        const denom = layOdds - c;
-        if (betType === "freebet") {
-            return (backStake * (backOdds - 1)) / denom;
-        } else {
-            return (backStake * backOdds) / denom;
-        }
-    }, [betType, backStake, backOdds, layOdds, c]);
+    // If back wins
+    const payoutBackWins = useMemo(() => {
+        if (!stake || !backOdds) return 0;
+        return stake * backOdds - hedgeStake * hedgeOdds;
+    }, [stake, backOdds, hedgeStake, hedgeOdds]);
 
-    // Outcome values (rounded only for display)
-    // If Bookmaker Bet Wins:
-    //   - freebet: bookmaker = BS*(BO-1)
-    //   - qualifying: bookmaker = BS*(BO-1)
-    // exchange side loses liability = L * (LO - 1)
-    const bookmakerIfBackWins = useMemo(() => {
-        if (betType === "freebet") return backStake * (backOdds - 1);
-        return backStake * (backOdds - 1);
-    }, [betType, backStake, backOdds]);
+    // If hedge wins
+    const payoutHedgeWins = useMemo(() => {
+        if (!stake || !hedgeStake) return 0;
+        return hedgeStake - stake;
+    }, [stake, hedgeStake]);
 
-    const exchangeIfBackWins = useMemo(() => {
-        return -layStake * (layOdds - 1);
-    }, [layStake, layOdds]);
+    // Profit (guaranteed)
+    const profit = useMemo(() => {
+        return (payoutBackWins + payoutHedgeWins) / 2;
+    }, [payoutBackWins, payoutHedgeWins]);
 
-    const totalIfBackWins = useMemo(() => {
-        return bookmakerIfBackWins + exchangeIfBackWins;
-    }, [bookmakerIfBackWins, exchangeIfBackWins]);
+    // Retention %
+    const retention = useMemo(() => {
+        if (!stake) return 0;
+        return (profit / stake) * 100;
+    }, [profit, stake]);
 
-    // If Exchange Bet Wins:
-    //   - bookmaker: qualifying -> -BS (you lose the qualifying stake)
-    //                freebet -> 0 (you lose free bet, stake was not your cash)
-    //   - exchange: you win lay stake minus commission on winnings => L * (1 - c)
-    const bookmakerIfExchangeWins = useMemo(() => {
-        return betType === "freebet" ? 0 : -backStake;
-    }, [betType, backStake]);
-
-    const exchangeIfExchangeWins = useMemo(() => {
-        return layStake * (1 - c);
-    }, [layStake, c]);
-
-    const totalIfExchangeWins = useMemo(() => {
-        return bookmakerIfExchangeWins + exchangeIfExchangeWins;
-    }, [bookmakerIfExchangeWins, exchangeIfExchangeWins]);
-
-    // safe display helpers
-    const fmt = (v) =>
-        typeof v === "number" && !isNaN(v) ? v.toFixed(2) : "0.00";
+    const fmt = (v) => (v && !isNaN(v) ? Number(v).toFixed(2) : "0.00");
 
     return (
         <>
-            <Layout >
+            <Layout>
                 <div className="min-h-screen bg-[#262626] text-gray-100 px-6 py-8">
                     <div className="max-w-6xl mx-auto">
-                        {/* Header */}
+
                         <div className="text-center mb-8">
                             <h1 className="text-3xl md:text-4xl font-bold">Matched Betting Calculator</h1>
-                            <p className="text-sm text-green-300 mt-1">Back &amp; Lay Method</p>
+                            <p className="text-sm text-green-300 mt-1">Simple Back &amp; Hedge Calculator</p>
                         </div>
 
-                        {/* Two-column layout */}
                         <div className="flex justify-center">
-
-                            {/* Left - Calculator (spans 2 cols on large) */}
-                            <div className="lg:col-span-2 ...">
+                            <div className="w-full lg:col-span-2">
                                 <div className="bg-black rounded-lg p-5 shadow-md border border-gray-800">
-                                    {/* Bet type selector */}
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="flex items-center gap-3">
-                                            <label className="text-sm text-gray-300">Bet type</label>
-                                            <select
-                                                value={betType}
-                                                onChange={(e) => setBetType(e.target.value)}
-                                                className="bg-[#101010] text-gray-100 px-3 py-1 rounded text-sm outline-none"
-                                            >
-                                                <option value="freebet">Bonus Bet (SNR)</option>
-                                                <option value="qualifying">Qualifying Bet</option>
-                                            </select>
+
+                                    {/* Inputs */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                                        <div>
+                                            <label className="text-xs text-gray-300">BACK ODDS</label>
+                                            <input
+                                                type="number"
+                                                value={backOdds}
+                                                onChange={(e) => setBackOdds(Number(e.target.value))}
+                                                className="w-full mt-2 bg-[#262626] text-gray-100 px-3 py-2 rounded outline-none"
+                                            />
                                         </div>
 
-                                        {/* <div className="text-xs text-gray-400 flex items-center gap-2">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="opacity-80">
-                    <path d="M12 2v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    <path d="M12 16v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                    <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.5" />
-                  </svg>
-                  <span>Used when converting a bonus bet into cash with the not stake returned.</span>
-                </div> */}
+                                        <div>
+                                            <label className="text-xs text-gray-300">HEDGE ODDS</label>
+                                            <input
+                                                type="number"
+                                                value={hedgeOdds}
+                                                onChange={(e) => setHedgeOdds(Number(e.target.value))}
+                                                className="w-full mt-2 bg-[#262626] text-gray-100 px-3 py-2 rounded outline-none"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="text-xs text-gray-300">STAKE ($)</label>
+                                            <input
+                                                type="number"
+                                                value={stake}
+                                                onChange={(e) => setStake(Number(e.target.value))}
+                                                className="w-full mt-2 bg-[#262626] text-gray-100 px-3 py-2 rounded outline-none"
+                                            />
+                                        </div>
+
                                     </div>
 
-                                    {/* Bookmaker's Bet (green card) */}
-                                    <div className="rounded-md overflow-hidden mb-4 border border-green-700">
-                                        <div className="bg-green-700 text-white px-4 py-2 font-semibold">Bookmaker's Bet</div>
-                                        <div className="bg-[#0f0f0f] px-4 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="text-xs text-gray-300">BACK STAKE</label>
-                                                <input
-                                                    type="number"
-                                                    value={backStake}
-                                                    onChange={(e) => setBackStake(Number(e.target.value))}
-                                                    className="w-full mt-2 bg-[#262626] text-gray-100 px-3 py-2 rounded outline-none"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="text-xs text-gray-300">BACK ODDS</label>
-                                                <input
-                                                    type="number"
-                                                    value={backOdds}
-                                                    onChange={(e) => setBackOdds(Number(e.target.value))}
-                                                    className="w-full mt-2 bg-[#262626] text-gray-100 px-3 py-2 rounded outline-none"
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
+                                    {/* Results */}
+                                    <div className="mt-6 bg-[#0f0f0f] p-4 rounded border border-gray-800">
+                                        <h3 className="text-lg font-semibold mb-3">Results</h3>
 
-                                    {/* Betting Exchange's Bet (red card) */}
-                                    <div className="rounded-md overflow-hidden border border-red-700">
-                                        <div className="bg-red-700 text-white px-4 py-2 font-semibold">Betting Exchange's Bet</div>
-                                        <div className="bg-[#0f0f0f] px-4 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div>
-                                                <label className="text-xs text-gray-300">LAY ODDS</label>
-                                                <input
-                                                    type="number"
-                                                    value={layOdds}
-                                                    onChange={(e) => setLayOdds(Number(e.target.value))}
-                                                    className="w-full mt-2 bg-[#262626] text-gray-100 px-3 py-2 rounded outline-none"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="text-xs text-gray-300">LAY COMMISSION (%)</label>
-                                                <input
-                                                    type="number"
-                                                    value={layCommission}
-                                                    onChange={(e) => setLayCommission(Number(e.target.value))}
-                                                    className="w-full mt-2 bg-[#262626] text-gray-100 px-3 py-2 rounded outline-none"
-                                                />
-                                            </div>
-                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-                                        {/* Small footer showing lay stake */}
-                                        <div className="bg-[#2b2b2b] px-4 py-2 text-sm text-gray-200">
-                                            Your lay stake: <span className="font-semibold">{fmt(layStake)}</span>
-                                        </div>
-                                    </div>
-
-                                    {/* Profit box (dark) */}
-                                    <div className="mt-4 bg-[#0f0f0f] p-4 rounded border border-gray-800">
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <div className="p-3 bg-[#262626] rounded">
-                                                <div className="text-xs text-gray-400">If Bookmaker Bet Wins:</div>
-                                                <div className="mt-2 text-sm text-gray-300">Bookmaker <span className="float-right font-semibold">{fmt(bookmakerIfBackWins)}</span></div>
-                                                <div className="mt-1 text-sm text-gray-300">Exchange <span className="float-right font-semibold">{fmt(exchangeIfBackWins)}</span></div>
-                                                <div className="mt-1 text-sm text-gray-200 border-t border-gray-800 pt-2">Total <span className="float-right font-semibold">{fmt(totalIfBackWins)}</span></div>
+                                                <div className="text-xs text-gray-400">Hedge Stake</div>
+                                                <div className="text-xl font-bold mt-1">${fmt(hedgeStake)}</div>
                                             </div>
 
                                             <div className="p-3 bg-[#262626] rounded">
-                                                <div className="text-xs text-gray-400">If Exchange Bet Wins:</div>
-                                                <div className="mt-2 text-sm text-gray-300">Bookmaker <span className="float-right font-semibold">{fmt(bookmakerIfExchangeWins)}</span></div>
-                                                <div className="mt-1 text-sm text-gray-300">Exchange <span className="float-right font-semibold">{fmt(exchangeIfExchangeWins)}</span></div>
-                                                <div className="mt-1 text-sm text-gray-200 border-t border-gray-800 pt-2">Total <span className="float-right font-semibold">{fmt(totalIfExchangeWins)}</span></div>
+                                                <div className="text-xs text-gray-400">Profit (Back Wins)</div>
+                                                <div className="text-xl font-bold mt-1">${fmt(payoutBackWins)}</div>
                                             </div>
 
                                             <div className="p-3 bg-[#262626] rounded">
-                                                <div className="text-xs text-gray-400">Summary</div>
-                                                <div className="mt-2 text-sm text-gray-200">Lay Stake <span className="float-right font-semibold">{fmt(layStake)}</span></div>
-                                                <div className="mt-1 text-sm text-gray-200">Expected Return <span className="float-right font-semibold">{fmt(Math.max(totalIfBackWins, totalIfExchangeWins))}</span></div>
+                                                <div className="text-xs text-gray-400">Profit (Hedge Wins)</div>
+                                                <div className="text-xl font-bold mt-1">${fmt(payoutHedgeWins)}</div>
                                             </div>
+
+                                            <div className="p-3 bg-[#262626] rounded">
+                                                <div className="text-xs text-gray-400">Guaranteed Profit</div>
+                                                <div className="text-xl font-bold mt-1 text-green-400">${fmt(profit)}</div>
+                                            </div>
+
+                                            <div className="p-3 bg-[#262626] rounded">
+                                                <div className="text-xs text-gray-400">Retention %</div>
+                                                <div className="text-xl font-bold mt-1">{fmt(retention)}%</div>
+                                            </div>
+
                                         </div>
                                     </div>
+
+                                    {/* Description Document (your text) */}
                                     <div className="mt-12 text-gray-100 space-y-6 leading-relaxed max-w-4xl">
-                                        <h2 className="text-3xl font-bold">
-                                            Back and Lay Calculator for Matched Betting (Australia)
-                                        </h2>
 
+                                        <h2 className="text-3xl font-bold">Punt Data – Matched Betting Calculator</h2>
                                         <p className="text-gray-300 text-[15px]">
-                                            This free <strong>back and lay calculator</strong> is built for Australians looking to make consistent,
-                                            risk-free profits from bookmaker promotions using a method known as
-                                            <strong> matched betting</strong>. It’s easy to use, beginner-friendly, and powerful
-                                            enough for advanced bettors who want to maximise value from every bonus.
+                                            The Punt Data Matched Betting Calculator helps you turn bookmaker promotions 
+                                            into steady, predictable returns. Enter your odds and stake and the calculator 
+                                            tells you exactly how much to place on each side so you can lock in a result 
+                                            without relying on luck.
                                         </p>
 
+                                        <h3 className="text-2xl font-bold mt-10">What Is Matched Betting</h3>
                                         <p className="text-gray-300 text-[15px]">
-                                            Whether you're placing a <strong>qualifying bet</strong> to unlock a reward or using a
-                                            <strong> free bet</strong> to secure profit, our <strong>back lay calculator</strong> works
-                                            out the exact <strong>lay stake</strong> you need to place on a betting exchange to
-                                            balance the outcomes. This removes the risk, allowing you to keep the bonus — not lose it.
+                                            Matched betting uses two bets on opposite outcomes to remove risk. You back one outcome 
+                                            with the bookmaker, then place a hedge bet on the other outcome. No matter who wins, 
+                                            the payouts balance out.
                                         </p>
 
+                                        <h3 className="text-2xl font-bold mt-10">Responsible Gambling</h3>
                                         <p className="text-gray-300 text-[15px]">
-                                            The calculator handles decimal odds, common exchange commissions, and both
-                                            <strong> stake returned</strong> and <strong>stake not returned (SNR)</strong> bet types.
-                                            It’s a must-have tool if you're doing any type of <strong>back to lay betting</strong>,
-                                            <strong> lay back arbitrage</strong>, or want to build a repeatable system for
-                                            <strong> sports betting</strong> profits.
+                                            Use promotions wisely. Stay in control. Bet within your limits.
                                         </p>
 
-                                        <h3 className="text-2xl font-bold mt-10">What This Calculator Supports:</h3>
-
-                                        <ul className="space-y-2 text-gray-200 text-[15px]">
-                                            <li className="flex items-start gap-2">
-                                                <span className="text-green-400 text-xl">✔</span>
-                                                Quick calculations for both <strong>qualifying bets</strong> and <strong>free bets</strong>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <span className="text-green-400 text-xl">✔</span>
-                                                Works with all <strong>decimal odds</strong> and <strong>Betfair commission rates</strong>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <span className="text-green-400 text-xl">✔</span>
-                                                Ideal for <strong>back/lay betting strategies</strong> and <strong>arbitrage</strong>
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <span className="text-green-400 text-xl">✔</span>
-                                                100% free — no sign-up, no subscriptions
-                                            </li>
-                                            <li className="flex items-start gap-2">
-                                                <span className="text-green-400 text-xl">✔</span>
-                                                Mobile-friendly and fast
-                                            </li>
-                                        </ul>
-
-                                        <p className="text-gray-300 text-[15px]">
-                                            Whether you're betting on the <strong>Premier League</strong>, Aussie horse racing, or other popular events,
-                                            our calculator helps ensure you always place smart, risk-managed bets. It’s trusted by people who want a smarter,
-                                            more calculated approach to sports betting — without gambling in the traditional sense.
-                                        </p>
-
-                                        <p className="text-gray-300 text-[15px]">
-                                            The <strong>back and lay calculator</strong> is the core tool behind every successful matched betting system.
-                                            It allows you to remove emotion and guesswork from your bets and replace them with precise, mathematical
-                                            outcomes that compound over time.
-                                        </p>
-
-                                        <p className="text-gray-300 text-[15px]">
-                                            New to this? <span className="text-blue-400 font-semibold cursor-pointer underline">
-                                                Check out our free matched betting guide
-                                            </span> and learn how to start making risk-free money today using a proven system anyone can follow.
-                                        </p>
                                     </div>
+
                                 </div>
                             </div>
-
-
                         </div>
-
-                        {/* Description section (exact text you provided) */}
 
                     </div>
                 </div>
@@ -266,6 +157,7 @@ export default function MatchedBettingCalculator() {
         </>
     );
 }
+
 
 
 
@@ -278,3 +170,69 @@ export default function MatchedBettingCalculator() {
 //     res.status(500).json({ error: 'Database error' });
 //   }
 // });
+
+
+//                           <div className="mt-12 text-gray-100 space-y-6 leading-relaxed max-w-4xl">
+
+//     <h2 className="text-3xl font-bold">Punt Data – Matched Betting Calculator</h2>
+//     <p className="text-gray-300 text-[15px]">
+//         The Punt Data Matched Betting Calculator helps you turn bookmaker promotions into 
+//         steady, predictable returns. Enter your odds and stake and the calculator tells you 
+//         exactly how much to place on each side so you can lock in a result without relying on luck.
+//     </p>
+
+//     <h3 className="text-2xl font-bold mt-10">What Is Matched Betting</h3>
+//     <p className="text-gray-300 text-[15px]">
+//         Matched betting uses two bets on opposite outcomes to remove risk. You back one outcome 
+//         with the bookmaker, then place a hedge bet on the other outcome. No matter who wins, 
+//         the payouts balance out. You are not trying to guess the winner — you are using maths 
+//         to make the promotion work in your favour.
+//     </p>
+
+//     <h3 className="text-2xl font-bold mt-10">How Promotions Make It Work</h3>
+//     <p className="text-gray-300 text-[15px]">
+//         Bookmakers use promos to attract punters — bonus bets, bet & get offers, money-back credits. 
+//         Matched betting converts these promos into predictable returns. The promo provides value, 
+//         and the hedge removes the risk.
+//     </p>
+
+//     <h3 className="text-2xl font-bold mt-10">How to Use the Calculator</h3>
+//     <ul className="space-y-2 text-gray-200 text-[15px]">
+//         <li>Enter your back odds</li>
+//         <li>Enter your hedge (lay) odds</li>
+//         <li>Enter your stake or bonus amount</li>
+//         <li>Select the bet type</li>
+//         <li>Press Calculate</li>
+//     </ul>
+
+//     <p className="text-gray-300 text-[15px]">
+//         The calculator instantly shows your lay stake, payouts for both outcomes, total profit, 
+//         and retention — everything you need to stay in control.
+//     </p>
+
+//     <h3 className="text-2xl font-bold mt-10">Simple Example</h3>
+//     <p className="text-gray-300 text-[15px]">
+//         Back Odds: 2.40 • Hedge Odds: 1.70 • Back Stake: $50  
+//         The calculator works out a hedge stake of $41.18 so both outcomes return around $70.  
+//         Guaranteed Profit: $28.82 (57.64% retention)
+//     </p>
+
+//     <h3 className="text-2xl font-bold mt-10">Why People Use Matched Betting</h3>
+//     <ul className="space-y-2 text-gray-200 text-[15px]">
+//         <li>Removes risk</li>
+//         <li>Uses promos for real value</li>
+//         <li>Creates consistent returns</li>
+//         <li>Easy with a calculator</li>
+//         <li>Works with nearly all betting offers</li>
+//     </ul>
+//     <p className="text-gray-300 text-[15px]">
+//         Matched betting is mathematics — not gambling.
+//     </p>
+
+//     <h3 className="text-2xl font-bold mt-10">Responsible Gambling</h3>
+//     <p className="text-gray-300 text-[15px]">
+//         Use promotions wisely. Stay in control. Bet within your limits.  
+//         If gambling becomes a problem, visit Gambling Help Online or call 1800 858 858.
+//     </p>
+
+// </div>

@@ -157,26 +157,35 @@
 // };
 
 // export default ResultSection;
-
-
 import React, { useState, useEffect } from "react";
 import ResultInput from "./ResultInput";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "../CustomDatePicker.css";
+import "../CustomDatePicker.css";   
 import { PiCalendarDotsBold } from "react-icons/pi";
 import ResultExpandable from "./ResultExpandable";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchKenoResults, fetchFilteredResults } from "../../redux/kenoSlice"; 
-// import { fetchTracksideResults } from "../../redux/tracksideSlice"; // ⭐ Trackside Redux Slice
+import { fetchKenoResults, fetchFilteredResults } from "../../redux/kenoSlice";
+// import { fetchTracksideResults } from "../../redux/tracksideSlice";
 
 const ResultSection = () => {
   const [date, setDate] = useState(null);
   const [open, setOpen] = useState(false);
   const [location, setLocation] = useState("NSW");
 
-  // ⭐ NEW STATE — Keno / Trackside switch
+  // NEW STATE — Keno / Trackside switch
   const [selectedGame, setSelectedGame] = useState("keno");
+
+  //  Store last used filters so pagination also works for VIC/SA/ACT
+  const [filters, setFilters] = useState({
+    page: 1,
+    limit: 10,
+    location: "NSW",
+    combination: "",
+    fromGame: "",
+    toGame: "",
+    date: "",
+  });
 
   const dispatch = useDispatch();
 
@@ -187,7 +196,12 @@ const ResultSection = () => {
   const error = selectedGame === "keno" ? kenoState.error : tracksideState.error;
   const results = selectedGame === "keno" ? kenoState.results : tracksideState.results;
 
-  // ⭐ Load initial data when game changes
+  // ⭐ Correct pagination state for ALL LOCATIONS (NSW, VIC, SA, ACT)
+  const paginationState = selectedGame === "keno" ? kenoState : tracksideState;
+  const { page, limit, total } = paginationState;
+  const totalPages = Math.ceil(total / limit);
+
+  // Load initial data when game changes
   useEffect(() => {
     if (selectedGame === "keno") {
       dispatch(fetchKenoResults());
@@ -196,7 +210,14 @@ const ResultSection = () => {
     }
   }, [selectedGame, dispatch]);
 
-  // ⭐ Normalized data mapping for UI (same Expandable component)
+  // ⭐ PAGE CHANGE FIX — Works for VIC, SA, ACT, NSW
+  const handlePageChange = (newPage) => {
+    const updated = { ...filters, page: newPage };
+    setFilters(updated);
+    dispatch(fetchFilteredResults(updated));
+  };
+
+  // Normalized data mapping for UI
   const resultData = results.map((item) => ({
     id: item._id,
     date: item.date,
@@ -209,42 +230,35 @@ const ResultSection = () => {
     dividends: item.dividends || {},
   }));
 
-  // ⭐ Handle Search
+  // ⭐ SEARCH FIX — Stores filters so pagination works
   const handleSearch = () => {
-    const filters = {
-      page: 1,
-      limit: 10,
-      fromGame: document.querySelector('input[placeholder="First Game No."]')?.value,
-      toGame: document.querySelector('input[placeholder="Last Game No."]')?.value,
-      combination: document.querySelector('input[placeholder="Search by combinations"]')?.value,
-      date: date ? date.toISOString().split("T")[0] : undefined,
-      location,
-    };
+  const firstGame = document.querySelector('input[name="fromGame"]')?.value ?? "";
+  const lastGame = document.querySelector('input[name="toGame"]')?.value ?? "";
+  const combo = document.querySelector('input[name="combination"]')?.value ?? "";
 
-    // Remove empty filters
-    Object.keys(filters).forEach((key) => filters[key] === "" && delete filters[key]);
-
-    // Dispatch based on selected game
-    if (selectedGame === "keno") {
-      dispatch(fetchFilteredResults(filters));
-    } else {
-      dispatch(fetchTracksideResults(filters));
-    }
+  const newFilters = {
+    page: 1,
+    limit: 10,
+    location,
+    fromGame: firstGame,
+    toGame: lastGame,
+    combination: combo,
+    date: date ? date.toISOString().split("T")[0] : "",
   };
+
+  setFilters(newFilters);
+  dispatch(fetchFilteredResults(newFilters));
+};
+
 
   return (
     <div className="flex flex-col bg-[#262626] px-4 sm:px-8 py-4 my-4 rounded font-poppins w-full">
-
-   
-
       <div className="flex flex-col sm:flex-row sm:justify-between gap-4 w-full">
         <h3 className="text-xl font-semibold text-white">
           {selectedGame === "keno" ? "Keno Results:" : "Trackside Results:"}
         </h3>
 
         <div className="flex flex-wrap gap-3 items-center">
-
-          {/* Only show game number filters for KENO */}
           {selectedGame === "keno" && (
             <>
               <ResultInput placeholder={"First Game No."} width="w-[130px]" />
@@ -291,51 +305,24 @@ const ResultSection = () => {
           >
             Search
           </button>
-           {/* <div className="flex gap-3 ">
-        <button
-          onClick={() => setSelectedGame("keno")}
-          className={`px-4 py-2 rounded-xl text-sm ${
-            selectedGame === "keno" ? "bg-white text-black" : "bg-[#464646] text-[#c8c8c8]"
-          }`}
-        >
-          Keno
-        </button>
-
-        <button
-          onClick={() => setSelectedGame("trackside")}
-          className={`px-4 py-2 rounded-xl text-sm ${
-            selectedGame === "trackside" ? "bg-white text-black" : "bg-[#464646] text-[#c8c8c8]"
-          }`}
-        >
-          Trackside
-        </button>
-      </div> */}
         </div>
       </div>
-     
-     
+
       {/* Show All + Location Selector */}
       <div className="flex items-center gap-4 ml-auto mt-5">
-
-        <label className="inline-flex items-center cursor-pointer font-light relative text-sm">
-          <input
-            type="checkbox"
-            className="peer appearance-none w-5 h-5 border border-white rounded bg-transparent checked:bg-transparent checked:border-white"
-          />
-          <span className="absolute left-[4px] text-white text-md hidden peer-checked:inline">✓</span>
-          <span className="ml-3 text-white">Show results from all races till date</span>
-        </label>
-
         <select
           value={location}
           onChange={(e) => {
             setLocation(e.target.value);
 
-            if (selectedGame === "keno") {
-              dispatch(fetchFilteredResults({ location: e.target.value }));
-            } else {
-              dispatch(fetchTracksideResults({ location: e.target.value }));
-            }
+            const updated = {
+              ...filters,
+              location: e.target.value,
+              page: 1,
+            };
+
+            setFilters(updated);
+            dispatch(fetchFilteredResults(updated));
           }}
           className="bg-[#464646] text-white text-sm px-3 py-2 rounded-lg focus:outline-none"
         >
@@ -344,22 +331,51 @@ const ResultSection = () => {
           <option value="SA">SA</option>
           <option value="NSW">NSW</option>
         </select>
-
-      
-
       </div>
 
       {/* LOADING / ERROR */}
       {loading && <p className="text-gray-400 mt-4">Loading...</p>}
       {error && <p className="text-red-400 mt-4">Error fetching results: {error}</p>}
 
-      {/* RESULTS TABLE */}
       {!loading && !error && (
-        <div className="mt-4 rounded overflow-x-auto">
-          <ResultExpandable
-            resultData={Array.isArray(resultData) ? resultData : [resultData]}
-          />
-        </div>
+        <>
+          <div className="mt-4 rounded overflow-x-auto">
+            <ResultExpandable
+              resultData={Array.isArray(resultData) ? resultData : [resultData]}
+            />
+          </div>
+
+          {/* ⭐ PAGINATION UI */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-3 mt-6 text-white">
+              <button
+                disabled={page === 1}
+                onClick={() => handlePageChange(page - 1)}
+                className={`px-3 py-1 rounded ${
+                  page === 1 ? "bg-gray-600 cursor-not-allowed" : "bg-white text-black"
+                }`}
+              >
+                Prev
+              </button>
+
+              <span className="text-sm">
+                Page {page} / {totalPages}
+              </span>
+
+              <button
+                disabled={page === totalPages}
+                onClick={() => handlePageChange(page + 1)}
+                className={`px-3 py-1 rounded ${
+                  page === totalPages
+                    ? "bg-gray-600 cursor-not-allowed"
+                    : "bg-white text-black"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

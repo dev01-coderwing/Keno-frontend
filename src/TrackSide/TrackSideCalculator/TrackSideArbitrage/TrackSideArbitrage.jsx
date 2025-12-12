@@ -2,68 +2,91 @@ import React, { useState, useMemo } from "react";
 import TrackSideLayout from "../../TrackSideLayout/TrackSideLayout";
 
 function TrackSideArbitrage() {
-
-     const [outcomes, setOutcomes] = useState(2);
+const [outcomes, setOutcomes] = useState(2);
     const [odds, setOdds] = useState(["", "", ""]);
     const [totalStake, setTotalStake] = useState("");
     const [labels, setLabels] = useState(["", "", ""]);
-    
-    
-        function updateOdd(index, value) {
-            const next = [...odds];
-            next[index] = Number(value || 0);
-            setOdds(next);
-        }
-    
-        function updateLabel(index, value) {
-            const next = [...labels];
-            next[index] = value;
-            setLabels(next);
-        }
-    
-        const effectiveOdds = useMemo(() => odds.slice(0, outcomes), [odds, outcomes]);
-    
-        const impliedProbabilities = useMemo(() => {
-            return effectiveOdds.map((o) => (o > 0 ? 1 / o : 0));
-        }, [effectiveOdds]);
-    
-        const sumImplied = useMemo(() => {
-            return impliedProbabilities.reduce((a, b) => a + b, 0);
-        }, [impliedProbabilities]);
-    
-        const isArb = sumImplied > 0 && sumImplied < 1;
-    
-        // Recommended stakes proportionally: stake_i = ( (1/odd_i) / sumImplied ) * totalStake
-        const recommendedStakes = useMemo(() => {
-            if (!totalStake || totalStake <= 0) return effectiveOdds.map(() => 0);
-            const stakes = impliedProbabilities.map((p) => (p / sumImplied) * Number(totalStake || 0));
-            return stakes;
-        }, [impliedProbabilities, sumImplied, totalStake]);
-    
-        // Profit calculation: For each outcome, payout = stake_i * odd_i. Profit = payout - totalStake
-        const payouts = useMemo(() => {
-            return recommendedStakes.map((s, i) => s * effectiveOdds[i]);
-        }, [recommendedStakes, effectiveOdds]);
-    
-        const profits = useMemo(() => {
-            return payouts.map((p) => p - Number(totalStake || 0));
-        }, [payouts, totalStake]);
-    
-        const minProfit = useMemo(() => {
-            if (profits.length === 0) return 0;
-            return Math.min(...profits);
-        }, [profits]);
-    
-        function reset() {
-            setOutcomes(2);
-            setOdds([1.8, 2.2, 0]);
-            setTotalStake(100);
-            setLabels(["Outcome A", "Outcome B", "Outcome C"]);
+
+    function updateOdd(index, value) {
+        const next = [...odds];
+        next[index] = Number(value || 0);
+        setOdds(next);
+    }
+
+    function updateLabel(index, value) {
+        const next = [...labels];
+        next[index] = value;
+        setLabels(next);
+    }
+
+    const effectiveOdds = useMemo(() => odds.slice(0, outcomes), [odds, outcomes]);
+
+    // ---------------------------
+    // IMPLIED PROBABILITIES (same as document)
+    // ---------------------------
+    const impliedProbabilities = useMemo(() => {
+        return effectiveOdds.map((o) => (o > 0 ? 1 / o : 0));
+    }, [effectiveOdds]);
+
+    const sumImplied = useMemo(() => {
+        return impliedProbabilities.reduce((a, b) => a + b, 0);
+    }, [impliedProbabilities]);
+
+    const isArb = sumImplied < 1;
+
+
+    // -------------------------------------------------
+    // ⭐ NEW DOCUMENT-BASED STAKE SPLIT FORMULA (2-WAY)
+    // -------------------------------------------------
+    const recommendedStakes = useMemo(() => {
+        if (!totalStake || totalStake <= 0 || effectiveOdds.length < 2)
+            return effectiveOdds.map(() => 0);
+
+        const A = effectiveOdds[0];
+        const B = effectiveOdds[1];
+        const T = Number(totalStake);
+
+        // Stake on outcome A
+        const SA = T / (1 + A / B);
+
+        // Stake on outcome B
+        const SB = T - SA;
+
+        return [SA, SB];
+    }, [effectiveOdds, totalStake]);
+
+
+    // ---------------------------------------------
+    // ⭐ NEW PAYOUTS (Same payout for both outcomes)
+    // ---------------------------------------------
+    const payouts = useMemo(() => {
+        return recommendedStakes.map((stake, i) => stake * effectiveOdds[i]);
+    }, [recommendedStakes, effectiveOdds]);
+
+
+    // ---------------------------------------------
+    // ⭐ NEW PROFIT CALCULATION
+    // ---------------------------------------------
+    const profits = useMemo(() => {
+        return payouts.map((payout) => payout - Number(totalStake));
+    }, [payouts, totalStake]);
+
+
+    const minProfit = useMemo(() => {
+        return Math.min(...profits);
+    }, [profits]);
+
+
+    function reset() {
+        setOutcomes(2);
+        setOdds([1.8, 2.2, 0]);
+        setTotalStake(100);
+        setLabels(["Outcome A", "Outcome B", "Outcome C"]);
         }
   return (
     <>
     <TrackSideLayout>
-          <div className="bg-[#262626] min-h-screen">
+             <div className="bg-[#262626] min-h-screen">
             <div className="max-w-6xl mx-auto p-6">
                 <div className="bg-black text-gray-100 rounded-2xl shadow-lg p-6 ring-1 ring-white/5">
                     <h2 className="text-2xl font-semibold mb-2">Arbitrage Calculator</h2>
@@ -194,45 +217,87 @@ function TrackSideArbitrage() {
                         </button>
                     </div> */}
 
-                    <div className="mt-5 text-xs text-gray-500">
-                        Notes: Odds must be decimal (e.g., 2.5). This calculator provides estimated stakes based on implied
-                        probabilities; real-world use should consider bookmaker limits, commissions, and timing.
-                    </div>
-                     {/* Description Section */}
-            <div className="mt-10  text-gray-100 rounded-2xl shadow-lg p-6 ring-1 ring-white/5 space-y-6">
-                <h2 className="text-2xl font-semibold">What this Arbitrage Calculator does</h2>
-                <p className="text-gray-300 text-sm">Our arbitrage calculator is a powerful tool designed to help you calculate and optimize your bets. With it, you can easily determine the right stake amount for each outcome whenever an arbitrage betting opportunity appears.</p>
+                <div className="mt-5 text-xs text-gray-500">
+    Notes: Odds must be decimal (e.g., 2.5). Arbitrage opportunities depend on finding the highest prices for each
+    outcome. Always double-check bookmaker limits and timing.
+</div>
 
-                <h3 className="text-xl font-semibold">How to Use the Arbitrage Calculator</h3>
-                <p className="text-gray-300 text-sm">Enter decimal odds, total stake, and the calculator will instantly show implied probability, recommended stake, and guaranteed profit.</p>
+{/* Description Section */}
+<div className="mt-10 text-gray-100 rounded-2xl shadow-lg p-6 ring-1 ring-white/5 space-y-6">
 
-                <h3 className="text-xl font-semibold">What is Arbitrage Betting?</h3>
-                <p className="text-gray-300 text-sm">Arbitrage betting (surebet) is a strategy where you place bets on all possible outcomes using different bookmakers to lock in guaranteed profit.</p>
+    <h2 className="text-2xl font-semibold">Punt Data – Arbitrage Calculator</h2>
+    <p className="text-gray-300 text-sm">
+        The Punt Data Arbitrage Calculator shows you how to lock in a profit by backing different outcomes when
+        the odds create a guaranteed margin. Arbitrage betting is not about guessing winners — it is about using
+        differences in prices to secure a return no matter what happens. The idea is simple: win, not lose.
+    </p>
 
-                <h3 className="text-xl font-semibold">Why Do Arbitrage Bets Exist?</h3>
-                <p className="text-gray-300 text-sm">They exist due to odds differences, market imbalance, slow updates from bookmakers, and global variance.</p>
+    <h3 className="text-xl font-semibold">What Is Arbitrage Betting?</h3>
+    <p className="text-gray-300 text-sm">
+        Arbitrage betting (arbing) happens when odds vary enough across different places that you can cover all
+        outcomes and still make a profit. You place one bet on Outcome A and another bet on Outcome B. If the odds
+        are high enough across both sides, you can guarantee a return. You are not predicting results — you are
+        using maths and price differences to your advantage.
+    </p>
 
-                <h3 className="text-xl font-semibold">Example of an Arbitrage Bet</h3>
-                <p className="text-gray-300 text-sm">If odds are 2.10 and 2.15, implied probability becomes less than 100%, creating a surebet opportunity.</p>
+    <h3 className="text-xl font-semibold">How to Find the Highest Odds</h3>
+    <p className="text-gray-300 text-sm">
+        Arbitrage only works when you use the best possible odds for each outcome. Prices for the same event can
+        vary, and these variations create the opportunity.
+    </p>
 
-                <h3 className="text-xl font-semibold">How to Find Arbitrage Opportunities</h3>
-                <p className="text-gray-300 text-sm">Monitor sportsbook odds, use comparison websites, scanners, or this calculator to identify opportunities.</p>
+    <ul className="list-disc list-inside text-gray-300 text-sm space-y-1">
+        <li>Find the highest odds for Outcome A</li>
+        <li>Find the highest odds for Outcome B</li>
+        <li>Enter both odds into the calculator</li>
+        <li>Stake exactly as shown</li>
+        <li>Lock in a guaranteed return</li>
+    </ul>
 
-                <h3 className="text-xl font-semibold">Benefits of Using an Arbitrage Tool</h3>
-                <ul className="list-disc list-inside text-gray-300 text-sm space-y-1">
-                    <li>Saves time</li>
-                    <li>Removes calculation mistakes</li>
-                    <li>Maximizes guaranteed profit</li>
-                    <li>Works for 2-way & 3-way markets</li>
-                </ul>
+    <p className="text-gray-300 text-sm">No guessing. No predictions. Just maths.</p>
 
-                <h3 className="text-xl font-semibold">Start Your Arbitrage Betting Journey</h3>
-                <p className="text-gray-300 text-sm">Use this calculator to test different odds and see if profit is possible. Arbitrage betting can give stable returns with proper strategy.</p>
-            </div>
+    <h3 className="text-xl font-semibold">Why Use the Punt Data Arbitrage Calculator?</h3>
+    <ul className="list-disc list-inside text-gray-300 text-sm space-y-1">
+        <li>Finds the exact stake split for each outcome</li>
+        <li>Shows your total outlay</li>
+        <li>Shows your guaranteed return</li>
+        <li>Simple and accurate</li>
+        <li>No complex formulas needed</li>
+    </ul>
+
+    <h3 className="text-xl font-semibold">How to Use the Calculator</h3>
+    <p className="text-gray-300 text-sm">Enter:</p>
+    <ul className="list-disc list-inside text-gray-300 text-sm space-y-1">
+        <li>The odds for Outcome A</li>
+        <li>The odds for Outcome B</li>
+        <li>Your total stake</li>
+    </ul>
+    <p className="text-gray-300 text-sm">
+        Press Calculate — you will instantly see how much to stake on each outcome, your total spend, and your
+        locked-in profit.
+    </p>
+
+    <h3 className="text-xl font-semibold">Why People Use Arbitrage Betting</h3>
+    <ul className="list-disc list-inside text-gray-300 text-sm space-y-1">
+        <li>Removes risk</li>
+        <li>Takes advantage of price differences</li>
+        <li>Works on any two-outcome market</li>
+        <li>Pure mathematics</li>
+        <li>No guesswork</li>
+    </ul>
+
+    <h3 className="text-xl font-semibold">Responsible Gambling</h3>
+    <p className="text-gray-300 text-sm">
+        Always stay in control. Bet within your limits. If gambling becomes a problem, visit Gambling Help Online
+        or call 1800 858 858.
+    </p>
+
+</div>
+
                 </div>
             </div>
             
-       </div>    
+       </div>
        </TrackSideLayout>
     </>
   )

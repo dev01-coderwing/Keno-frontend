@@ -65,201 +65,85 @@
 // export default kenoSlice.reducer;
     
 
-// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-// import api from "../api";
-
-// // ✅ Default NSW data
-// export const fetchKenoResults = createAsyncThunk(
-//   "keno/fetchKenoResults",
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       const res = await api.get("/nsw-keno/applyfilters?page=1&limit=10");
-//       return res.data.results;
-//     } catch (err) {
-//       return rejectWithValue(
-//         err.response?.data?.message || "Failed to fetch NSW results"
-//       );
-//     }
-//   }
-// );
-
-// export const fetchFilteredResults = createAsyncThunk(
-//   "keno/fetchFilteredResults",
-//   async (filters, { rejectWithValue }) => {
-//     try {
-//       const { location = "NSW", page = 1, limit = 10, combination, date } = filters;
-//       let endpoint = "";
-
-//       // ✅ VIC APIs
-//       if (location === "VIC") {
-//         const base = "/vic-keno";
-//         if (combination || date) {
-//           endpoint = `${base}/applyfilters-vic?page=${page}&limit=${limit}`;
-//           if (combination) endpoint += `&combination=${combination}`;
-//           if (date) endpoint += `&date=${date}`;
-//         } else {
-//           endpoint = `${base}/keno-results-vic?page=${page}&limit=${limit}`;
-//         }
-//       }
-
-//       // ✅ SA APIs
-//       else if (location === "SA") {
-//         const base = "/sa-keno";
-//         if (combination || date) {
-//           endpoint = `${base}/applyfilters-sa?page=${page}&limit=${limit}`;
-//           if (combination) endpoint += `&combination=${combination}`;
-//           if (date) endpoint += `&date=${date}`;
-//         } else {
-//           endpoint = `${base}/keno-results-sa?page=${page}&limit=${limit}`;
-//         }
-//       }
-
-//       // ✅ NSW (default)
-//       else if (location === "NSW") {
-//         const base = "/nsw-keno";
-//         endpoint = `${base}/applyfilters?page=${page}&limit=${limit}`;
-//         if (combination) endpoint += `&combination=${combination}`;
-//         if (date) endpoint += `&date=${date}`;
-//       }
-
-//       // ✅ Default fallback
-//       else {
-//         endpoint = `/nsw-keno/applyfilters?page=${page}&limit=${limit}`;
-//       }
-
-//       const res = await api.get(endpoint);
-//       return res.data.results;
-//     } catch (err) {
-//       return rejectWithValue(
-//         err.response?.data?.message || "Failed to fetch filtered results"
-//       );
-//     }
-//   }
-// );
-
-// const kenoSlice = createSlice({
-//   name: "keno",
-//   initialState: {
-//     results: [],
-//     loading: false,
-//     error: null,
-//   },
-//   reducers: {},
-//   extraReducers: (builder) => {
-//     builder
-//       // ✅ NSW default
-//       .addCase(fetchKenoResults.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(fetchKenoResults.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.results = action.payload || [];
-//       })
-//       .addCase(fetchKenoResults.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//       })
-
-//       // ✅ Filtered (VIC, SA, NSW)
-//       .addCase(fetchFilteredResults.pending, (state) => {
-//         state.loading = true;
-//         state.error = null;
-//       })
-//       .addCase(fetchFilteredResults.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.results = action.payload || [];
-//       })
-//       .addCase(fetchFilteredResults.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//       });
-//   },
-// });
-
-// export default kenoSlice.reducer;
-
-
+// redux/kenoSlice.js
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 
-// ✅ Default NSW data
+const endpoints = {
+  NSW: "/nsw-keno/applyfilters",
+  VIC: "/vic-keno/applyfilters-vic",
+  SA: "/sa-keno/applyfilters-sa",
+  ACT: "/atc-keno/applyfilters",
+};
+
 export const fetchKenoResults = createAsyncThunk(
   "keno/fetchKenoResults",
-  async (_, { rejectWithValue }) => {
+  async (opts = { location: "NSW", page: 1, limit: 10 }, { rejectWithValue }) => {
     try {
-      const res = await api.get("/nsw-keno/applyfilters?page=1&limit=10");
-      return res.data.results;
+      const { location = "NSW", page = 1, limit = 10 } = opts;
+      const base = endpoints[location] || endpoints.NSW;
+      const url = `${base}?page=${encodeURIComponent(page)}&limit=${encodeURIComponent(limit)}`;
+      const res = await api.get(url);
+      return {
+        results: res.data.results,
+        total: res.data.total,
+        page: res.data.page,
+        limit: res.data.limit,
+      };
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch NSW results"
-      );
+      return rejectWithValue(err.response?.data?.message || "Failed to fetch Keno results");
     }
   }
 );
 
 export const fetchFilteredResults = createAsyncThunk(
   "keno/fetchFilteredResults",
-  async (filters, { rejectWithValue }) => {
+  async (filters = {}, { rejectWithValue }) => {
     try {
-      const { location = "NSW", page = 1, limit = 10, combination, date } = filters;
-      let endpoint = "";
+      const {
+        location = "NSW",
+        page = 1,
+        limit = 10,
+        combination,
+        date,
+        fromGame,
+        toGame,
+      } = filters;
 
-      // ✅ VIC APIs
-      if (location === "VIC") {
-        const base = "/vic-keno";
-        if (combination || date) {
-          endpoint = `${base}/applyfilters-vic?page=${page}&limit=${limit}`;
-          if (combination) endpoint += `&combination=${combination}`;
-          if (date) endpoint += `&date=${date}`;
-        } else {
-          endpoint = `${base}/keno-results-vic?page=${page}&limit=${limit}`;
-        }
+      // pick correct base endpoint (always applyfilters)
+      const base = endpoints[location] || endpoints.NSW;
+
+      // build query params safely
+      const params = new URLSearchParams();
+      params.append("page", page);
+      params.append("limit", limit);
+
+      if (combination !== undefined && combination !== "") {
+        params.append("combination", combination);
+      }
+      if (date) {
+        // ensure date in YYYY-MM-DD if backend expects that
+        params.append("date", date);
+      }
+      if (fromGame !== undefined && fromGame !== "") {
+        params.append("fromGame", fromGame);
+      }
+      if (toGame !== undefined && toGame !== "") {
+        params.append("toGame", toGame);
       }
 
-      // ✅ SA APIs
-      else if (location === "SA") {
-        const base = "/sa-keno";
-        if (combination || date) {
-          endpoint = `${base}/applyfilters-sa?page=${page}&limit=${limit}`;
-          if (combination) endpoint += `&combination=${combination}`;
-          if (date) endpoint += `&date=${date}`;
-        } else {
-          endpoint = `${base}/keno-results-sa?page=${page}&limit=${limit}`;
-        }
-      }
-
-      // ✅ ACT APIs
-      else if (location === "ACT") {
-        const base = "/atc-keno";
-        if (combination || date) {
-          endpoint = `${base}/applyfilters?page=${page}&limit=${limit}`;
-          if (combination) endpoint += `&combination=${combination}`;
-          if (date) endpoint += `&date=${date}`;
-        } else {
-          endpoint = `${base}/keno-results?page=${page}&limit=${limit}`;
-        }
-      }
-
-      // ✅ NSW (default)
-      else if (location === "NSW") {
-        const base = "/nsw-keno";
-        endpoint = `${base}/applyfilters?page=${page}&limit=${limit}`;
-        if (combination) endpoint += `&combination=${combination}`;
-        if (date) endpoint += `&date=${date}`;
-      }
-
-      // ✅ Default fallback
-      else {
-        endpoint = `/nsw-keno/applyfilters?page=${page}&limit=${limit}`;
-      }
+      const endpoint = `${base}?${params.toString()}`;
 
       const res = await api.get(endpoint);
-      return res.data.results;
+
+      return {
+        results: res.data.results,
+        total: res.data.total,
+        page: res.data.page,
+        limit: res.data.limit,
+      };
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch filtered results"
-      );
+      return rejectWithValue(err.response?.data?.message || "Failed to fetch filtered results");
     }
   }
 );
@@ -268,34 +152,41 @@ const kenoSlice = createSlice({
   name: "keno",
   initialState: {
     results: [],
+    total: 0,
+    page: 1,
+    limit: 10,
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      // ✅ NSW default
       .addCase(fetchKenoResults.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchKenoResults.fulfilled, (state, action) => {
         state.loading = false;
-        state.results = action.payload || [];
+        state.results = action.payload.results;
+        state.total = action.payload.total;
+        state.page = action.payload.page;
+        state.limit = action.payload.limit;
       })
       .addCase(fetchKenoResults.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // ✅ Filtered (NSW, VIC, SA, ACT)
       .addCase(fetchFilteredResults.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchFilteredResults.fulfilled, (state, action) => {
         state.loading = false;
-        state.results = action.payload || [];
+        state.results = action.payload.results;
+        state.total = action.payload.total;
+        state.page = action.payload.page;
+        state.limit = action.payload.limit;
       })
       .addCase(fetchFilteredResults.rejected, (state, action) => {
         state.loading = false;

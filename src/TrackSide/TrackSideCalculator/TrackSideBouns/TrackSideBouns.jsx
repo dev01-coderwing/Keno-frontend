@@ -19,37 +19,43 @@ function TrackSideBouns() {
             return Number.isFinite(n) ? n : 0;
         };
     
-        useEffect(() => {
-            // For now we support Decimal odds only. If user selects fractional or american, we try a best-effort conversion from input.
-            let decBack = toNum(backOdds);
-            let decLay = toNum(layOdds);
-    
-            // Prevent division by zero or negative
-            const c = toNum(commission) / 100;
-            const B = toNum(bonusStake);
-    
-            if (decLay <= c + 0.0000001) {
-                setLayStake(0);
-                setProfit(0);
-                setLiability(0);
-                setRetentionPct(0);
-                return;
-            }
-    
-            // Formula derived for FREE BET (stake not returned):
-            // LayStake = (BonusStake * (BackOdds - 1)) / (LayOdds - commission)
-            // commission is a decimal fraction (e.g. 0.05)
-            const L = (B * (decBack - 1)) / (decLay - c);
-            const liabilityCalc = L * (decLay - 1);
-            // Profit (either outcome) = LayStake * (1 - commission)
-            const profitCalc = L * (1 - c);
-            const retention = B > 0 ? (profitCalc / B) * 100 : 0;
-    
-            setLayStake(Number.isFinite(L) && L > 0 ? +L.toFixed(2) : 0);
-            setLiability(Number.isFinite(liabilityCalc) ? +liabilityCalc.toFixed(2) : 0);
-            setProfit(Number.isFinite(profitCalc) ? +profitCalc.toFixed(2) : 0);
-            setRetentionPct(Number.isFinite(retention) ? +retention.toFixed(1) : 0);
-        }, [bonusStake, backOdds, layOdds, commission, oddsFormat]);
+         useEffect(() => {
+               const B = Number(bonusStake);
+               const bonusOdds = Number(backOdds);   // using same field name
+               const hedgeOdds = Number(layOdds);    // using same field name
+       
+               if (!B || !bonusOdds || !hedgeOdds || hedgeOdds <= 1 || bonusOdds <= 1) {
+                   setLayStake(0);
+                   setProfit(0);
+                   setLiability(0);
+                   setRetentionPct(0);
+                   return;
+               }
+       
+               // Punt Data Calculator Formulas:
+       
+               // 1. Bonus profit (stake not returned)
+               const bonusProfit = (bonusOdds - 1) * B;
+       
+               // 2. Hedge stake
+               const hedgeStake = bonusProfit / (hedgeOdds - 1);
+       
+               // 3. Hedge payout
+               const hedgePayout = hedgeStake * (hedgeOdds - 1);
+       
+               // 4. Guaranteed profit (same for either winner)
+               const guaranteedProfit = bonusProfit - hedgeStake;
+       
+               // 5. Retention %
+               const retention = (guaranteedProfit / B) * 100;
+       
+               // Update UI values
+               setLayStake(+hedgeStake.toFixed(2));
+               setLiability(+hedgePayout.toFixed(2)); // showing hedge payout here
+               setProfit(+guaranteedProfit.toFixed(2));
+               setRetentionPct(+retention.toFixed(2));
+       
+           }, [bonusStake, backOdds, layOdds]);
     
   return (
     <>
@@ -112,97 +118,98 @@ function TrackSideBouns() {
                         </div>
                     </div>
 
-                    <div className="mt-6 text-sm text-gray-300 bg-gray-850 p-4 rounded">
-                        <strong>How it works (short):</strong>
-                        <ul className="list-disc ml-5 mt-2 text-gray-400">
-                            <li>This assumes a free-bet where the <em>stake is not returned</em>. The formula used is: <code>Lay = (Bonus * (Back - 1)) / (Lay - commission)</code>.</li>
-                            <li>Profit is approximately the same whether the back wins or the lay wins (small rounding differences possible).</li>
-                            <li>If you need support for returned-stake bets, multiples, or fractional/american conversions, tell me and I'll extend it.</li>
-                        </ul>
-                    </div>
+                     <div className="mt-6 text-sm text-gray-300 bg-gray-850 p-4 rounded">
+                            <strong>Punt Data – Bonus Bet Calculator</strong>
+                            <p className="mt-2 text-gray-400">
+                                Welcome to the Punt Data bonus bet calculator. This tool shows you the simplest way to turn a bookmaker
+                                bonus bet into real money. If you have a $50 bonus bet or any other promo, the calculator works out exactly
+                                how much to stake on the other outcome so you can lock in a return.
+                            </p>
+                        </div>
 
+                        <div className="mt-6 text-sm text-gray-300 leading-relaxed">
 
-                    <div className="mt-4 text-xs text-gray-500">Tip: If you don't have Tailwind in your project I can provide a plain CSS version. Also tell me your preferred currency symbol and I'll update the component.</div>
-                    <div className="mt-10 text-gray-300 text-sm leading-relaxed">
-                        <h2 className="text-lg font-bold mb-2">Free Bonus Bet Calculator (2025)</h2>
-                        <p>
-                            Welcome to Wagerville’s free bonus bet calculator — the fastest way to turn promotional bets into real profit. Whether
-                            you’re using a $50 bonus from a new bookmaker or trying to convert multiple promos, this tool shows you exactly how
-                            much to stake and what your guaranteed payout will be. Designed for both beginners and advanced bettors, our
-                            calculator is the perfect companion for maximizing retention.
-                        </p>
+                            <h2 className="text-lg font-bold mb-2">What is a Bonus Bet?</h2>
+                            <p className="text-gray-400">
+                                A bonus bet is a promo credit from a bookmaker. You cannot withdraw the bonus itself, but you can use it
+                                to win real money. If your bonus bet wins, you only receive the profit, not the stake. For example, a $50
+                                bonus at $2.40 returns $70 profit — not $120. Because the stake does not return, you need the correct
+                                hedge bet. The Punt Data calculator handles all the maths for you.
+                            </p>
 
-                        <h2 className="text-lg font-bold mt-4 mb-2">What is a Bonus Bet?</h2>
-                        <p>
-                            A bonus bet (also called a free bet, bonus credit, or token) is non-withdrawable promotional amount bookmakers offer
-                            to encourage new sign-ups or reward loyalty. While you can’t cash out the bonus bet directly, you can use a bonus bet
-                            conversion calculator to hedge it and walk away with real, withdrawable money.
-                        </p>
+                            <h2 className="text-lg font-bold mt-4 mb-2">Why Use the Bonus Bet Calculator?</h2>
+                            <ul className="list-disc ml-5 text-gray-400">
+                                <li>Work out the exact hedge stake</li>
+                                <li>Lock in a return no matter who wins</li>
+                                <li>See your payouts instantly</li>
+                                <li>Understand your retention percentage</li>
+                                <li>Turn more of your bonus into real cash</li>
+                            </ul>
 
-                        <h2 className="text-lg font-bold mt-4 mb-2">Why Use a Bonus Bet Calculator?</h2>
-                        <p>
-                            When using a bonus bet, your bet only keeps the winnings (not the stake). This means blindly placing it on any outcome
-                            may lead to poor value or even no profit. Our bonus bet hedge calculator helps you:
-                        </p>
-                        <ul className="list-disc ml-5 mt-2 text-gray-400">
-                            <li>Hedge with one or two other outcomes</li>
-                            <li>Calculate exact hedge stakes for risk-free profit</li>
-                            <li>See potential payouts for all outcomes</li>
-                            <li>Get your bonus bet retention percentage</li>
-                        </ul>
-                        <p className="mt-2">This makes it ideal for matched betting and arbitrage play.</p>
+                            <h2 className="text-lg font-bold mt-6 mb-2">How to Use the Calculator</h2>
+                            <p className="text-gray-400">Enter your:</p>
+                            <ul className="list-disc ml-5 text-gray-400">
+                                <li>Bonus Odds</li>
+                                <li>Hedge Odds</li>
+                                <li>Bonus Amount</li>
+                            </ul>
+                            <p className="text-gray-400 mt-2">Press calculate — you will instantly see:</p>
+                            <ul className="list-disc ml-5 text-gray-400">
+                                <li>Hedge stake</li>
+                                <li>Payouts</li>
+                                <li>Total profit</li>
+                                <li>Retention %</li>
+                            </ul>
 
-                        <h2 className="text-lg font-bold mt-4 mb-2">How to Use the Bonus Bet Hedge Calculator</h2>
-                        <p>Using this calculator is simple:</p>
-                        <ol className="list-decimal ml-5 mt-2 text-gray-400">
-                            <li>Choose your odds format (Decimal, American, or Fractional)</li>
-                            <li>Enter the odds where you’ll place your bonus bet</li>
-                            <li>Enter the odds for your hedge outcome(s)</li>
-                            <li>Input the bonus amount (e.g., $50)</li>
-                            <li>Click Calculate</li>
-                        </ol>
-                        <p className="mt-2">
-                            The calculator will display the required stakes, your guaranteed profit, and retention. You can then place your hedge bets accordingly.
-                        </p>
+                            <h2 className="text-lg font-bold mt-6 mb-2">What Is Bonus Bet Retention?</h2>
+                            <p className="text-gray-400">
+                                Retention is how much of your bonus becomes real cash after hedging.
+                                Example: If a $50 bonus returns $28.82 profit, retention is 57.64%.
+                                Higher retention means better value.
+                            </p>
 
-                        <h2 className="text-lg font-bold mt-4 mb-2">What is Bonus Bet Retention?</h2>
-                        <p>
-                            Bonus bet retention is the percentage of your bonus value that you keep as real money after hedging. For example,
-                            if you have a $50 bonus and your calculator result shows $38 profit, your retention is 76%. Higher retention means better value.
-                        </p>
+                            <h2 className="text-lg font-bold mt-6 mb-2">Example: Simple Basketball Match</h2>
+                            <p className="text-gray-400">
+                                A match with two outcomes. One team pays $2.40, the other $1.70.
+                            </p>
 
-                        <h2 className="text-lg font-bold mt-4 mb-2">Bonus Bet Arbitrage Calculator for Two-Way or Three-Way Bets</h2>
-                        <p>
-                            Whether you’re placing a bonus bet on a win/draw-loss market (2-way) or a simple two-outcome market, this bonus bet
-                            arbitrage calculator allows you to enter up to two hedge lines. This flexibility ensures you can fully cover
-                            multi-outcome events like soccer, basketball, or MMA — locking in profit no matter what.
-                        </p>
+                            <p className="mt-2 text-gray-300 font-semibold">Inputs</p>
+                            <ul className="list-disc ml-5 text-gray-400">
+                                <li>Bonus Odds: 2.40</li>
+                                <li>Hedge Odds: 1.70</li>
+                                <li>Bonus Amount: $50</li>
+                            </ul>
 
-                        <h2 className="text-lg font-bold mt-4 mb-2">Matched Bonus Bet Calculator: Ideal for Sign-Up Offers</h2>
-                        <p>
-                            Sign-up offers from bookmakers are one of the easiest ways to make risk-free profits. Use this matched bonus bet
-                            calculator to convert your sign-up bonus into cash. Combined with our step-by-step guides, you’ll be on your way to
-                            $200+ profit in your first week.
-                        </p>
+                            <p className="mt-4 text-gray-300 font-semibold">Outputs</p>
+                            <p className="text-gray-400 mt-1"><strong>Bonus Bet @ 2.40</strong></p>
+                            <ul className="list-disc ml-5 text-gray-400">
+                                <li>Stake: $50</li>
+                                <li>Profit: $70</li>
+                            </ul>
 
-                        <h2 className="text-lg font-bold mt-4 mb-2">FAQ: Bonus Bet Calculator</h2>
-                        <p><strong>Q:</strong> Is this calculator free to use?<br /><strong>A:</strong> Yes — 100% free, no account required.</p>
-                        <p><strong>Q:</strong> Can I use this for multi-bets or accumulators?<br /><strong>A:</strong> The calculator is designed for single outcomes. For multi-bets, hedge individually or wait for our multi-bet calculator (coming soon).</p>
-                        <p><strong>Q:</strong> What’s the best way to find high retention bets?<br /><strong>A:</strong> Use an odds comparison tool like OddsJam, where we show top-value bets to convert bonuses quickly.</p>
-                        <p><strong>Q:</strong> What’s a good retention percentage?<br /><strong>A:</strong> Anything above 70% is solid. 80–90% is considered elite.</p>
+                            <p className="text-gray-400 mt-3"><strong>Hedge Bet @ 1.70</strong></p>
+                            <ul className="list-disc ml-5 text-gray-400">
+                                <li>Stake: $41.18</li>
+                                <li>Payout: $70</li>
+                            </ul>
 
-                        <h2 className="text-lg font-bold mt-4 mb-2">More Tools Like This</h2>
-                        <p>
-                            Want more calculators? Try our arbitrage calculator or EV calculator — perfect for sharp bettors and those seeking
-                            matched betting as a side hustle. These tools aim to give you an edge, start using them today.
-                        </p>
+                            <h2 className="text-lg font-bold mt-6 mb-2">Guaranteed Result</h2>
+                            <ul className="list-disc ml-5 text-gray-400">
+                                <li>Total profit: $28.82</li>
+                                <li>Retention: 57.64%</li>
+                            </ul>
 
-                        <h2 className="text-lg font-bold mt-4 mb-2">Start Converting Bonus Bets Into Real Money</h2>
-                        <p>
-                            Don’t let bonus bets expire or go to waste. Use the Wagerville Bonus Bet Converter to turn them into tax-free cash.
-                            Thousands of users are already profiting — why not you?
-                        </p>
-                    </div>
+                            <p className="text-gray-400 mt-4">
+                                The aim is simple — use the bonus to create a return, protect yourself with a hedge, and walk away with
+                                real profit.
+                            </p>
+
+                            <h2 className="text-lg font-bold mt-6 mb-2">Responsible Gambling Message</h2>
+                            <p className="text-gray-400">
+                                Punt Data encourages responsible gambling. Set limits, stay in control, and only bet what you can afford
+                                to lose. If gambling becomes a problem, help is available at Gambling Help Online or 1800 858 858.
+                            </p>
+                        </div>
                 </div>
 
             </div>

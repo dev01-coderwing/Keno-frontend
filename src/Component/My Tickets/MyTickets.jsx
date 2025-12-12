@@ -155,6 +155,7 @@ const MyTickets = () => {
                     setOpen(false);
                   }}
                   inline
+                  minDate={new Date()} 
                 />
               </div>
             )}
@@ -171,6 +172,7 @@ const MyTickets = () => {
               placeholder="First Game No."
               type="number"
               required
+              
               width="w-full sm:w-1/2 lg:ml-2 md:ml-2"
               name="firstRace"
               value={formData.firstRace}
@@ -199,6 +201,7 @@ const MyTickets = () => {
             required
             width="w-full md:w-[44%]"
             name="amount"
+            min="1"
             value={formData.amount}
             onChange={handleChange}
           />
@@ -215,6 +218,7 @@ const MyTickets = () => {
             required
             width="w-full md:w-[44%]"
             name="payout"
+            min="1"
             value={formData.payout}
             onChange={handleChange}
           />

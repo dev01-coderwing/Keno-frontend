@@ -6,6 +6,7 @@ import combinationReducer from "./combinationSlice";
 import overdueReducer from "./overdueSlice";
 import historicalReducer from "./historicalFrequencySlice";
 import profileReducer from "./profileSlice";
+import tracksideResultsReducer from "./tracksideResultsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     overdue: overdueReducer,
     historical: historicalReducer,
     profile: profileReducer,
+    tracksideResults: tracksideResultsReducer,
 
 
   },

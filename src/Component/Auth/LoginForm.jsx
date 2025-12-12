@@ -175,11 +175,11 @@ const LoginForm = ({ onSwitchForm }) => {
   // ✅ Navigate when user login success
   useEffect(() => {
     if (user) {
-      alert("Login successful!");
+      // alert("Login successful!");
       setTimeout(() => {
         console.log(`This is the user role ${user.role}`);
         if (user.role === "admin") navigate("/dashboard");
-        else navigate("/update-profile");
+        else navigate("/UserProfile");
       }, 1000);
     }
   }, [user, navigate]);
