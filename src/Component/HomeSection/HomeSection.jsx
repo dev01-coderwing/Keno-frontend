@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOverdueCombos } from "../../redux/overdueSlice";
+import { fetchQuickStats } from "../../redux/quickStatsSlice"; // 🔹 ADDED
 import RaceCard from "../Cards/RaceCard";
 import StateTable from "../StateTable/StateTable";
 import ChoiceSelector from "../Cards/ChoiceSelector";
@@ -22,9 +23,17 @@ const HomeSection = () => {
   const dispatch = useDispatch();
   const { combos, loading, error } = useSelector((state) => state.overdue);
 
+  // 🔹 ADDED – Quick Stats Redux state
+  const {
+    data: quickStats,
+    loading: qsLoading,
+    error: qsError,
+  } = useSelector((state) => state.quickStats);
+
   // API call on load
   useEffect(() => {
     dispatch(fetchOverdueCombos());
+    dispatch(fetchQuickStats()); // 🔹 ADDED
   }, [dispatch]);
 
   // Slider autoscroll
@@ -49,15 +58,18 @@ const HomeSection = () => {
     );
   };
 
-  const columns = [
-    "Entries",
-    "Win",
-    "Place",
-    "Win %",
-    "Last Win",
-    "Total Races",
-  ];
+ const columns = [
+   "Horse",
+  "Entries",
+  "Win",
+  "Place",
+  "Win %",
+  "Last Win",
+  "Total Races",
+];
 
+
+  // ❌ ORIGINAL DUMMY DATA (UNCHANGED)
   const data = Array.from({ length: 12 }, (_, i) => ({
     rowData: [
       <span
@@ -87,6 +99,39 @@ const HomeSection = () => {
       "550",
     ],
   }));
+
+  // 🔹 ADDED – API data mapping (new variable only)
+  const apiTableData =
+    quickStats?.map((item, i) => ({
+      rowData: [
+        <span
+          className={`px-3 py-1 rounded text-white ${
+            [
+              "bg-red-700",
+              "bg-black",
+              "border border-white text-white",
+              "bg-blue-800",
+              "bg-green-500",
+              "bg-green-900",
+              "bg-blue-400",
+              "bg-pink-400",
+              "bg-green-700",
+              "bg-red-500",
+              "bg-orange-500",
+              "bg-blue-300",
+            ][i]
+          }`}
+        >
+          {item.horse}
+        </span>,
+        item.summary.entries,
+        item.summary.win,
+        item.summary.place,
+        `${item.summary.winPercentage}%`,
+        item.summary.lastWin ?? "-",
+        item.summary.totalRaces,
+      ],
+    })) || [];
 
   const cards = [
     {
@@ -139,7 +184,6 @@ const HomeSection = () => {
           </button>
         </div>
 
-        {/* Dropdown */}
         {showChoices && (
           <div className="absolute right-12 w-full max-w-xs z-50 rounded-l-xl shadow-lg">
             <ChoiceSelector />
@@ -179,26 +223,6 @@ const HomeSection = () => {
 
           {/* Race Cards */}
           <div className="relative p-4 bg-[#1D1D1D] pt-0 rounded-b-xl">
-            <button
-              onClick={() => {
-                const container = document.getElementById("racecard-scroll");
-                container.scrollBy({ left: -300, behavior: "smooth" });
-              }}
-              className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-black/40 p-2 rounded-full text-white sm:hidden"
-            >
-              &#10094;
-            </button>
-
-            <button
-              onClick={() => {
-                const container = document.getElementById("racecard-scroll");
-                container.scrollBy({ left: 300, behavior: "smooth" });
-              }}
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-black/40 p-2 rounded-full text-white sm:hidden"
-            >
-              &#10095;
-            </button>
-
             <div
               id="racecard-scroll"
               className="flex gap-4 overflow-x-auto scroll-smooth sm:grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 sm:overflow-visible"
@@ -217,7 +241,20 @@ const HomeSection = () => {
           <h3 className="text-lg sm:text-xl font-semibold px-4 sm:px-7 pt-4 bg-[#0A0A0A] rounded-t-xl">
             Quick Stats
           </h3>
-          <StateTable columns={columns} data={data} />
+
+          {qsLoading && (
+            <p className="text-gray-400 text-sm p-4">
+              Loading quick stats...
+            </p>
+          )}
+
+          {qsError && (
+            <p className="text-red-400 text-sm p-4">{qsError}</p>
+          )}
+
+          {!qsLoading && !qsError && (
+            <StateTable columns={columns} data={apiTableData} />
+          )}
         </div>
       </div>
     </div>

@@ -1,73 +1,49 @@
-import React from 'react'
-import AdminTable from './AdminTable';
-
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import AdminTable from "./AdminTable";
+import { fetchDrawHistory } from "../../redux/dashboardSlice";
 
 const columns = [
-  { header: 'Race Id', accessor: 'race' },
-  { header: 'Type', accessor: 'type' },
-  { header: 'Time', accessor: 'time' },
-  { header: 'Numbers', accessor: 'number' },
-  { header: 'Status', accessor: 'status' },
-];
-
-const data = [
-  {
-    race: "#20674",
-    type: "Keno",
-    time: "11:30 AM",
-    number: "12-15-44-19",
-    status: "Completed",
-  },
-  {
-    race: "#20674",
-    type: "Keno",
-    time: "11:30 AM",
-    number: "12-15-44-19",
-    status: "Completed",
-  },
-  {
-    race: "#20674",
-    type: "Keno",
-    time: "11:30 AM",
-    number: "12-15-44-19",
-    status: "Completed",
-  },
-  {
-    race: "#20674",
-    type: "Keno",
-    time: "11:30 AM",
-    number: "12-15-44-19",
-    status: "Completed",
-  },
-  {
-    race: "#20674",
-    type: "Virtual Race",
-    time: "11:30 AM",
-    number: "3-7-5",
-    status: "Completed",
-  },
-  {
-    race: "#20674",
-    type: "Virtual Race",
-    time: "11:30 AM",
-    number: "3-7-5",
-    status: "Completed",
-  },
-  {
-    race: "#20674",
-    type: "Virtual Race",
-    time: "11:30 AM",
-    number: "3-7-5",
-    status: "Completed",
-  },
+  { header: "Race Id", accessor: "race" },
+  { header: "Type", accessor: "type" },
+  { header: "Time", accessor: "time" },
+  { header: "Numbers", accessor: "number" },
+  { header: "Status", accessor: "status" },
 ];
 
 const RecentRaceTable = () => {
+  const dispatch = useDispatch();
+
+  const { drawHistory, drawHistoryLoading } = useSelector(
+    (state) => state.dashboard
+  );
+
+  useEffect(() => {
+    dispatch(fetchDrawHistory());
+  }, [dispatch]);
+
+  if (drawHistoryLoading) {
+    return <div className="text-white p-4">Loading Recent Races...</div>;
+  }
+
+  // 🔹 API data ko table format me convert
+  const tableData = drawHistory.map((item) => ({
+    race: item.race,
+    type: "Keno",
+    time: item.time,
+    number: item.number,
+    status: item.status,
+  }));
+
   return (
     <div>
-              <AdminTable title="Recent Races" columns={columns} data={data}/>
-        </div>
-  )
-}
+      <AdminTable
+        title="Recent Races"
+        columns={columns}
+        data={tableData}
+      />
+    </div>
+  );
+};
 
-export default RecentRaceTable
+export default RecentRaceTable;

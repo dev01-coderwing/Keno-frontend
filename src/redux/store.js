@@ -7,6 +7,9 @@ import overdueReducer from "./overdueSlice";
 import historicalReducer from "./historicalFrequencySlice";
 import profileReducer from "./profileSlice";
 import tracksideResultsReducer from "./tracksideResultsSlice";
+import quickStatsReducer from "./quickStatsSlice";
+import usersReducer from "./usersSlice";
+import dashboardReducer from "./dashboardSlice";
 
 export const store = configureStore({
   reducer: {
@@ -18,6 +21,9 @@ export const store = configureStore({
     historical: historicalReducer,
     profile: profileReducer,
     tracksideResults: tracksideResultsReducer,
+    quickStats: quickStatsReducer,
+    users: usersReducer,
+    dashboard: dashboardReducer,
 
 
   },

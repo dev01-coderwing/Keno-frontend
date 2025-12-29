@@ -1,62 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
-import api from "../../api";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers, toggleUserStatus } from "../../redux/usersSlice";
 
 const UsersAccessTable = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [updatingId, setUpdatingId] = useState(null);
-
-  // 🔹 Fetch all users
-  const fetchUsers = async () => {
-    try {
-      const res = await api.get("/profile/users", {
-        headers: {
-          "API-KEY": "kajal",
-          "Content-Type": "application/json",
-        },
-      });
-      setUsers(res.data);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch users");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const dispatch = useDispatch();
+  const { users, loading, error, updatingId } = useSelector(
+    (state) => state.users
+  );
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  // 🔹 Toggle Active/Inactive API call
-  const toggleUserStatus = async (userId, currentStatus) => {
-    const newStatus = currentStatus === "active" ? "inactive" : "active";
-    setUpdatingId(userId);
-
-    try {
-      await api.patch(
-        `/profile/status/${userId}`,
-        { status: newStatus },
-        {
-          headers: {
-            "API-KEY": "kajal",
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      setUsers((prev) =>
-        prev.map((u) =>
-          u._id === userId ? { ...u, status: newStatus } : u
-        )
-      );
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to update status");
-    } finally {
-      setUpdatingId(null);
-    }
-  };
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   if (loading) return <p className="text-gray-400">Loading users...</p>;
   if (error) return <p className="text-red-400">{error}</p>;
@@ -74,13 +29,15 @@ const UsersAccessTable = () => {
             <th className="py-3">Actions</th>
           </tr>
         </thead>
+
         <tbody>
           {users.map((user, idx) => (
             <tr
               key={user._id}
               className="border-b border-white/10 last:border-none hover:bg-white/5 odd:bg-[#1A1A1A]"
             >
-              <td className="py-4 pl-2 text-sm w-[50px]">{idx + 1}.</td>
+              <td className="py-4 pl-2 text-sm">{idx + 1}.</td>
+
               <td className="py-4 text-sm font-medium">
                 <div className="flex items-center gap-3">
                   <img
@@ -88,18 +45,30 @@ const UsersAccessTable = () => {
                       user.fullName || "User"
                     )}&background=random`}
                     alt="avatar"
-                    className="w-8 h-8 rounded-full object-cover"
+                    className="w-8 h-8 rounded-full"
                   />
                   {user.fullName}
                 </div>
               </td>
+
               <td className="py-4 text-sm">{user.email}</td>
+
               <td className="py-4 text-sm">
-                {user.dob ? new Date(user.dob).toLocaleDateString() : "-"}
+                {user.dob
+                  ? new Date(user.dob).toLocaleDateString()
+                  : "-"}
               </td>
+
               <td className="py-4">
                 <button
-                  onClick={() => toggleUserStatus(user._id, user.status)}
+                  onClick={() =>
+                    dispatch(
+                      toggleUserStatus({
+                        userId: user._id,
+                        currentStatus: user.status,
+                      })
+                    )
+                  }
                   disabled={updatingId === user._id}
                   className={`px-3 py-1 text-xs font-semibold rounded-full ${
                     user.status === "active"
@@ -110,6 +79,7 @@ const UsersAccessTable = () => {
                   {updatingId === user._id ? "Updating..." : user.status}
                 </button>
               </td>
+
               <td className="py-4">
                 <BsThreeDotsVertical className="text-lg cursor-pointer text-gray-400 hover:text-white" />
               </td>

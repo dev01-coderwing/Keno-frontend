@@ -43,16 +43,17 @@ const AdminAnalytics = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-        <LineChartCard
+        {/* <LineChartCard
           title="Average First Response Time (FRT)"
           data={lineData}
-        />
+        /> */}
         <BarChartCard title="Average Resolution Time" data={barData} />
+         <TicketsTableCard data={agents} />
       </div>
 
-      <TicketsTableCard data={agents} />
+     
     </div>
   );
 };
-
+ 
 export default AdminAnalytics;

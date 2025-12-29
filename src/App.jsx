@@ -128,6 +128,8 @@ const App = () => {
         <Route path='/calculator/TrackSideBouns' element={<TrackSideBouns />} />
         <Route path='/calculator/TrackSideMatched' element={<TrackSideMatched />} />
         <Route path='/UserProfile' element={<UserProfile />} />
+          {/* <Route path='/Dashboard' element={<Dashboard />} />
+               <Route path='/Settings' element={<Settings />} /> */}
         {/* Protected Pages (Login Required) */}
         <Route path='/predictor' element={
           <ProtectedRoute><ExoticPredictor /></ProtectedRoute>
@@ -171,7 +173,7 @@ const App = () => {
 
         <Route path='/TrackSideHome' element={
           <ProtectedRoute><TrackSideHome /></ProtectedRoute>
-        } />
+        } />;
 
         <Route path='/TrackSideResults' element={
           <ProtectedRoute><TrackSideResults /></ProtectedRoute>
