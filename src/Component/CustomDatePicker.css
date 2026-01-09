@@ -1,0 +1,109 @@
+/* Calendar base */
+.react-datepicker {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Header (month/year bar) */
+.react-datepicker__header {
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #444;
+  padding-bottom: 8px;
+}
+
+/* Current Month */
+.react-datepicker__current-month {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* Day names (Sun, Mon, etc.) */
+.react-datepicker__day-name {
+  color: #999;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+/* Days */
+.react-datepicker__day {
+  color: #eee;
+  font-size: 0.9rem;
+  width: 2rem;
+  line-height: 2rem;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+/* Hover */
+.react-datepicker__day:hover {
+  background-color: #333;
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Selected Day */
+.react-datepicker__day--selected,
+.react-datepicker__day--keyboard-selected {
+  background-color: #ffffff;
+  color: #000;
+  font-weight: 600;
+}
+
+/* Today’s Day */
+.react-datepicker__day--today {
+  border: 1px solid #777;
+  font-weight: bold;
+}
+
+/* Dropdowns (Month & Year) */
+.react-datepicker__month-dropdown,
+.react-datepicker__year-dropdown {
+  background-color: #1a1a1a;
+  color: white;
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 4px 0;
+  max-height: 150px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #1a1a1a;
+}
+
+/* Dropdown options */
+.react-datepicker__month-option,
+.react-datepicker__year-option {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.react-datepicker__month-option:hover,
+.react-datepicker__year-option:hover {
+  background-color: #333;
+}
+
+/* Arrows */
+.react-datepicker__navigation {
+  top: 16px;
+  line-height: 1.6rem;
+}
+
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  border-color: white;
+}
+
+.react-datepicker__triangle {
+  display: none !important; /* Hide the triangle */
+}
+
+

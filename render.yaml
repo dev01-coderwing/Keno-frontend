@@ -1,0 +1,5 @@
+staticPublishPath: ./dist
+redirects:
+  - source: /*
+    destination: /index.html
+    status: 200
