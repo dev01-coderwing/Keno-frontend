@@ -26,8 +26,7 @@ const RecentRaceTable = () => {
     return <div className="text-white p-4">Loading Recent Races...</div>;
   }
 
-  // 🔹 API data ko table format me convert
-  const tableData = drawHistory.map((item) => ({
+  const tableData = drawHistory.slice(0, 10).map((item) => ({
     race: item.race,
     type: "Keno",
     time: item.time,

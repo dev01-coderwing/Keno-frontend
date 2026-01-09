@@ -67,8 +67,11 @@
 
 
 
-import React from 'react'
+import React, {useEffect} from 'react'
 import Home from './Pages/Home'
+import api from "./api";
+import { getToken } from "firebase/messaging";
+import { messaging } from "./firebase";
 import Analytics from './Pages/Analytics'
 import "./chartSetup";
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -96,7 +99,6 @@ import TrackSideMyTickets from './TrackSide/TrackSideTicket/TrackSideMyTickets';
 import TrackSidePredictor from './TrackSide/TrackSideExoticPredictor/TrackSidePredictor';
 import TrackSideAnalyticsSection from './TrackSide/TrackSideAnalyticsSection/TrackSideAnalyticsSection';
 import BonusHedgeCalculator from './Component/Calculator/Bouns/BonusHedgeCalculator';
-// 👉 NEW IMPORT
 import ProtectedRoute from "./ProtectedRoute/ProtectedRoute";
 import ArbitrageCalculator from './Component/Calculator/Arbitrage/ArbitrageCalculator';
 import BackLayCalculator from './Component/Calculator/Matched/BackLayCalculator';
@@ -106,6 +108,33 @@ import TrackSideMatched from './TrackSide/TrackSideCalculator/TrackSideMatched/T
 import UserProfile from './Component/UserProfile/UserProfile';
 
 const App = () => {
+   useEffect(() => {
+    const saveFcmToken = async () => {
+      const jwt = localStorage.getItem("token");
+      if (!jwt) return; 
+
+      try {
+        const fcmToken = await getToken(messaging);
+        if (!fcmToken) return;
+
+        await api.post(
+          "/users/save-fcm-token",
+          { token: fcmToken },
+          {
+            headers: {
+              Authorization: `Bearer ${jwt}`,
+            },
+          }
+        );
+
+        console.log(" FCM token saved");
+      } catch (err) {
+        console.error(" FCM token save failed", err);
+      }
+    };
+
+    saveFcmToken();
+  }, []);
   return (
     <BrowserRouter>
       <Routes>
@@ -128,6 +157,7 @@ const App = () => {
         <Route path='/calculator/TrackSideBouns' element={<TrackSideBouns />} />
         <Route path='/calculator/TrackSideMatched' element={<TrackSideMatched />} />
         <Route path='/UserProfile' element={<UserProfile />} />
+        <Route path='/Analytics' element={<Analytics />} />
           {/* <Route path='/Dashboard' element={<Dashboard />} />
                <Route path='/Settings' element={<Settings />} /> */}
         {/* Protected Pages (Login Required) */}
@@ -139,9 +169,9 @@ const App = () => {
           <ProtectedRoute><Tickets /></ProtectedRoute>
         } />
 
-        <Route path='/analytics' element={
+        {/* <Route path='/analytics' element={
           <ProtectedRoute><Analytics /></ProtectedRoute>
-        } />
+        } /> */}
 
         <Route path='/dashboard' element={
           <ProtectedRoute><Dashboard /></ProtectedRoute>

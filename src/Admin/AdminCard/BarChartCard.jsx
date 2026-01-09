@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -10,8 +10,12 @@ import { Bar } from "react-chartjs-2";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip);
 
-const BarChartCard = ({ title = "Average Resolution Time", data }) => {
+const BarChartCard = ({ title, data = [] }) => {
   const chartRef = useRef(null);
+
+  const bot = data[0]?.Bot || 0;
+  const human = data[0]?.Humans || 0;
+  const label = data[0]?.label || "0Hrs 0Mins";
 
   const getGradient = (ctx, color1, color2) => {
     const gradient = ctx.createLinearGradient(0, 0, 0, 200);
@@ -25,7 +29,7 @@ const BarChartCard = ({ title = "Average Resolution Time", data }) => {
     datasets: [
       {
         label: "Bot",
-        data: [2.07, null],
+        data: [bot, null],
         backgroundColor: (context) =>
           getGradient(context.chart.ctx, "#00FF75", "#147A42"),
         borderRadius: 12,
@@ -33,7 +37,7 @@ const BarChartCard = ({ title = "Average Resolution Time", data }) => {
       },
       {
         label: "Human",
-        data: [null, 2.07],
+        data: [null, human],
         backgroundColor: (context) =>
           getGradient(context.chart.ctx, "#FF6A76", "#9A1A1A"),
         borderRadius: 12,
@@ -50,14 +54,8 @@ const BarChartCard = ({ title = "Average Resolution Time", data }) => {
       tooltip: { enabled: false },
     },
     scales: {
-      x: {
-        grid: { display: false },
-        ticks: { display: false },
-      },
-      y: {
-        grid: { display: false },
-        ticks: { display: false },
-      },
+      x: { display: false },
+      y: { display: false },
     },
   };
 
@@ -66,21 +64,13 @@ const BarChartCard = ({ title = "Average Resolution Time", data }) => {
       <div className="flex justify-between items-start mb-2">
         <div>
           <p>{title}</p>
-          <h2 className="text-2xl font-semibold mt-4">2Hrs 4Mins</h2>
+          <h2 className="text-2xl font-semibold mt-4">{label}</h2>
           <p className="text-xs text-gray-400 mt-1">/ This Week</p>
         </div>
-        <span className="text-xs bg-[#262626] text-[#FF6A76] px-2 py-1 rounded-lg font-semibold">
-          -2.87%
-        </span>
       </div>
 
-      <div className="h-40 relative">
-        <Bar ref={chartRef} data={chartData} options={options} height="100%" />
-      </div>
-
-      <div className="flex justify-around text-center text-sm mt-4">
-        <p>2Hrs 4Mins</p>
-        <p>2Hrs 4Mins</p>
+      <div className="h-40">
+        <Bar ref={chartRef} data={chartData} options={options} />
       </div>
     </div>
   );

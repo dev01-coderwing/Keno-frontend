@@ -1,6 +1,8 @@
 import React from "react";
+import { BsCheckCircleFill } from "react-icons/bs";
 
 const MetricCard = ({ title, value, subtext, trend, info }) => {
+  console.log("INFO =>", info);
   return (
     <div className="bg-[#131313] rounded-lg p-6 text-white w-full">
       <div className="flex justify-between items-center">
@@ -12,16 +14,23 @@ const MetricCard = ({ title, value, subtext, trend, info }) => {
         <span className="text-xs text-gray-400">{subtext}</span>
       </div>
 
-      {info && (
-        <div className=" text-sm">
-          {Object.entries(info).map(([key, val]) => (
-            <div key={key} className="flex justify-between border-b border-gray-700">
-              <span className="py-1">{key}</span>
-              <span className="py-1">{val}</span>
-            </div>
-          ))}
+   {info && (
+  <div className="text-sm mt-3">
+    {Object.entries(info).map(([key, val]) => (
+      <div
+        key={key}
+        className="flex justify-between items-center border-b border-gray-700 py-1"
+      >
+        <div className="flex items-center gap-2">
+          <BsCheckCircleFill className="text-green-500 text-sm" />
+          <span className="text-gray-300">{key}</span>
         </div>
-      )}
+        <span className="text-white">{val}</span>
+      </div>
+    ))}
+  </div>
+)}
+
     </div>
   );
 };

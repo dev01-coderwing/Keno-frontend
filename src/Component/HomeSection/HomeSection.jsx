@@ -100,7 +100,7 @@ const HomeSection = () => {
     ],
   }));
 
-  // 🔹 ADDED – API data mapping (new variable only)
+  //  ADDED – API data mapping (new variable only)
   const apiTableData =
     quickStats?.map((item, i) => ({
       rowData: [
@@ -169,10 +169,6 @@ const HomeSection = () => {
           &#10095;
         </button>
       </div>
-
-      {/* ========================== */}
-      {/* FAVORITE NUMBER + REDUX UI */}
-      {/* ========================== */}
       <div className="bg-[#262626] mt-6 rounded-md">
         <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center bg-[#1D1D1D] p-4 rounded-t-xl gap-2">
           <h2 className="text-lg sm:text-xl font-semibold">Favorite Number</h2>

@@ -14,7 +14,7 @@
 
 // export const { setEmail } = authSlice.actions;
 // export default authSlice.reducer;import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../api"; 
+import api from "../api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 //  SIGNUP
@@ -205,7 +205,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-    
+
       .addCase(signupUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -219,7 +219,7 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
 
-   
+
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -232,14 +232,16 @@ const authSlice = createSlice({
         state.email = user?.email || "";
         localStorage.setItem("user", JSON.stringify(user));
         if (token) localStorage.setItem("token", token);
-        if (user?._id) localStorage.setItem("userId", user._id);
+        const userId = user?._id || user?.id;
+        if (userId) localStorage.setItem("userId", userId);
+
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      
+
       .addCase(setPassword.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -257,7 +259,7 @@ const authSlice = createSlice({
         state.passwordSuccess = false;
       })
 
-    
+
       .addCase(changePassword.pending, (state) => {
         state.loading = true;
         state.error = null;

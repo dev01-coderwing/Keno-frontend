@@ -83,8 +83,7 @@
 // export default WinningCombos;
 
 
-
-import React, { useEffect, useRef, useState } from "react";   // ⭐ useState added
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOverdueCombos } from "../../redux/overdueSlice";
 import RaceCard from "../Cards/RaceCard";
@@ -92,11 +91,14 @@ import RaceCard from "../Cards/RaceCard";
 const WinningCombos = () => {
   const dispatch = useDispatch();
   const scrollRef = useRef(null);
-  const { combos, loading, error } = useSelector((state) => state.overdue);
 
-  const [showAll, setShowAll] = useState(false);   // ⭐ NEW
+  const { combos, loading, error } = useSelector(
+    (state) => state.overdue
+  );
 
-  const visibleCombos = showAll ? combos : combos.slice(0, 4); // ⭐ NEW
+  const [showAll, setShowAll] = useState(false);
+
+  const visibleCombos = showAll ? combos : combos.slice(0, 4);
 
   const scrollLeft = () => {
     scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
@@ -119,47 +121,65 @@ const WinningCombos = () => {
         These popular combos usually hit often, but they haven’t in a while.
       </p>
 
-      {loading && <p className="text-gray-400 text-sm">Loading combos...</p>}
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      {loading && (
+        <p className="text-gray-400 text-sm">Loading combos...</p>
+      )}
+      {error && (
+        <p className="text-red-500 text-sm">{error}</p>
+      )}
 
       <div className="relative p-4 bg-[#1D1D1D] pt-0 rounded-b-xl">
+        {/* Mobile Scroll Buttons */}
         <button
           onClick={scrollLeft}
-          className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-black/40 p-2 rounded-full text-white sm:hidden"
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-black/40 p-2 rounded-full text-white sm:hidden"
         >
           &#10094;
         </button>
 
         <button
           onClick={scrollRight}
-          className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-black/40 p-2 rounded-full text-white sm:hidden"
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-black/40 p-2 rounded-full text-white sm:hidden"
         >
           &#10095;
         </button>
 
-        {/* ⭐ IMPORTANT: combos → visibleCombos */}
         <div
           ref={scrollRef}
           className="flex gap-4 overflow-x-auto scroll-smooth sm:grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 sm:overflow-visible"
         >
           {visibleCombos.length > 0 ? (
-            visibleCombos.map((combo, index) => (
-              <div key={index} className="flex-shrink-0 w-72 sm:w-full">
+            visibleCombos.map((combo) => (
+              <div
+                key={combo.combo}
+                className="flex-shrink-0 w-72 sm:w-full"
+              >
                 <RaceCard
+                  combination={combo.combo}
+                  summary={`${combo.frequency}% since last 20 races`}
                   stats={[
-                    { label: "Avg. every", value: `${combo.avgEvery} races` },
-                    { label: "Last seen", value: `${combo.lastSeen} races` },
+                    {
+                      label: "Avg. every",
+                      value: `${combo.avgEvery} races`,
+                    },
+                    {
+                      label: "Last seen",
+                      value: `${combo.lastSeen} races`,
+                    },
                   ]}
                 />
               </div>
             ))
           ) : (
-            !loading && <p className="text-gray-400 text-sm">No combos found.</p>
+            !loading && (
+              <p className="text-gray-400 text-sm">
+                No combos found.
+              </p>
+            )
           )}
         </div>
       </div>
 
-      {/* ⭐ NEW Show More / Show Less */}
       {combos.length > 4 && (
         <div className="mt-4 text-center">
           <button

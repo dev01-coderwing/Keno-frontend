@@ -7,11 +7,22 @@ export const createTicket = createAsyncThunk(
   "tickets/createTicket",
   async (ticketData, { rejectWithValue }) => {
     try {
-      const res = await api.post("/tickets/create", ticketData);
+      const token = localStorage.getItem("token");
+
+      const res = await api.post("/tickets/create", ticketData, {
+        headers: {
+          "API-KEY": "kajal",
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
       return res.data;
     } catch (error) {
       return rejectWithValue(
-        error.response?.data?.message || "Failed to create ticket"
+        error.response?.data?.error ||
+          error.response?.data?.message ||
+          "Failed to create ticket"
       );
     }
   }

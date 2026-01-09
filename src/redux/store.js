@@ -10,6 +10,10 @@ import tracksideResultsReducer from "./tracksideResultsSlice";
 import quickStatsReducer from "./quickStatsSlice";
 import usersReducer from "./usersSlice";
 import dashboardReducer from "./dashboardSlice";
+import analyticsReducer from "./analyticsSlice";
+import notificationReducer from "./notificationSlice";
+import kenoResultReducer from "./kenoResultSlice";
+import betComparisonReducer from "./betComparisonSlice";
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +28,11 @@ export const store = configureStore({
     quickStats: quickStatsReducer,
     users: usersReducer,
     dashboard: dashboardReducer,
+    analytics: analyticsReducer,
+    notification: notificationReducer,
+    kenoResults: kenoResultReducer,
+    betComparison: betComparisonReducer,
+    betComparison: betComparisonReducer,
 
 
   },

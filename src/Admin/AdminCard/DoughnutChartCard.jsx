@@ -17,6 +17,6 @@ const DoughnutChartCard = ({ title, trend, data, centerText, subtext }) => {
       <div className="text-center text-xs text-gray-400 pt-4">{subtext}</div>
     </div>
   );
-};
+};  
 
 export default DoughnutChartCard;

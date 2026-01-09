@@ -224,6 +224,8 @@ const SignupForm = ({ onSwitchForm }) => {
 
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
+const [pin, setPin] = useState("");
+const [confirmPin, setConfirmPin] = useState("");
 
   //  Calculate age
   const getAge = (birthDate) => {
@@ -252,16 +254,40 @@ const SignupForm = ({ onSwitchForm }) => {
       return;
     }
 
+    if (!pin || !confirmPin) {
+  setAlert({ message: "PIN is required.", type: "error" });
+  return;
+}
+
+if (!/^\d{4}(\d{2})?$/.test(pin)) {
+  setAlert({
+    message: "PIN must be 4 or 6 digits.",
+    type: "error",
+  });
+  return;
+}
+
+if (pin !== confirmPin) {
+  setAlert({
+    message: "PIN and Confirm PIN do not match.",
+    type: "error",
+  });
+  return;
+}
+
     setAlert({ message: "", type: "" });
 
     try {
-      const result = await dispatch(
-        signupUser({
-          fullName,
-          dob,
-          email,
-        })
-      ).unwrap();
+     const result = await dispatch(
+  signupUser({
+    fullName,
+    dob,
+    email,
+    pin,
+    default_state: "NSW", 
+  })
+).unwrap();
+
 
       console.log(result);
       setAlert({
@@ -269,7 +295,7 @@ const SignupForm = ({ onSwitchForm }) => {
         type: "success",
       });
 
-      dispatch(setEmail(email)); // ✅ store email for OTP
+      dispatch(setEmail(email)); 
       onSwitchForm("signup-otp");
     } catch (error) {
       setAlert({ message: error, type: "error" });
@@ -279,7 +305,13 @@ const SignupForm = ({ onSwitchForm }) => {
 
   return (
     <div className="w-full flex justify-center px-4">
-      <div className="flex flex-col backdrop-blur-md gap-4 border-2 border-white/50 rounded-2xl w-[90vw] max-w-lg px-6 py-6 text-white sm:px-8 md:px-10">
+      <div className=" flex flex-col backdrop-blur-md gap-4
+    border-2 border-white/50 rounded-2xl
+    w-[88vw] max-w-md
+    px-5 py-5 text-white
+    scale-[0.95]
+    sm:scale-[0.93]
+    md:scale-[0.9]">
         <h3 className="text-2xl sm:text-3xl font-semibold text-center">
           Sign Up
         </h3>
@@ -343,6 +375,32 @@ const SignupForm = ({ onSwitchForm }) => {
             placeholder="username@gmail.com"
           />
         </div>
+
+{/* PIN */}
+<div className="flex flex-col gap-1">
+  <label className="text-sm sm:text-base">Create PIN</label>
+  <input
+    type="password"
+    value={pin}
+    onChange={(e) => setPin(e.target.value)}
+    className="w-full bg-[#0C0C0C] border border-gray-400 rounded-md px-3 py-2 placeholder:text-xs focus:outline-none"
+    placeholder="Enter 4 or 6 digit PIN"
+    maxLength={6}
+  />
+</div>
+
+{/* Confirm PIN */}
+<div className="flex flex-col gap-1">
+  <label className="text-sm sm:text-base">Confirm PIN</label>
+  <input
+    type="password"
+    value={confirmPin}
+    onChange={(e) => setConfirmPin(e.target.value)}
+    className="w-full bg-[#0C0C0C] border border-gray-400 rounded-md px-3 py-2 placeholder:text-xs focus:outline-none"
+    placeholder="Re-enter PIN"
+    maxLength={6}
+  />
+</div>
 
         <span className="text-xs text-gray-300">
           A verification code will be sent to your registered email address.
