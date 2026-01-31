@@ -11,21 +11,13 @@ const ResultExpandable = ({ resultData }) => {
     return <p className="text-gray-400 p-4">No results available</p>;
   }
 
-  const groupColors = [
-    "#60A5FA", // 1-10
-    "#047857", // 11-20
-    "#84CC16", // 21-30
-    "#F59E0B", // 31-40
-    "#EF4444", // 41-50
-    "#8B5CF6", // 51-60
-    "#EC4899", // 61-70
-    "#06B6D4", // 71-80
-  ];
 
-  const getColorByNumber = (num) => {
-    const index = Math.floor((num - 1) / 10); // 0 for 1-10, 1 for 11-20, etc.
-    return groupColors[index] || "#4B5563"; // fallback color
-  };
+const getColorByNumber = (num) => {
+  if (num >= 1 && num <= 40) return "#EF4444";   // 🔴 Red
+  if (num >= 41 && num <= 80) return "#60A5FA";  // 🔵 Blue
+  return "#4B5563"; // fallback gray
+};
+
 
   return (
     <div className="w-full px-4">
@@ -125,8 +117,22 @@ const ResultExpandable = ({ resultData }) => {
                         </tbody>
                       </table>
 
+{item.headsTails && (
+  <div className="flex items-center justify-between bg-[#1E40AF] px-4 py-2 rounded-lg">
+    <div className="flex items-center gap-2">
+      <span className="text-white font-semibold">
+        {item.headsTails.result} wins
+      </span>
+    </div>
+
+    <div className="bg-green-600 text-white font-bold px-3 py-1 rounded-md">
+      {item.headsTails.multiplier}
+    </div>
+  </div>
+)}
+
                       <div className="flex justify-between bg-[#363636] px-2 py-2 border-b border-gray-600 text-sm text-gray-100 font-medium">
-                        <span>Exotic Results</span>
+                        <span>Drought Results</span>
                         <span>Dividend</span>
                       </div>
 
@@ -166,6 +172,7 @@ const ResultExpandable = ({ resultData }) => {
                             </div>
                           ))}
                       </div>
+                      
                     </div>
                   </td>
                 </tr>

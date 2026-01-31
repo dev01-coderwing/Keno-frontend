@@ -5,11 +5,12 @@ import OtpForm from "./OtpForm";
 import ResetPasswordForm from "./ResetPasswordForm";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import SetPasswordForm from "./SetPasswordForm";
+import horseLogo from "../../../public/image/horse.png";
 
 const signupBg =
   "https://res.cloudinary.com/dqacezsc5/image/upload/v1754648859/SignUp_jxsfbu.jpg";
-const horseLogo =
-  "https://res.cloudinary.com/dqacezsc5/image/upload/v1754648859/horse_aqkowv.png";
+// const horseLogo =
+//   "https://res.cloudinary.com/dqacezsc5/image/upload/v1754648859/horse_aqkowv.png";
 
 const AuthPage = () => {
   const [currentForm, setCurrentForm] = useState("login");

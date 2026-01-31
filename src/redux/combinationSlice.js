@@ -3,38 +3,37 @@ import api from "../api";
 
 //                                                                                                                          Async thunk to generate combinations
 export const generateCombinations = createAsyncThunk(
-  "combinations/generate",
-  async ({ betType, minRaces, numCombinations }, { rejectWithValue }) => {
+  "combinations/keno",
+  async (
+    { location, size, minDraws, numCombinations },
+    { rejectWithValue }
+  ) => {
     try {
       const res = await api.post(
-        "/combinations/data",
+        "/combinations/keno",
         {
-          betType,
-          minRacesSinceLastOccurrence: minRaces,
+          location, // ✅ dynamic
+          size,
+          minDrawsSinceLastOccurrence: minDraws,
           noOfCombinations: numCombinations,
-          location: "ACT",
         },
-        { 
+        {
           headers: {
-            "api-key": "kajal",
             "Content-Type": "application/json",
           },
         }
       );
 
-      console.log(" API Response:", res.data);
-
-      // Backend format → { success, data: [], totalDraws }
-      const data = res.data?.data || [];
-
-      return data;
+      return res.data?.data || [];
     } catch (err) {
       return rejectWithValue(
-        err?.response?.data?.message || err.message || "Something went wrong"
+        err?.response?.data?.message || "Keno API failed"
       );
     }
   }
 );
+
+
 
 const combinationSlice = createSlice({
   name: "combinations",
@@ -59,20 +58,21 @@ const combinationSlice = createSlice({
         state.errorMsg = "";
       })
 
-      .addCase(generateCombinations.fulfilled, (state, action) => {
-        state.loading = false;
+.addCase(generateCombinations.fulfilled, (state, action) => {
+  state.loading = false;
 
-        // 🔥 Map backend response → frontend required format
-        state.combinations = action.payload.map((item) => ({
-          numbers: item.numbers,                  // array of numbers
-          betType: "Trifecta",                   // default (or use real betType)
-          percentage: item.frequencyPercent,     // convert backend → frontend
-          racesSince: item.lastSeenRacesAgo,     // convert backend → frontend
-          occurrences: item.occurrences,
-          averageInterval: item.averageInterval,
-          combination: item.combination,
-        }));
-      })
+  state.combinations = action.payload.map((item) => ({
+    numbers: item.combination,
+    betType: "Keno",
+    combination: item.key,
+    racesSince: item.currentDrought,
+    percentage: 0,
+    occurrences: 0,
+    averageInterval: 0,
+  }));
+})
+
+
 
       .addCase(generateCombinations.rejected, (state, action) => {
         state.loading = false;
@@ -83,4 +83,3 @@ const combinationSlice = createSlice({
 
 export const { clearCombinations } = combinationSlice.actions;
 export default combinationSlice.reducer;
-    

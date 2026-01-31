@@ -6,40 +6,59 @@
 // import { PiCalendarDotsBold } from "react-icons/pi";
 // import ResultExpandable from "./ResultExpandable";
 // import api from "../../api";
+// import { useSelector } from "react-redux";
 
 // const ResultSection = () => {
 //   const [date, setDate] = useState(null);
 //   const [open, setOpen] = useState(false);
-//   const [resultData, setResultData] = useState([]);
+//   // const [resultData, setResultData] = useState([]);
 
-//   useEffect(() => {
-//     const fetchData = async () => {
-//       try {
-//         const response = await api.get("/nsw-keno/keno-results");
+//     const liveKenoData = useSelector(
+//     (state) => state.kenoResults.data
+//   );
 
-//         // Map API data into the structure your component expects
-//         const mappedData = response.data.results.map((item) => ({
-//           id: item._id,
-//           date: item.date,
-//           game: item.draw, // using draw as "game"
-//           entries: item.numbers, // numbers become entries
-//           positions: [], // no positions in API yet
-//           win: null,
-//           place: [],
-//           exotic: {},
-//           dividends: {},
-//         }));
+//   // useEffect(() => {
+//   //   const fetchData = async () => {
+//   //     try {
+//   //       const response = await api.get("/nsw-keno/keno-results");
 
-//         setResultData(mappedData);
-//       } catch (error) {
-//         console.error(
-//           "Error fetching Keno data:",
-//           error.response?.data || error.message
-//         );
-//       }
-//     };
-//     fetchData();
-//   }, []);
+//   //       // Map API data into the structure your component expects
+//   //       const mappedData = response.data.results.map((item) => ({
+//   //         id: item._id,
+//   //         date: item.date,
+//   //         game: item.draw, // using draw as "game"
+//   //         entries: item.numbers, // numbers become entries
+//   //         positions: [], // no positions in API yet
+//   //         win: null,
+//   //         place: [],
+//   //         exotic: {},
+//   //         dividends: {},
+//   //       }));
+
+//   //       setResultData(mappedData);
+//   //     } catch (error) {
+//   //       console.error(
+//   //         "Error fetching Keno data:",
+//   //         error.response?.data || error.message
+//   //       );
+//   //     }
+//   //   };
+//   //   fetchData();
+//   // }, []);
+
+
+//   const resultData = liveKenoData.map((item, idx) => ({
+//   id: idx,
+//   date: new Date().toLocaleDateString("en-GB"),
+//   game: item.draw,
+//   entries: item.numbers,
+//   positions: [],
+//   win: null,
+//   place: [],
+//   exotic: {},
+//   dividends: {},
+// }));
+
 
 //   const fetchFilteredData = async (filters = {}) => {
 //     try {
@@ -157,125 +176,136 @@
 // };
 
 // export default ResultSection;
+
+
+
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import ResultExpandable from "./ResultExpandable";
 import ResultInput from "./ResultInput";
+import { PiCalendarDotsBold } from "react-icons/pi";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import "../CustomDatePicker.css";   
-import { PiCalendarDotsBold } from "react-icons/pi";
-import ResultExpandable from "./ResultExpandable";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchKenoResults, fetchFilteredResults } from "../../redux/kenoSlice";
-// import { fetchTracksideResults } from "../../redux/tracksideSlice";
+import "../CustomDatePicker.css";
+import { fetchKenoResults } from "../../redux/kenoSlice";
 
 const ResultSection = () => {
-  const [date, setDate] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [location, setLocation] = useState("NSW");
-
-  // NEW STATE — Keno / Trackside switch
-  const [selectedGame, setSelectedGame] = useState("keno");
-
-  //  Store last used filters so pagination also works for VIC/SA/ACT
-  const [filters, setFilters] = useState({
-    page: 1,
-    limit: 10,
-    location: "NSW",
-    combination: "",
-    fromGame: "",
-    toGame: "",
-    date: "",
-  });
-
   const dispatch = useDispatch();
 
-  const kenoState = useSelector((state) => state.keno);
-  const tracksideState = useSelector((state) => state.trackside);
+  // 🔹 dropdown + pagination states
+  const [location, setLocation] = useState("NSW");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [date, setDate] = useState(null);
+  const [open, setOpen] = useState(false);
 
-  const loading = selectedGame === "keno" ? kenoState.loading : tracksideState.loading;
-  const error = selectedGame === "keno" ? kenoState.error : tracksideState.error;
-  const results = selectedGame === "keno" ? kenoState.results : tracksideState.results;
+  // 🔥 LIVE SOCKET DATA (latest only)
+  const liveKeno = useSelector(
+    (state) => state.kenoResults.data?.[location]
+  );
 
-  // ⭐ Correct pagination state for ALL LOCATIONS (NSW, VIC, SA, ACT)
-  const paginationState = selectedGame === "keno" ? kenoState : tracksideState;
-  const { page, limit, total } = paginationState;
-  const totalPages = Math.ceil(total / limit);
+  // 📄 PAGINATED OLD DATA
+  const { results: oldResults, total } = useSelector(
+    (state) => state.keno
+  );
 
-  // Load initial data when game changes
+  // 🔁 pagination API call
   useEffect(() => {
-    if (selectedGame === "keno") {
-      dispatch(fetchKenoResults());
-    } else {
-      dispatch(fetchTracksideResults());
+    dispatch(fetchKenoResults({ location, page, limit }));
+  }, [dispatch, location, page, limit]);
+
+  // 🧠 MERGE: LIVE (top) + OLD (below)
+  const resultData = [];
+
+  // 1️⃣ LIVE RESULT (TOP)
+  if (liveKeno) {
+    resultData.push({
+      id: `live-${location}-${liveKeno.draw}`,
+      date: new Date().toLocaleDateString("en-GB"),
+      game: liveKeno.draw,
+      entries: liveKeno.numbers,
+headsTails: liveKeno.coin_result
+  ? {
+      result: liveKeno.coin_result,
+      multiplier: liveKeno.bonus_x || 1,
     }
-  }, [selectedGame, dispatch]);
+  : null,
 
-  // ⭐ PAGE CHANGE FIX — Works for VIC, SA, ACT, NSW
-  const handlePageChange = (newPage) => {
-    const updated = { ...filters, page: newPage };
-    setFilters(updated);
-    dispatch(fetchFilteredResults(updated));
-  };
 
-  // Normalized data mapping for UI
-  const resultData = results.map((item) => ({
-    id: item._id,
-    date: item.date,
-    game: selectedGame === "keno" ? item.draw : item.raceNumber,
-    entries: selectedGame === "keno" ? item.numbers : item.horses,
-    positions: item.positions || [],
-    win: item.win || null,
-    place: item.place || [],
-    exotic: item.exotic || {},
-    dividends: item.dividends || {},
-  }));
+      isLive: true,
+      positions: [],
+      win: null,
+      place: [],
+      exotic: {},
+      dividends: {},
+    });
+  }
 
-  // ⭐ SEARCH FIX — Stores filters so pagination works
-  const handleSearch = () => {
-  const firstGame = document.querySelector('input[name="fromGame"]')?.value ?? "";
-  const lastGame = document.querySelector('input[name="toGame"]')?.value ?? "";
-  const combo = document.querySelector('input[name="combination"]')?.value ?? "";
 
-  const newFilters = {
-    page: 1,
-    limit: 10,
-    location,
-    fromGame: firstGame,
-    toGame: lastGame,
-    combination: combo,
-    date: date ? date.toISOString().split("T")[0] : "",
-  };
+ // 2️⃣ OLD RESULTS (PAGINATION) — LIVE DRAW REMOVE KARO
+if (Array.isArray(oldResults)) {
+  console.log("OLD RESULTS ITEM 👉", oldResults[0]);
 
-  setFilters(newFilters);
-  dispatch(fetchFilteredResults(newFilters));
-};
+  oldResults
+    .filter(
+      (item) =>
+        String(item.draw) !== String(liveKeno?.draw)
+    )
+    .forEach((item) => {
+      resultData.push({
+        id: item._id,
+        date: item.date,
+        game: item.draw,
+        entries: item.numbers,
+         headsTails: item.result
+  ? {
+      result: item.result,   // "Tails wins"
+      multiplier: item.bonus // "REG"
+    }
+  : null,
+
+        positions: [],
+        win: null,
+        place: [],
+        exotic: {},
+        dividends: {},
+      });
+    });
+}
 
 
   return (
     <div className="flex flex-col bg-[#262626] px-4 sm:px-8 py-4 my-4 rounded font-poppins w-full">
-      <div className="flex flex-col sm:flex-row sm:justify-between gap-4 w-full">
-        <h3 className="text-xl font-semibold text-white">
-          {selectedGame === "keno" ? "Keno Results:" : "Trackside Results:"}
-        </h3>
 
-        <div className="flex flex-wrap gap-3 items-center">
-          {selectedGame === "keno" && (
-            <>
-              <ResultInput placeholder={"First Game No."} width="w-[130px]" />
-              <ResultInput placeholder={"Last Game No."} width="w-[130px]" />
-            </>
-          )}
+      {/* HEADER */}
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-4 w-full mb-4">
+        <h3 className="text-xl font-semibold text-white">Results</h3>
 
+        <div className="flex gap-3 items-center flex-wrap">
+          {/* LOCATION DROPDOWN */}
+          <select
+            value={location}
+            onChange={(e) => {
+              setLocation(e.target.value);
+              setPage(1);
+            }}
+            className="bg-[#464646] text-white px-3 py-2 rounded-xl text-sm"
+          >
+            <option value="NSW">NSW</option>
+            <option value="VIC">VIC</option>
+            <option value="ACT">ACT</option>
+             <option value="SA">SA</option>
+          </select>
+
+          <ResultInput placeholder="First Game No." width="w-[130px]" />
+          <ResultInput placeholder="Last Game No." width="w-[130px]" />
           <ResultInput
-            placeholder={
-              selectedGame === "keno"
-                ? "Search by combinations"
-                : "Search horse / race"
-            }
+            placeholder="Search by combinations"
             width="w-[220px]"
-            showSearchIcon={true}
+            showSearchIcon
           />
 
+          {/* DATE PICKER */}
           <div className="relative inline-block">
             <button
               onClick={() => setOpen(!open)}
@@ -289,8 +319,8 @@ const ResultSection = () => {
               <div className="absolute top-full right-0 mt-2 z-50 shadow-lg max-w-[180px]">
                 <DatePicker
                   selected={date}
-                  onChange={(date) => {
-                    setDate(date);
+                  onChange={(d) => {
+                    setDate(d);
                     setOpen(false);
                   }}
                   inline
@@ -298,85 +328,36 @@ const ResultSection = () => {
               </div>
             )}
           </div>
-
-          <button
-            className="bg-white text-black px-4 py-3 text-sm rounded-xl"
-            onClick={handleSearch}
-          >
-            Search
-          </button>
         </div>
       </div>
 
-      {/* Show All + Location Selector */}
-      <div className="flex items-center gap-4 ml-auto mt-5">
-        <select
-          value={location}
-          onChange={(e) => {
-            setLocation(e.target.value);
-
-            const updated = {
-              ...filters,
-              location: e.target.value,
-              page: 1,
-            };
-
-            setFilters(updated);
-            dispatch(fetchFilteredResults(updated));
-          }}
-          className="bg-[#464646] text-white text-sm px-3 py-2 rounded-lg focus:outline-none"
-        >
-          <option value="VIC">VIC</option>
-          <option value="ACT">ACT</option>
-          <option value="SA">SA</option>
-          <option value="NSW">NSW</option>
-        </select>
+      {/* RESULTS TABLE */}
+      <div className="mt-4 rounded overflow-x-auto">
+        <ResultExpandable resultData={resultData} />
       </div>
 
-      {/* LOADING / ERROR */}
-      {loading && <p className="text-gray-400 mt-4">Loading...</p>}
-      {error && <p className="text-red-400 mt-4">Error fetching results: {error}</p>}
+      {/* PAGINATION */}
+      <div className="flex justify-end gap-3 mt-4 text-white">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage((p) => p - 1)}
+          className="px-3 py-1 bg-[#464646] rounded disabled:opacity-50"
+        >
+          Prev
+        </button>
 
-      {!loading && !error && (
-        <>
-          <div className="mt-4 rounded overflow-x-auto">
-            <ResultExpandable
-              resultData={Array.isArray(resultData) ? resultData : [resultData]}
-            />
-          </div>
+        <span className="px-2 py-1 text-sm">
+          Page {page}
+        </span>
 
-          {/* ⭐ PAGINATION UI */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-3 mt-6 text-white">
-              <button
-                disabled={page === 1}
-                onClick={() => handlePageChange(page - 1)}
-                className={`px-3 py-1 rounded ${
-                  page === 1 ? "bg-gray-600 cursor-not-allowed" : "bg-white text-black"
-                }`}
-              >
-                Prev
-              </button>
-
-              <span className="text-sm">
-                Page {page} / {totalPages}
-              </span>
-
-              <button
-                disabled={page === totalPages}
-                onClick={() => handlePageChange(page + 1)}
-                className={`px-3 py-1 rounded ${
-                  page === totalPages
-                    ? "bg-gray-600 cursor-not-allowed"
-                    : "bg-white text-black"
-                }`}
-              >
-                Next
-              </button>
-            </div>
-          )}
-        </>
-      )}
+        <button
+          disabled={page * limit >= total}
+          onClick={() => setPage((p) => p + 1)}
+          className="px-3 py-1 bg-[#464646] rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

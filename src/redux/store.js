@@ -14,26 +14,45 @@ import analyticsReducer from "./analyticsSlice";
 import notificationReducer from "./notificationSlice";
 import kenoResultReducer from "./kenoResultSlice";
 import betComparisonReducer from "./betComparisonSlice";
-
+import favoriteReducer from "./favoriteSlice";
+import tracksideQuickStatsReducer from "./tracksideQuickStatsSlice";
+import tracksideGraphReducer from "./tracksideGraphSlice";
+import tracksideAnalyticsReducer from "./tracksideAnalyticsSlice";
+import kenoGraphReducer from "./kenoGraphSlice";
+import alertReducer from "./alertSlice";
+import KenooverdueReducer from "./KenooverdueSlice";
+import kenoAlertReducer from "./KenoAlertSlice";
+import tracksideHistoricalReducer from "./tracksideHistoricalSlice";
+import trackideCombinationReducer from "./TrackideCombinationSlice";
+import paymentsReducer from "./paymentsSlice";
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     tickets: ticketReducer,
     keno: kenoReducer,
+    kenoResults: kenoResultReducer,
     combinations: combinationReducer,
     overdue: overdueReducer,
     historical: historicalReducer,
     profile: profileReducer,
-    tracksideResults: tracksideResultsReducer,
-    quickStats: quickStatsReducer,
+    kenoGraph: kenoGraphReducer,
+    alerts: alertReducer,
     users: usersReducer,
     dashboard: dashboardReducer,
     analytics: analyticsReducer,
     notification: notificationReducer,
-    kenoResults: kenoResultReducer,
+    favorite: favoriteReducer,
     betComparison: betComparisonReducer,
-    betComparison: betComparisonReducer,
+    Kenooverdue: KenooverdueReducer,
+kenoalert: kenoAlertReducer,
+    trackideCombination: trackideCombinationReducer,
 
-
+tracksideHistorical: tracksideHistoricalReducer,
+    tracksideResults: tracksideResultsReducer,
+    tracksideQuickStats: tracksideQuickStatsReducer,
+    tracksideGraph: tracksideGraphReducer,
+    tracksideAnalytics: tracksideAnalyticsReducer,
+ payments: paymentsReducer,
+    quickStats: quickStatsReducer,
   },
 });

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TrackSideLayout from "../../TrackSideLayout/TrackSideLayout";
-
+import SubscriptionGuard from "../../../Component/SubscriptionGuard";
 function TrackSideBouns() {
     const [backOdds, setBackOdds] = useState("");
     const [layOdds, setLayOdds] = useState("");
@@ -60,6 +60,7 @@ function TrackSideBouns() {
   return (
     <>
     <TrackSideLayout>
+    <SubscriptionGuard>
        <div className="min-h-screen flex items-center justify-center bg-[#262626] p-6 text-gray-100">
                 <div className="max-w-6xl w-full bg-black rounded-2xl shadow-2xl p-6">
                     <h1 className="text-xl font-bold mb-3">Bonus Bet Hedge Calculator</h1>
@@ -213,6 +214,7 @@ function TrackSideBouns() {
                 </div>
 
             </div>
+            </SubscriptionGuard>
             </TrackSideLayout>
     </>
   )

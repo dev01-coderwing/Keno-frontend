@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import TrackSideLayout from "../../TrackSideLayout/TrackSideLayout";
-
+import SubscriptionGuard from "../../../Component/SubscriptionGuard";
 function TrackSideMatched() {
      const [backOdds, setBackOdds] = useState("");
       const [hedgeOdds, setHedgeOdds] = useState("");
@@ -39,6 +39,7 @@ function TrackSideMatched() {
   return (
     <>
          <TrackSideLayout>
+         <SubscriptionGuard>
        <div className="min-h-screen bg-[#262626] text-gray-100 px-6 py-8">
                     <div className="max-w-6xl mx-auto">
 
@@ -151,6 +152,7 @@ function TrackSideMatched() {
 
                     </div>
                 </div>
+                </SubscriptionGuard>
                 </TrackSideLayout>
     </>
   )

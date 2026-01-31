@@ -14,6 +14,8 @@
 
 // export const { setEmail } = authSlice.actions;
 // export default authSlice.reducer;import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
+
 import api from "../api";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -161,13 +163,55 @@ export const resetForgotPassword = createAsyncThunk(
   }
 );
 
+// Fetch current user (refresh after actions like payment)
+export const fetchCurrentUser = createAsyncThunk(
+  "auth/fetchCurrentUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+
+      // Try common endpoints in order. Backend may expose one of these.
+      const attempts = [];
+      if (userId) attempts.push(`/profile/user/${userId}`);
+      attempts.push(`/users/me`);
+      attempts.push(`/profile/user`);
+
+      let res = null;
+      for (const ep of attempts) {
+        try {
+          res = await api.get(ep, {
+            headers: {
+              "api-key": "kajal",
+              "Content-Type": "application/json",
+              Authorization: token ? `Bearer ${token}` : undefined,
+            },
+          });
+          if (res && res.data) break;
+        } catch (err) {
+          // ignore and try next
+        }
+      }
+
+      if (!res || !res.data) {
+        return rejectWithValue("Failed to fetch current user");
+      }
+
+      // prefer res.data.data if present
+      return res.data.data || res.data;
+    } catch (err) {
+      return rejectWithValue(err?.response?.data || "Failed to fetch user");
+    }
+  }
+);
+
 //  AUTH SLICE 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
     email: "",
-    user: null,
-    token: null,
+ user: null,
+  token: localStorage.getItem("token"),
     loading: false,
     error: null,
     successMessage: "",
@@ -318,6 +362,25 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload?.message || "Password reset failed.";
         state.resetSuccess = false;
+      });
+      
+      // ===== Fetch Current User =====
+      builder
+      .addCase(fetchCurrentUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+        state.error = null;
+        localStorage.setItem("user", JSON.stringify(action.payload));
+        const userId = action.payload?._id || action.payload?.id;
+        if (userId) localStorage.setItem("userId", userId);
+      })
+      .addCase(fetchCurrentUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error?.message;
       });
   },
 });

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import Layout from "../../../Layout/Layout";
+import SubscriptionGuard from "../../../Component/SubscriptionGuard";
 
 export default function MatchedBettingCalculator() {
 
@@ -41,6 +42,7 @@ export default function MatchedBettingCalculator() {
     return (
         <>
             <Layout>
+                <SubscriptionGuard>
                 <div className="min-h-screen bg-[#262626] text-gray-100 px-6 py-8">
                     <div className="max-w-6xl mx-auto">
 
@@ -153,6 +155,7 @@ export default function MatchedBettingCalculator() {
 
                     </div>
                 </div>
+                </SubscriptionGuard>
             </Layout>
         </>
     );

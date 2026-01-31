@@ -297,7 +297,7 @@
 
 
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ResultInput from "../../Component/ResultSection/ResultInput";
 import Entries from "../../Component/Cards/Entries";
 import ResultExpandable from "../../Component/ResultSection/ResultExpandable";
@@ -308,7 +308,8 @@ import { PiCalendarDotsBold } from "react-icons/pi";
 import { useDispatch, useSelector } from "react-redux";
 import { createTicket } from "../../redux/ticketSlice";
 import TrackSideLayout from "../TrackSideLayout/TrackSideLayout";
-
+import TracksideEntries from "../TrackSideExoticPredictor/TracksideEntries";
+import SubscriptionGuard from "../../Component/SubscriptionGuard";
 const mapBetTypeForApi = (v) => {
     switch (v) {
         case "quinella":
@@ -408,6 +409,12 @@ function TrackSideMyTickets() {
         }
     };
 
+
+useEffect(() => {
+  setEntries([]);
+}, [formData.betType]);
+
+
     const getEntryCount = () => {
         switch (formData.betType.toLowerCase()) {
             case "quinella":
@@ -417,12 +424,13 @@ function TrackSideMyTickets() {
             case "first four":
                 return 4;
             default:
-                return 1;
+                return 0;
         }
     };
 
     return (
         <TrackSideLayout>
+        <SubscriptionGuard>
             <div className="bg-[#1E1E1E] text-white min-h-screen px-4 md:px-8 py-10 font-poppins">
                 <h2 className="text-2xl md:text-3xl font-semibold mb-4">My Tickets</h2>
                 <p className="text-base md:text-lg mb-8">Enter your ticket’s details -</p>
@@ -466,7 +474,7 @@ function TrackSideMyTickets() {
                     <div className="flex flex-col md:flex-row md:items-center gap-2">
                         <label className="w-full md:w-40 text-base md:text-lg font-medium">Race no. range :</label>
 
-                        <div className="flex flex-col gap-1 sm:flex-row w-full md:max-w-[45%]">
+                        <div className="flex flex-col gap-1 pl-5 sm:flex-row w-full md:max-w-[80%]">
                             <ResultInput
                                 placeholder="First Game No."
                                 type="number"
@@ -534,14 +542,14 @@ function TrackSideMyTickets() {
                             <option value="default">Select</option>
                             <option value="quinella">Quinella</option>
                             <option value="trifecta">Trifecta</option>
-                            <option value="first-four">First Four</option>
+                            <option value="first four">first four</option>
                         </select>
                     </div>
 
                     {/* Entries */}
                     <div className="mt-10 w-full max-w-4xl">
                         <h5 className="text-lg md:text-xl font-semibold mb-2">Select your entries</h5>
-                        <Entries count={getEntryCount()} onEntriesChange={setEntries} />
+                        <TracksideEntries count={getEntryCount()}    maxNumber={12}  onEntriesChange={setEntries} />
                     </div>
 
                     {/* Submit */}
@@ -557,6 +565,7 @@ function TrackSideMyTickets() {
 
                 </form>
             </div>
+            </SubscriptionGuard>
         </TrackSideLayout>
     );
 }

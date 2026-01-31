@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from "../../../Layout/Layout";
+import SubscriptionGuard from "../../../Component/SubscriptionGuard";
 
 // Default export React component (single-file). Built with Tailwind CSS classes for styling.
 // Drop this file into a Vite + React project (src/components/BonusHedgeCalculator.jsx)
@@ -65,6 +66,7 @@ export default function BonusHedgeCalculator() {
     return (
         <>
             <Layout>
+                    <SubscriptionGuard>
                 <div className="min-h-screen flex items-center justify-center bg-[#262626] p-6 text-gray-100">
                     <div className="max-w-6xl w-full bg-black rounded-2xl shadow-2xl p-6">
                         <h1 className="text-xl font-bold mb-3">Bonus Bet Hedge Calculator</h1>
@@ -219,6 +221,7 @@ export default function BonusHedgeCalculator() {
                     </div>
 
                 </div>
+                    </SubscriptionGuard>
             </Layout>
         </>
     );

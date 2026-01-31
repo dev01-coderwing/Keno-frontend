@@ -6,17 +6,31 @@ export const fetchHistoricalFrequency = createAsyncThunk(
   "historical/fetchData",
   async ({ location, entries, size }, { rejectWithValue }) => {
     try {
-      const res = await api.post("/historical-frequency/analyze", {
-        location,
-        entries,
-        size,
-      });
+      const res = await api.post(
+        "/historical-frequency/keno",
+        {
+          location,
+          entries,
+          size,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("KENO HISTORICAL RESPONSE:", res.data);
+
       return res.data;
     } catch (err) {
-      return rejectWithValue(err.response?.data || err.message);
+      return rejectWithValue(
+        err?.response?.data?.message || "Historical Keno API failed"
+      );
     }
   }
 );
+
 
 const historicalSlice = createSlice({
   name: "historical",
@@ -32,10 +46,11 @@ const historicalSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchHistoricalFrequency.fulfilled, (state, action) => {
-        state.loading = false;
-        state.data = action.payload;
-      })
+.addCase(fetchHistoricalFrequency.fulfilled, (state, action) => {
+  state.loading = false;
+  state.data = action.payload;
+})
+
       .addCase(fetchHistoricalFrequency.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;

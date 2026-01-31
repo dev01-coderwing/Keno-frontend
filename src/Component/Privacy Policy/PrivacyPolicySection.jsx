@@ -18,7 +18,7 @@ const PrivacyPolicySection = () => {
         <div>
           <h2 className="text-xl font-semibold">Punt Data – App Privacy Policy</h2>
           <p className="text-xs text-gray-400 mt-2">
-            Last updated: [insert date]
+            Last updated: [15-01-2026]
           </p>
         </div>
 

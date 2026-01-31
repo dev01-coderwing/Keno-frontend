@@ -3,6 +3,7 @@ import { FaAngleDown, FaAngleUp, FaRegBell } from "react-icons/fa";
 import { HiOutlineLogout } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import PuntMateLogo from "../../assets/horse-logo.png";
 
 // 🔔 Redux notification actions
 import {
@@ -92,7 +93,7 @@ const TrackSideHeader = () => {
       {/* ================= LEFT LOGO ================= */}
       <Link to="/" className="flex items-center gap-2">
         <img
-          src="https://res.cloudinary.com/dqacezsc5/image/upload/v1754648053/logo_w7gbjw.png"
+          src={PuntMateLogo}
           alt="PuntMate-Logo"
           className="h-14 w-14 sm:h-20 sm:w-20 object-contain"
         />

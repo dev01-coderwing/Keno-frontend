@@ -3,11 +3,12 @@ import CombinationGenerator from "./TrackSideCombinationGenerator";
 import WinningCombos from "./TrackSideWinningCombos";
 import HistoricalFrequency from "./TrackSideHistoricalFrequency";
 import TrackSideLayout from "../TrackSideLayout/TrackSideLayout";
-
+import SubscriptionGuard from "../../Component/SubscriptionGuard";
 function TrackSidePredictor() {
   return (
     <>
         <TrackSideLayout>
+    <SubscriptionGuard>
         <div className="bg-[#262626] py-6 px-4 sm:px-6 md:px-10 rounded-lg font-poppins w-full">
       <div className="text-center py-6">
         <h3 className="text-xl sm:text-2xl font-semibold text-white">
@@ -24,6 +25,7 @@ function TrackSidePredictor() {
         <HistoricalFrequency />
       </div>
     </div>
+      </SubscriptionGuard>
     </TrackSideLayout>
     </>
   )

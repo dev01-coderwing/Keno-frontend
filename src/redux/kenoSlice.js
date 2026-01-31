@@ -66,6 +66,8 @@
     
 
 // redux/kenoSlice.js
+
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 
@@ -158,7 +160,13 @@ const kenoSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+reducers: {
+  socketKenoListUpdate: (state, action) => {
+    state.results = action.payload;
+    state.loading = false;
+  },
+},
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchKenoResults.pending, (state) => {
@@ -194,5 +202,8 @@ const kenoSlice = createSlice({
       });
   },
 });
+
+export const { socketKenoListUpdate } = kenoSlice.actions;
+
 
 export default kenoSlice.reducer;

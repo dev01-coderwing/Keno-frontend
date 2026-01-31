@@ -221,11 +221,12 @@ const SignupForm = ({ onSwitchForm }) => {
   const [dob, setDob] = useState(null);
   const [email, setLocalEmail] = useState("");
   const [alert, setAlert] = useState({ message: "", type: "" });
+const [termsAccepted, setTermsAccepted] = useState(false);
 
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
-const [pin, setPin] = useState("");
-const [confirmPin, setConfirmPin] = useState("");
+
+
 
   //  Calculate age
   const getAge = (birthDate) => {
@@ -244,7 +245,14 @@ const [confirmPin, setConfirmPin] = useState("");
       setAlert({ message: "Please fill in all fields.", type: "error" });
       return;
     }
-
+ 
+    if (!termsAccepted) {
+  setAlert({
+    message: "Please accept Terms & Conditions to continue.",
+    type: "error",
+  });
+  return;
+}
     const age = getAge(dob);
     if (age < 18) {
       setAlert({
@@ -254,26 +262,6 @@ const [confirmPin, setConfirmPin] = useState("");
       return;
     }
 
-    if (!pin || !confirmPin) {
-  setAlert({ message: "PIN is required.", type: "error" });
-  return;
-}
-
-if (!/^\d{4}(\d{2})?$/.test(pin)) {
-  setAlert({
-    message: "PIN must be 4 or 6 digits.",
-    type: "error",
-  });
-  return;
-}
-
-if (pin !== confirmPin) {
-  setAlert({
-    message: "PIN and Confirm PIN do not match.",
-    type: "error",
-  });
-  return;
-}
 
     setAlert({ message: "", type: "" });
 
@@ -283,7 +271,6 @@ if (pin !== confirmPin) {
     fullName,
     dob,
     email,
-    pin,
     default_state: "NSW", 
   })
 ).unwrap();
@@ -377,7 +364,7 @@ if (pin !== confirmPin) {
         </div>
 
 {/* PIN */}
-<div className="flex flex-col gap-1">
+{/* <div className="flex flex-col gap-1">
   <label className="text-sm sm:text-base">Create PIN</label>
   <input
     type="password"
@@ -387,10 +374,10 @@ if (pin !== confirmPin) {
     placeholder="Enter 4 or 6 digit PIN"
     maxLength={6}
   />
-</div>
+</div> */}
 
 {/* Confirm PIN */}
-<div className="flex flex-col gap-1">
+{/* <div className="flex flex-col gap-1">
   <label className="text-sm sm:text-base">Confirm PIN</label>
   <input
     type="password"
@@ -400,6 +387,34 @@ if (pin !== confirmPin) {
     placeholder="Re-enter PIN"
     maxLength={6}
   />
+</div> */}
+{/* Terms & Conditions */}
+<div className="flex items-start gap-2 text-xs text-gray-300">
+  <input
+    type="checkbox"
+    id="terms"
+    checked={termsAccepted}
+    onChange={(e) => setTermsAccepted(e.target.checked)}
+    className="mt-1 accent-white cursor-pointer"
+  />
+  <label htmlFor="terms" className="cursor-pointer leading-snug">
+    I agree to the{" "}
+    <a
+      href="/terms-of-service"
+      target="_blank"
+      className="underline text-white"
+    >
+      Terms of Service
+    </a>{" "}
+    and{" "}
+    <a
+      href="/privacy-policy"
+      target="_blank"
+      className="underline text-white"
+    >
+      Privacy Policy
+    </a>
+  </label>
 </div>
 
         <span className="text-xs text-gray-300">
@@ -407,13 +422,18 @@ if (pin !== confirmPin) {
         </span>
 
         {/* Signup Button */}
-        <button
-          className="w-full bg-white text-black py-2 font-semibold rounded-xl hover:bg-gray-200 transition"
-          onClick={handleSignup}
-          disabled={loading}
-        >
-          {loading ? "Processing..." : "Verify"}
-        </button>
+   <button
+  className={`w-full py-2 font-semibold rounded-xl transition ${
+    termsAccepted
+      ? "bg-white text-black hover:bg-gray-200"
+      : "bg-gray-400 text-gray-700 cursor-not-allowed"
+  }`}
+  onClick={handleSignup}
+  disabled={loading || !termsAccepted}
+>
+  {loading ? "Processing..." : "Verify"}
+</button>
+
 
         <ContinueSection />
 

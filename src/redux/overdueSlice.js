@@ -1,12 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 
-/* ================= OVERDUE COMBOS ================= */
 export const fetchOverdueCombos = createAsyncThunk(
   "overdue/fetchOverdueCombos",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/over-due-combo/generate", {
+      const res = await api.get("over-due-combo/trackside/generate/", {
         headers: { "api-key": "kajal" },
       });
       return res.data;
@@ -16,7 +15,7 @@ export const fetchOverdueCombos = createAsyncThunk(
   }
 );
 
-/* ================= TOP FEATURED ================= */
+
 export const fetchTopFeatured = createAsyncThunk(
   "overdue/fetchTopFeatured",
   async (_, { rejectWithValue }) => {
@@ -31,7 +30,6 @@ export const fetchTopFeatured = createAsyncThunk(
   }
 );
 
-/* ================= LEAST FEATURED ================= */
 export const fetchLeastFeatured = createAsyncThunk(
   "overdue/fetchLeastFeatured",
   async (_, { rejectWithValue }) => {
@@ -46,35 +44,79 @@ export const fetchLeastFeatured = createAsyncThunk(
   }
 );
 
+export const fetchTracksideTopFeatured = createAsyncThunk(
+  "overdue/fetchTracksideTopFeatured",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await api.get("/trackside/top-featured", {
+        headers: { "api-key": "kajal" },
+      });
+      return res.data;
+    } catch (error) {
+      return rejectWithValue("Failed to fetch trackside top featured");
+    }
+  }
+);
+
+export const fetchTracksideLeastFeatured = createAsyncThunk(
+  "overdue/fetchTracksideLeastFeatured",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await api.get("/trackside/least-featured", {
+        headers: { "api-key": "kajal" },
+      });
+      return res.data;
+    } catch (error) {
+      return rejectWithValue("Failed to fetch trackside least featured");
+    }
+  }
+);
+
 const overdueSlice = createSlice({
   name: "overdue",
   initialState: {
     combos: [],
+
     topFeatured: null,
     leastFeatured: null,
+
+    tracksideTopFeatured: null,
+    tracksideLeastFeatured: null,
+
     loading: false,
     featuredLoading: false,
     leastLoading: false,
+    tracksideTopLoading: false,
+    tracksideLeastLoading: false,
+
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
 
-      /* OVERDUE */
+      /* ========== OVERDUE ========== */
       .addCase(fetchOverdueCombos.pending, (state) => {
         state.loading = true;
       })
       .addCase(fetchOverdueCombos.fulfilled, (state, action) => {
         state.loading = false;
-        state.combos = action.payload || [];
+
+        state.combos = (action.payload || []).map((item) => ({
+          combo: item.comboKey,      
+          numbers: item.combo,       
+          frequency: item.frequency,
+          avgEvery: item.avgEvery,
+          lastSeen: item.lastSeen,
+          location: item.location,
+        }));
       })
       .addCase(fetchOverdueCombos.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      /* TOP FEATURED */
+      /* ========== KENO TOP FEATURED ========== */
       .addCase(fetchTopFeatured.pending, (state) => {
         state.featuredLoading = true;
       })
@@ -87,7 +129,7 @@ const overdueSlice = createSlice({
         state.error = action.payload;
       })
 
-      /* LEAST FEATURED */
+      /* ========== KENO LEAST FEATURED ========== */
       .addCase(fetchLeastFeatured.pending, (state) => {
         state.leastLoading = true;
       })
@@ -97,6 +139,32 @@ const overdueSlice = createSlice({
       })
       .addCase(fetchLeastFeatured.rejected, (state, action) => {
         state.leastLoading = false;
+        state.error = action.payload;
+      })
+
+      /* ========== TRACKSIDE TOP FEATURED ========== */
+      .addCase(fetchTracksideTopFeatured.pending, (state) => {
+        state.tracksideTopLoading = true;
+      })
+      .addCase(fetchTracksideTopFeatured.fulfilled, (state, action) => {
+        state.tracksideTopLoading = false;
+        state.tracksideTopFeatured = action.payload?.data || null;
+      })
+      .addCase(fetchTracksideTopFeatured.rejected, (state, action) => {
+        state.tracksideTopLoading = false;
+        state.error = action.payload;
+      })
+
+      /* ========== TRACKSIDE LEAST FEATURED ========== */
+      .addCase(fetchTracksideLeastFeatured.pending, (state) => {
+        state.tracksideLeastLoading = true;
+      })
+      .addCase(fetchTracksideLeastFeatured.fulfilled, (state, action) => {
+        state.tracksideLeastLoading = false;
+        state.tracksideLeastFeatured = action.payload?.data || null;
+      })
+      .addCase(fetchTracksideLeastFeatured.rejected, (state, action) => {
+        state.tracksideLeastLoading = false;
         state.error = action.payload;
       });
   },

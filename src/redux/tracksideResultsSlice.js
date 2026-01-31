@@ -87,6 +87,9 @@
 // });
 
 // export default tracksideResultsSlice.reducer;
+
+
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 
@@ -157,7 +160,7 @@ export const fetchFilteredResultsByLocation = createAsyncThunk(
       };
 
       const res = await api.get(urlMap[location], { params: filters });
-      return res.data;
+      return res.data.data;
     } catch (err) {
       return rejectWithValue(err.response?.data || "API Error");
     }
@@ -169,13 +172,37 @@ const tracksideResultsSlice = createSlice({
   name: "tracksideResults",
   initialState: {
     loading: false,
+
+    // 🔥 LIVE SOCKET DATA (LOCATION WISE)
+    live: {
+      NSW: null,
+      VIC: null,
+      ACT: null,
+    },
+
+    // 📄 OLD / PAGINATED DATA
     results: [],
     totalCount: 0,
     totalPages: 0,
     currentPage: 1,
     error: null,
   },
-  reducers: {},
+
+  reducers: {
+    socketTracksideResultsUpdate: (state, action) => {
+      const { location, latestGame } = action.payload;
+
+      state.live = {
+        ...state.live,
+        [location]: {
+          ...latestGame,
+          location,
+          updatedAt: Date.now(), // 👈 force rerender
+        },
+      };
+    },
+  },
+
   extraReducers: (builder) => {
     /* PAGINATED RESULTS */
     builder
@@ -229,17 +256,19 @@ const tracksideResultsSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchFilteredResultsByLocation.fulfilled, (state, action) => {
-        state.loading = false;
-        state.results = action.payload.data;
-        state.totalCount = action.payload.totalCount;
-        state.totalPages = action.payload.totalPages;
-        state.currentPage = action.payload.currentPage;
-      })
+  state.loading = false;
+  state.results = action.payload; // ✅ FIX
+  state.totalCount = action.payload.length; // optional
+  state.totalPages = 1;
+  state.currentPage = 1;
+})
+
       .addCase(fetchFilteredResultsByLocation.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
   },
 });
-
+export const { socketTracksideResultsUpdate } =
+  tracksideResultsSlice.actions;
 export default tracksideResultsSlice.reducer;

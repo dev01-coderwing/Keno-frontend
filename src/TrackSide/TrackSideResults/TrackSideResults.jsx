@@ -170,6 +170,7 @@ import "../../Component/CustomDatePicker.css";
 import { PiCalendarDotsBold } from "react-icons/pi";
 import ResultExpandable from "./TrackSideResultExpandable";
 import TrackSideLayout from "../TrackSideLayout/TrackSideLayout";
+import SubscriptionGuard from "../../Component/SubscriptionGuard";
 
 // Redux
 import { useDispatch, useSelector } from "react-redux";
@@ -186,55 +187,97 @@ function TrackSideResults() {
   const [lastGame, setLastGame] = useState("");
   const [location, setLocation] = useState("NSW");
   const [limit] = useState(20);
+  const [isSearchMode, setIsSearchMode] = useState(false);
 
   const dispatch = useDispatch();
 
-  const { loading, results, error, totalPages, currentPage } = useSelector(
-    (state) => state.tracksideResults
-  );
+  const {
+    loading,
+    results,
+    live,
+    error,
+    totalPages,
+    currentPage,
+  } = useSelector((state) => state.tracksideResults);
+
 
   /* ------------------------------ LOAD INITIAL PAGINATED DATA ------------------------------ */
   useEffect(() => {
     dispatch(fetchPaginatedTracksideResults({ location, limit, page: 1 }));
-  }, [dispatch]);
+  }, [dispatch, location, limit]);
+
+useEffect(() => {
+  console.log("RESULTS FROM REDUX:", results);
+}, [results]);
 
   /* ------------------------------ FORMAT TABLE DATA ------------------------------ */
-  const resultData = results?.map((item) => ({
-    id: item._id,
-    date: item.date,
-    game: item.gameName,
-    entries: item.numbers,
-    positions: [],
-    win: null,
-    place: [],
-    exotic: {},
-    dividends: {},
-  }));
+  // 🔥 LIVE + OLD MERGED DATA (LIVE ALWAYS ON TOP)
+  const resultData = [];
+
+  // 1️⃣ LIVE DATA (SOCKET) — TOP PE
+  const liveGame = live?.[location];
+
+  if (liveGame?.gameNumber) {
+    resultData.push({
+      id: `live-${location}-${liveGame.gameNumber}`,
+      date: new Date(liveGame.timestamp).toISOString().split("T")[0],
+      game: liveGame.gameName,
+      entries: liveGame.numbers,
+      isLive: true,
+      positions: [],
+      win: null,
+      place: [],
+      exotic: {},
+      dividends: {},
+    });
+  }
+
+  // 2️⃣ OLD PAGINATED DATA — NICHE
+  // 2️⃣ OLD RESULTS — SORT DESC (LATEST FIRST)
+  const filteredResults = isSearchMode
+    ? results // 🔍 search ke time direct results
+    : results?.filter((item) => item.location === location); // 📄 normal mode
+
+  filteredResults
+    ?.filter(
+      (item) =>
+        String(item.gameNumber) !== String(liveGame?.gameNumber)
+    )
+    .sort((a, b) => b.gameNumber - a.gameNumber)
+    .forEach((item) => {
+      resultData.push({
+        id: item._id,
+        date: item.date,
+        game: item.gameName,
+        entries: item.numbers,
+        positions: [],
+        win: null,
+        place: [],
+        exotic: {},
+        dividends: {},
+      });
+    });
+
+
 
   /* ------------------------------ HANDLE SEARCH ------------------------------ */
   const handleSearch = () => {
     if (!date) return alert("Please select a date");
     if (!firstGame || !lastGame) return alert("Please enter game range");
-
-    const pad = (n) => (n < 10 ? "0" + n : n);
-
-    const formattedDate = `${pad(date.getDate())}/${pad(
-      date.getMonth() + 1
-    )}/${date.getFullYear()}`;
-
+const formattedDate = date.toISOString().split("T")[0];
     const filters = {
       startDate: formattedDate,
       endDate: formattedDate,
       startGameNo: Number(firstGame),
       endGameNo: Number(lastGame),
     };
+  setIsSearchMode(true); 
 
     dispatch(fetchFilteredResultsByLocation({ location, filters })).catch(
       (err) => console.log("FILTER ERROR:", err)
     );
   };
 
-  /* ------------------------------ PAGINATION ------------------------------ */
   const handleNext = () => {
     if (currentPage < totalPages) {
       dispatch(
@@ -248,6 +291,8 @@ function TrackSideResults() {
   };
 
   const handlePrev = () => {
+    if (isSearchMode) return;
+
     if (currentPage > 1) {
       dispatch(
         fetchPaginatedTracksideResults({
@@ -262,6 +307,7 @@ function TrackSideResults() {
   /* ------------------------------ RENDER ------------------------------ */
   return (
     <TrackSideLayout>
+    <SubscriptionGuard>
       <div className="flex flex-col bg-[#262626] px-4 sm:px-8 py-4 my-4 rounded font-poppins w-full">
 
         {/* HEADER */}
@@ -343,6 +389,7 @@ function TrackSideResults() {
             onChange={(e) => {
               const loc = e.target.value;
               setLocation(loc);
+              setIsSearchMode(false); // ✅ ADD
 
               // Load fresh data when location changes
               dispatch(fetchTracksideResults(loc));
@@ -352,15 +399,17 @@ function TrackSideResults() {
             }}
             className="bg-[#464646] text-white text-sm px-3 py-2 rounded-lg focus:outline-none"
           >
-            <option value="VIC">VIC</option>
-            <option value="ACT">ACT</option>
+            <option value="VIC">VIC-ACT</option>
             <option value="NSW">NSW</option>
           </select>
         </div>
 
         {/* RESULTS TABLE */}
         <div className="mt-4 rounded overflow-x-auto">
-          <ResultExpandable resultData={resultData} />
+          <ResultExpandable
+            key={live?.[location]?.gameNumber || "static"}
+            resultData={resultData}
+          />
         </div>
 
         {/* PAGINATION */}
@@ -386,6 +435,7 @@ function TrackSideResults() {
           </button>
         </div>
       </div>
+      </SubscriptionGuard>
     </TrackSideLayout>
   );
 }

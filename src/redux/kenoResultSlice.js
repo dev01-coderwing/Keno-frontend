@@ -22,7 +22,22 @@ const kenoResultSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {},
+ reducers: {
+    socketLatestKenoUpdate: (state, action) => {
+      const { location, draw, numbers } = action.payload;
+
+      state.data = {
+        ...state.data,
+        [location]: {
+          draw,
+          numbers,
+          location,
+          updatedAt: Date.now(), // 🔥 force change
+        },
+      };
+    }, 
+   },
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchLatestKenoResults.pending, (state) => {
@@ -41,5 +56,9 @@ const kenoResultSlice = createSlice({
       });
   },
 });
+
+export const { socketLatestKenoUpdate } =
+  kenoResultSlice.actions;
+
 
 export default kenoResultSlice.reducer;

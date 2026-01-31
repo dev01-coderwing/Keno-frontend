@@ -1,51 +1,111 @@
-import React, { useState } from "react";
-
-const choices = ["Win", "Place", "Quinella", "Exacta", "Trifecta", "First 4"];
-const maxSelection = 3;
-
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserAlerts, deleteAlert } from "../../redux/alertSlice";
+import { Trash } from "lucide-react";
 const ChoiceSelector = () => {
-  const [selected, setSelected] = useState([]);
+  const dispatch = useDispatch();
 
-  const toggleChoice = (item) => {
-    if (selected.includes(item)) {
-      setSelected(selected.filter((i) => i !== item));
-    } else if (selected.length < maxSelection) {
-      setSelected([...selected, item]);
+  const { user } = useSelector((state) => state.auth);
+  const { kenoAlerts, loading, error } = useSelector(
+    (state) => state.alerts
+  );
+
+useEffect(() => {
+  if (user?.id) {
+    dispatch(fetchUserAlerts(user.id));
+  }
+}, [user?.id, dispatch]);
+
+
+  const handleDelete = (alertId) => {
+    if (window.confirm("Delete this KENO alert?")) {
+      dispatch(deleteAlert(alertId));
     }
   };
 
-  return (
-    <div className="w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-md mx-auto mt-6 bg-black text-white rounded-xl p-4 border border-white/20 font-['Open_Sans']">
-      <div className="flex justify-between items-center border-b pb-2 mb-4 flex-wrap gap-2 sm:flex-nowrap">
-        <h2 className="text-lg font-bold">Select your choice</h2>
-        <span className="text-sm text-white/70">{`${selected.length}/3`}</span>
-      </div>
+  const extractNumbers = (text = "") =>
+    text.replace(/[^0-9-]/g, "");
 
-      <div className="flex flex-col gap-3">
-        {choices.map((choice, index) => (
-          <label
-            key={index}
-            className="flex items-center justify-between border-b border-white/30 pb-2 cursor-pointer"
+  if (loading) {
+    return (
+      <div className="bg-[#0f0f0f] p-4 rounded-xl text-gray-400">
+        Loading KENO alerts...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-[#0f0f0f] p-4 rounded-xl text-red-400">
+        {error}
+      </div>
+    );
+  }
+
+  if (!kenoAlerts?.length) {
+    return (
+      <div className="bg-[#0f0f0f] p-4 rounded-xl text-gray-400">
+        No KENO alerts found
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-[#0f0f0f] p-6 rounded-xl">
+      <h2 className="text-white text-xl font-semibold mb-6">
+        KENO Alerts
+      </h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {kenoAlerts.map((item) => (
+          <div
+            key={item._id}
+            className="bg-[#151515] rounded-2xl p-6 relative min-h-[220px]"
           >
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                checked={selected.includes(choice)}
-                onChange={() => toggleChoice(choice)}
-                className="form-checkbox h-5 w-5 accent-white rounded border-white/60 bg-black"
-              />
-              <span className="text-base">{choice}</span>
+            <button
+              onClick={() => handleDelete(item._id)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-lg"
+            >
+         <Trash />
+            </button>
+
+            <h3 className="text-white font-bold text-xl mb-2 text-center">
+              {extractNumbers(item.alertType)}
+            </h3>
+
+            <p className="text-sm text-gray-400 mb-4 text-center">
+              Target: {item.targetValue}
+            </p>
+
+            <div className="space-y-2 text-base">
+              <div className="flex justify-between text-gray-300">
+                <span>Game</span>
+                <span>{item.gameType}</span>
+              </div>
+
+              <div className="flex justify-between text-gray-300">
+                <span>Status</span>
+                <span
+                  className={
+                    item.status === "Active"
+                      ? "text-green-400 font-semibold"
+                      : "text-red-400 font-semibold"
+                  }
+                >
+                  {item.status}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-gray-300">
+                <span>Created</span>
+                <span>
+                  {new Date(item.createdAt).toLocaleDateString()}
+                </span>
+              </div>
             </div>
-          </label>
+          </div>
         ))}
       </div>
-
-      <button
-        className="mt-6 w-full bg-white text-black font-semibold py-2 rounded-xl transition duration-300 hover:bg-gray-200"
-        onClick={() => alert(`Selected: ${selected.join(", ")}`)}
-      >
-        Apply
-      </button>
     </div>
   );
 };

@@ -21,6 +21,10 @@ function TrackSideResultExpandable({ resultData }) {
         "#EC4899", // 61-70
         "#06B6D4", // 71-80
       ];
+      const getImageByNumber = (num) => {
+  return `/image/${num}.jpeg`;
+};
+
     
       const getColorByNumber = (num) => {
         const index = Math.floor((num - 1) / 10); // 0 for 1-10, 1 for 11-20, etc.
@@ -49,17 +53,15 @@ function TrackSideResultExpandable({ resultData }) {
                     <td className="p-3">{item.game}</td>
                     <td className="p-3">
                       <div className="flex gap-2">
-                        {item.entries?.map((num) => (
-                          <span
-                            key={`${item.id}-entry-${num}`}
-                            className="px-2 py-1 rounded text-sm font-semibold text-white"
-                            style={{
-                              backgroundColor: getColorByNumber(num),
-                            }}
-                          >
-                            {num}
-                          </span>
-                        ))}
+                       {item.entries?.map((num) => (
+  <img
+    key={`${item.id}-entry-${num}`}
+    src={getImageByNumber(num)}
+    alt={`Number ${num}`}
+    className="w-8 h-8 rounded"
+  />
+))}
+
                       </div>
                     </td>
                   </tr>

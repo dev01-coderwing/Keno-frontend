@@ -82,7 +82,6 @@
 
 // export default WinningCombos;
 
-
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOverdueCombos } from "../../redux/overdueSlice";
@@ -92,13 +91,21 @@ const WinningCombos = () => {
   const dispatch = useDispatch();
   const scrollRef = useRef(null);
 
-  const { combos, loading, error } = useSelector(
+  const { combos = [], loading, error } = useSelector(
     (state) => state.overdue
   );
 
+  const { user } = useSelector((state) => state.auth);
+  console.log("AUTH USER 👉", user);
+
   const [showAll, setShowAll] = useState(false);
 
-  const visibleCombos = showAll ? combos : combos.slice(0, 4);
+  // 🔥 CRITICAL FIX: null-safe slicing
+  const visibleCombos = showAll
+    ? combos
+    : Array.isArray(combos)
+      ? combos.slice(0, 4)
+      : [];
 
   const scrollLeft = () => {
     scrollRef.current?.scrollBy({ left: -300, behavior: "smooth" });
@@ -117,6 +124,7 @@ const WinningCombos = () => {
       <h3 className="text-lg sm:text-xl font-semibold mb-2 text-white">
         Overdue Winning Combos
       </h3>
+
       <p className="text-xs sm:text-sm font-extralight text-gray-300 mb-4">
         These popular combos usually hit often, but they haven’t in a while.
       </p>
@@ -144,52 +152,11 @@ const WinningCombos = () => {
           &#10095;
         </button>
 
-        <div
-          ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scroll-smooth sm:grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 sm:overflow-visible"
-        >
-          {visibleCombos.length > 0 ? (
-            visibleCombos.map((combo) => (
-              <div
-                key={combo.combo}
-                className="flex-shrink-0 w-72 sm:w-full"
-              >
-                <RaceCard
-                  combination={combo.combo}
-                  summary={`${combo.frequency}% since last 20 races`}
-                  stats={[
-                    {
-                      label: "Avg. every",
-                      value: `${combo.avgEvery} races`,
-                    },
-                    {
-                      label: "Last seen",
-                      value: `${combo.lastSeen} races`,
-                    },
-                  ]}
-                />
-              </div>
-            ))
-          ) : (
-            !loading && (
-              <p className="text-gray-400 text-sm">
-                No combos found.
-              </p>
-            )
-          )}
-        </div>
+        <RaceCard />
+
       </div>
 
-      {combos.length > 4 && (
-        <div className="mt-4 text-center">
-          <button
-            onClick={() => setShowAll(!showAll)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-          >
-            {showAll ? "Show Less" : "Show More"}
-          </button>
-        </div>
-      )}
+
     </div>
   );
 };

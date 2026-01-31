@@ -13,14 +13,18 @@ const mapBetTypeForApi = (v) => {
   switch (v) {
     case "quinella":
       return "Quinella";
+
     case "trifecta":
-      return "Trifectra";
-    case "first-four":
-      return "First Four";
+      return "Trifecta";
+
+    case "first four":
+      return "Other"; 
+
     default:
-      return v;
+      return "Other";
   }
 };
+
 
 const MyTickets = () => {
   const [date, setDate] = useState(null);
@@ -38,13 +42,35 @@ const MyTickets = () => {
     betType: "default",
   });
 
+  const { user } = useSelector((state) => state.auth || {});
+const isSubscribed = user?.isSubscribed === true;
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+console.log("USER FROM REDUX:", user);
+console.log("SUB STATUS:", user?.subscriptionStatus);
+
+console.log("DEBUG SUBMIT CHECK =>", {
+  date,
+  firstRace: formData.firstRace,
+  lastRace: formData.lastRace,
+  amount: formData.amount,
+  payout: formData.payout,
+  betType: formData.betType,
+  entries,
+});
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+      if (!isSubscribed) {
+  alert("🔒 Please subscribe to create tickets.");
+  return;
+}
 
     console.log("Current formData:", formData);
 
@@ -56,14 +82,21 @@ const MyTickets = () => {
       formData.payout === "" ||
       formData.betType === "default"
     ) {
-      alert("⚠️ Please fill all fields and select a valid Bet Type.");
+      alert(" Please fill all fields and select a valid Bet Type.");
       return;
     }
 
-    if (entries.length === 0 || entries.some((entry) => entry.numbers.length === 0)) {
-      alert("⚠️ Please select at least one number for each entry.");
-      return;
-    }
+   if (
+  !Array.isArray(entries) ||
+  entries.length === 0 ||
+  entries.some(
+    (entry) => !Array.isArray(entry?.numbers) || entry.numbers.length === 0
+  )
+) {
+  alert(" Please select at least one number for each entry.");
+  return;
+}
+
 
     const firstNo = Number(formData.firstRace);
     const lastNo = Number(formData.lastRace);
@@ -130,6 +163,13 @@ const MyTickets = () => {
       <h2 className="text-2xl md:text-3xl font-semibold mb-4">My Tickets</h2>
       <p className="text-base md:text-lg mb-8">Enter your ticket’s details -</p>
 
+{!isSubscribed && (
+  <div>
+     You are in read-only mode. Subscribe to create tickets.
+  </div>
+)}
+
+
       <form onSubmit={handleSubmit} className="space-y-6 max-w-3xl w-full">
         {/* Date */}
         <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
@@ -176,6 +216,7 @@ const MyTickets = () => {
               width="w-full sm:w-1/2 lg:ml-2 md:ml-2"
               name="firstRace"
               value={formData.firstRace}
+               disabled={!isSubscribed}
               onChange={handleChange}
             />
             <ResultInput
@@ -185,6 +226,7 @@ const MyTickets = () => {
               width="w-full sm:w-1/2"
               name="lastRace"
               value={formData.lastRace}
+               disabled={!isSubscribed}
               onChange={handleChange}
             />
           </div>
@@ -203,6 +245,7 @@ const MyTickets = () => {
             name="amount"
             min="1"
             value={formData.amount}
+             disabled={!isSubscribed}
             onChange={handleChange}
           />
         </div>
@@ -220,6 +263,7 @@ const MyTickets = () => {
             name="payout"
             min="1"
             value={formData.payout}
+             disabled={!isSubscribed}
             onChange={handleChange}
           />
         </div>
@@ -233,12 +277,13 @@ const MyTickets = () => {
             className="bg-[#464646] w-full md:w-[44%] py-3 rounded-lg text-sm text-center"
             name="betType"
             value={formData.betType}
+             disabled={!isSubscribed}
             onChange={handleChange}
           >
             <option value="default">Select</option>
             <option value="quinella">Quinella</option>
             <option value="trifecta">Trifecta</option>
-            <option value="first-four">First Four</option>
+            <option value="first four">First Four</option>
           </select>
         </div>
 
@@ -247,17 +292,23 @@ const MyTickets = () => {
           <h5 className="text-lg md:text-xl font-semibold mb-2">
             Select your entries
           </h5>
-          <Entries count={getEntryCount()} onEntriesChange={setEntries} />
+          <Entries count={getEntryCount()} onEntriesChange={setEntries}   disabled={!isSubscribed}/>
         </div>
 
         {/* Submit Button */}
         <div className="flex justify-center mt-6">
           <button
-            type="submit"
-            disabled={loading}
+            type="submit" 
+         disabled={loading || !isSubscribed}
+            
             className="bg-white px-8 py-3 rounded-lg text-black font-semibold hover:bg-gray-200 transition"
           >
-            {loading ? "Submitting..." : "Submit Ticket"}
+          {!isSubscribed
+  ? "Subscribe to Submit"
+  : loading
+  ? "Submitting..."
+  : "Submit Ticket"}
+
           </button>
         </div>
 

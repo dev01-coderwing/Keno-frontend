@@ -1,0 +1,103 @@
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserAlerts, deleteAlert  } from "../../redux/alertSlice";
+import { Trash } from "lucide-react";
+const TrackSideChoiceSelector = () => {
+  const dispatch = useDispatch();
+
+  const { user } = useSelector((state) => state.auth);
+  const { tracksideAlerts, loading, error } = useSelector(
+    (state) => state.alerts
+  );
+
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(fetchUserAlerts(user.id));
+    }
+  }, [dispatch, user?.id]);
+
+  const handleDelete = (alertId) => {
+    if (window.confirm("Delete this alert?")) {
+      dispatch(deleteAlert(alertId));
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="bg-[#0f0f0f] p-4 rounded-xl text-gray-400">
+        Loading alerts...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-[#0f0f0f] p-4 rounded-xl text-red-400">
+        {error}
+      </div>
+    );
+  }
+
+  if (!tracksideAlerts.length) {
+    return (
+      <div className="bg-[#0f0f0f] p-4 rounded-xl text-gray-400">
+        No Trackside alerts found
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-[#0f0f0f] p-6 rounded-xl">
+      <h2 className="text-white text-xl font-semibold mb-6">
+        Alert Numbers
+      </h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {tracksideAlerts.map((alert) => (
+          <div
+            key={alert._id}
+            className="bg-[#151515] rounded-2xl p-6 relative min-h-[220px]"
+          >
+            <button
+              onClick={() => handleDelete(alert._id)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-lg"
+            >
+<Trash />
+            </button>
+
+            <h3 className="text-white font-bold text-xl mb-2 text-center">
+              {alert.combinations?.join("–")}
+            </h3>
+
+            <p className="text-sm text-gray-400 mb-4 text-center">
+              Alert Type: {alert.betType}
+            </p>
+
+            <div className="space-y-2 text-base">
+              <div className="flex justify-between text-gray-300">
+                <span>Game</span>
+                <span>{alert.gameType}</span>
+              </div>
+
+              <div className="flex justify-between text-gray-300">
+                <span>Status</span>
+                <span className="text-green-400">
+                  {alert.status || "Active"}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-gray-300">
+                <span>Created</span>
+                <span>
+                  {new Date(alert.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default TrackSideChoiceSelector;

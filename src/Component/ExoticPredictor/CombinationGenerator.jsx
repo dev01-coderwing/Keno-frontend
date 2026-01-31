@@ -145,8 +145,7 @@
 
 // export default CombinationGenerator;
 
-
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { generateCombinations } from "../../redux/combinationSlice";
 import RaceCard from "../Cards/RaceCard";
@@ -158,29 +157,33 @@ const CombinationGenerator = () => {
     (state) => state.combinations
   );
 
-  const [betType, setBetType] = useState("Trifecta");
-  const [minRaces, setMinRaces] = useState(50);
-  const [numCombinations, setNumCombinations] = useState(2);
+  // ✅ API based states
+  const [location, setLocation] = useState("NSW");
+  const [size, setSize] = useState(4); // spot size
+  const [minDraws, setMinDraws] = useState(100);
+  const [numCombinations, setNumCombinations] = useState(5);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("You must be logged in to generate combinations.");
-      return;
-    }
+  dispatch(
+    generateCombinations({
+      location,
+      size,
+      minDraws,
+      numCombinations,
+    })
+  );
+};
 
-    dispatch(generateCombinations({ betType, minRaces, numCombinations }));
-  };
 
   return (
     <div className="bg-[#1d1d1d] p-4 sm:p-6 rounded-xl w-full mx-auto">
       <h3 className="text-lg sm:text-xl font-semibold mb-2">
-        Combination Generator
+        Keno Combination Generator
       </h3>
       <p className="text-xs sm:text-sm font-extralight text-gray-300 mb-4">
-        Get random exotic bet combinations filtered by recent frequency
+        Generate overdue Keno combinations based on draw frequency
       </p>
 
       <div className="flex justify-center">
@@ -189,28 +192,44 @@ const CombinationGenerator = () => {
             onSubmit={handleSubmit}
             className="space-y-4 w-full text-xs sm:text-sm"
           >
-            {/* Bet Type */}
+            {/* Location */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-              <label className="text-white">Bet Type:</label>
+              <label className="text-white">Location:</label>
               <select
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
                 className="bg-[#3F3F3F] text-center w-full sm:w-28 py-2 rounded-lg text-white"
-                value={betType}
-                onChange={(e) => setBetType(e.target.value)}
               >
-                <option value="Quinella">Quinella</option>
-                <option value="Trifecta">Trifecta</option>
-                <option value="First Four">First Four</option>
+                <option value="NSW">NSW</option>
+                <option value="ACT">ACT</option>
+                <option value="VIC">VIC</option>
+                <option value="SA">SA</option>
               </select>
             </div>
 
-            {/* Min Races */}
+            {/* Spot Size */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-              <label className="text-white">Min. races since last occurrence:</label>
+              <label className="text-white">Spot Size:</label>
               <input
-                className="no-spinner bg-[#3F3F3F] text-center w-full sm:w-28 py-2 rounded-lg text-white"
                 type="number"
-                value={minRaces}
-                onChange={(e) => setMinRaces(Number(e.target.value))}
+                min={2}
+                max={10}
+                value={size}
+                onChange={(e) => setSize(Number(e.target.value))}
+                className="no-spinner bg-[#3F3F3F] text-center w-full sm:w-28 py-2 rounded-lg text-white"
+              />
+            </div>
+
+            {/* Min Draws */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+              <label className="text-white">
+                Min. draws since last occurrence:
+              </label>
+              <input
+                type="number"
+                value={minDraws}
+                onChange={(e) => setMinDraws(Number(e.target.value))}
+                className="no-spinner bg-[#3F3F3F] text-center w-full sm:w-28 py-2 rounded-lg text-white"
               />
             </div>
 
@@ -218,10 +237,10 @@ const CombinationGenerator = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
               <label className="text-white">No. of combinations:</label>
               <input
-                className="no-spinner bg-[#3F3F3F] text-center w-full sm:w-28 py-2 rounded-lg text-white"
                 type="number"
                 value={numCombinations}
                 onChange={(e) => setNumCombinations(Number(e.target.value))}
+                className="no-spinner bg-[#3F3F3F] text-center w-full sm:w-28 py-2 rounded-lg text-white"
               />
             </div>
 
@@ -240,10 +259,12 @@ const CombinationGenerator = () => {
       </div>
 
       {/* Error */}
-      {errorMsg && <p className="text-red-400 text-center mt-2">{errorMsg}</p>}
+      {errorMsg && (
+        <p className="text-red-400 text-center mt-2">{errorMsg}</p>
+      )}
 
       {/* Display Response */}
-      <div className="relative p-4 bg-[#1D1D1D] pt-0 rounded-b-xl">
+      {/* <div className="relative p-4 bg-[#1D1D1D] pt-0 rounded-b-xl">
         {combinations.length > 0 ? (
           <div
             id="racecard-scroll"
@@ -252,8 +273,11 @@ const CombinationGenerator = () => {
             {combinations.map((combo, index) => (
               <div key={index} className="flex-shrink-0 w-72 sm:w-full">
                 <RaceCard
-                  combination={combo.numbers.join("-")}
-                  summary={`Bet Type: ${combo.betType} | ${combo.percentage}% (last ${combo.racesSince} races)`}
+                  combination={combo.combination}
+                  summary={`Keno ${combo.numbers.length}-Spot | ${location}`}
+                  stats={[
+                    { label: "Numbers", value: combo.combination },
+                  ]}
                 />
               </div>
             ))}
@@ -263,7 +287,7 @@ const CombinationGenerator = () => {
             No combinations yet
           </p>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

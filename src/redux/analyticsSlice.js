@@ -89,7 +89,7 @@ export const fetchLiveKenoResult = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        "http://13.210.115.73:3000/api/v1/keno/live-result"
+        "http://localhost:3000/api/v1/keno/live-result"
       );
       return res.data;
     } catch (err) {

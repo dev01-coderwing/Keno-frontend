@@ -106,6 +106,15 @@ import TrackSideArbitrage from './TrackSide/TrackSideCalculator/TrackSideArbitra
 import TrackSideBouns from './TrackSide/TrackSideCalculator/TrackSideBouns/TrackSideBouns';
 import TrackSideMatched from './TrackSide/TrackSideCalculator/TrackSideMatched/TrackSideMatched';
 import UserProfile from './Component/UserProfile/UserProfile';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import TracksideTop10 from './TrackSide/TrackSideAnalyticsSection/TracksideTop10';
+import socket from "./socket";
+import ComingSoon from './ComingSoon.jsx';
+import CookieConsentBanner from "./Component/CookieConsentBanner.jsx";
+import PaymentSuccess from './Payment/PaymentSuccess.jsx';
+import PaymentCancel from './Payment/PaymentCancel.jsx';
+import Pricing from "./Component/Pricing/Pricing.jsx";
 
 const App = () => {
    useEffect(() => {
@@ -135,13 +144,28 @@ const App = () => {
 
     saveFcmToken();
   }, []);
+
+    useEffect(() => {
+    socket.on("connect", () => {
+  console.log("✅ SOCKET CONNECTED:", socket.id);    });
+
+    socket.on("disconnect", () => {
+  console.log("❌ SOCKET DISCONNECTED");
+    });
+
+    return () => {
+      socket.off("connect");
+      socket.off("disconnect");
+    };
+  }, []);
   return (
     <BrowserRouter>
       <Routes>
+     
 
         {/* Public Pages */}
         <Route path='/' element={<Home />} />
-        {/* <Route path='/analytics' element={<Analytics />} /> */}
+        <Route path='/TracksideTop10' element={<TracksideTop10 />} />
         <Route path='/results' element={<Results />} />
         <Route path='/about-us' element={<AboutUs />} />
         <Route path='/terms-of-service' element={<TermsAndConditions />} />
@@ -158,6 +182,11 @@ const App = () => {
         <Route path='/calculator/TrackSideMatched' element={<TrackSideMatched />} />
         <Route path='/UserProfile' element={<UserProfile />} />
         <Route path='/Analytics' element={<Analytics />} />
+          <Route path='/ComingSoon' element={<ComingSoon />} />
+           <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-cancel" element={<PaymentCancel />} />
+        <Route path="/pricing" element={<Pricing />} />
+
           {/* <Route path='/Dashboard' element={<Dashboard />} />
                <Route path='/Settings' element={<Settings />} /> */}
         {/* Protected Pages (Login Required) */}
@@ -222,6 +251,9 @@ const App = () => {
         } />
 
       </Routes>
+      <CookieConsentBanner />
+            <ToastContainer position="top-right" autoClose={2000} />
+
     </BrowserRouter>
   )
 }
