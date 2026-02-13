@@ -67,7 +67,7 @@
 
 
 
-import React, {useEffect} from 'react'
+import React, { useEffect } from 'react'
 import Home from './Pages/Home'
 import api from "./api";
 import { getToken } from "firebase/messaging";
@@ -116,11 +116,23 @@ import PaymentSuccess from './Payment/PaymentSuccess.jsx';
 import PaymentCancel from './Payment/PaymentCancel.jsx';
 import Pricing from "./Component/Pricing/Pricing.jsx";
 
+import { useDispatch } from 'react-redux';
+import { fetchCurrentUser } from './redux/authSlice';
+
 const App = () => {
-   useEffect(() => {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      dispatch(fetchCurrentUser());
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
     const saveFcmToken = async () => {
       const jwt = localStorage.getItem("token");
-      if (!jwt) return; 
+      if (!jwt) return;
 
       try {
         const fcmToken = await getToken(messaging);
@@ -145,12 +157,13 @@ const App = () => {
     saveFcmToken();
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     socket.on("connect", () => {
-  console.log("✅ SOCKET CONNECTED:", socket.id);    });
+      console.log("✅ SOCKET CONNECTED:", socket.id);
+    });
 
     socket.on("disconnect", () => {
-  console.log("❌ SOCKET DISCONNECTED");
+      console.log("❌ SOCKET DISCONNECTED");
     });
 
     return () => {
@@ -161,7 +174,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <Routes>
-     
+
 
         {/* Public Pages */}
         <Route path='/' element={<Home />} />
@@ -182,12 +195,12 @@ const App = () => {
         <Route path='/calculator/TrackSideMatched' element={<TrackSideMatched />} />
         <Route path='/UserProfile' element={<UserProfile />} />
         <Route path='/Analytics' element={<Analytics />} />
-          <Route path='/ComingSoon' element={<ComingSoon />} />
-           <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path='/ComingSoon' element={<ComingSoon />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-cancel" element={<PaymentCancel />} />
         <Route path="/pricing" element={<Pricing />} />
 
-          {/* <Route path='/Dashboard' element={<Dashboard />} />
+        {/* <Route path='/Dashboard' element={<Dashboard />} />
                <Route path='/Settings' element={<Settings />} /> */}
         {/* Protected Pages (Login Required) */}
         <Route path='/predictor' element={
@@ -252,7 +265,7 @@ const App = () => {
 
       </Routes>
       <CookieConsentBanner />
-            <ToastContainer position="top-right" autoClose={2000} />
+      <ToastContainer position="top-right" autoClose={2000} />
 
     </BrowserRouter>
   )

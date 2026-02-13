@@ -17,11 +17,11 @@ const links = [
     icon: <PiHorse className={iconClass} />,
     label: "Home",
   },
-  {
-    to: "/tickets",
-    icon: <IoTicketOutline className={iconClass} />,
-    label: "My Tickets",
-  },
+  // {
+  //   to: "/tickets",
+  //   icon: <IoTicketOutline className={iconClass} />,
+  //   label: "My Tickets",
+  // },
   {
     to: "/analytics",
     icon: <GoGraph className={iconClass} />,
@@ -30,7 +30,7 @@ const links = [
   {
     to: "/predictor",
     icon: <img src={auction} alt="auction" className={iconClass} />,
-    label: "Exotic Predictor",
+    label: "Keno Calculator",
   },
   {
     to: "/results",

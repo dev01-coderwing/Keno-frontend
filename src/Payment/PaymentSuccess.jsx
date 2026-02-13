@@ -2,18 +2,75 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { fetchCurrentUser } from "../redux/authSlice";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import api from "../api";
 
 const PaymentSuccess = () => {
   const dispatch = useDispatch();
+
   useEffect(() => {
-    console.log("Payment successful / Trial started");
-    // Refresh user data so `isSubscribed` in Redux is up-to-date
-    try {
-      dispatch(fetchCurrentUser());
-    } catch (err) {
-      // ignore
-    }
-  }, []);
+    const activateAndRefresh = async () => {
+      console.log("💳 Payment successful / Trial started");
+
+      // AUTO-ACTIVATE IN DEV MODE (Because Webhooks don't reach localhost)
+      if (window.location.hostname === "localhost") {
+        try {
+          console.log("🛠️ Dev Mode: Auto-activating subscription...");
+          const response = await api.post("/payments/dev-activate");
+          console.log("✅ Dev activation response:", response.data);
+
+          // Wait a moment for the backend to process
+          await new Promise(resolve => setTimeout(resolve, 500));
+        } catch (e) {
+          console.error("❌ Dev activation failed:", e);
+        }
+      }
+
+      // Refresh user data with polling until subscription is active
+      try {
+        // Clear old cached user data first
+        localStorage.removeItem("user");
+        console.log("🗑️ Cleared old user data from localStorage");
+
+        // Poll for updated user data (max 5 attempts)
+        let attempts = 0;
+        let userData = null;
+
+        while (attempts < 5) {
+          attempts++;
+          console.log(`🔄 Attempt ${attempts}/5: Fetching user data...`);
+
+          try {
+            const result = await dispatch(fetchCurrentUser()).unwrap();
+            console.log(`📦 Received:`, {
+              isSubscriptionActive: result?.isSubscriptionActive,
+              isSubscribed: result?.isSubscribed
+            });
+
+            // Check if subscription is active
+            if (result?.isSubscriptionActive === true || result?.isSubscribed === true) {
+              console.log("✅ Subscription confirmed active!");
+              userData = result;
+              break;
+            } else {
+              console.log(`⏳ Not active yet, retrying in 1s...`);
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+          } catch (err) {
+            console.error(`❌ Attempt ${attempts} failed:`, err);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+
+        console.log("🔄 Redirecting to homepage...");
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 500);
+      } catch (err) {
+        console.error("❌ Failed to refresh user data:", err);
+      }
+    };
+    activateAndRefresh();
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">

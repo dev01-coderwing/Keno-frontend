@@ -48,7 +48,14 @@ function KenoTop10() {
             <h3 className="text-lg font-semibold mb-4">
                 Keno Top 10 Analytics
             </h3>
-
+      {/*  COLD KENO */}
+            <h4 className="text-md font-semibold mt-6 mb-2 text-blue-400">
+                 Top 10 Cold Keno
+            </h4>
+            <KenoTable
+                data={top10ColdKeno}
+                renderDroughtBadge={renderDroughtBadge}
+            />
             {/*  HOT KENO */}
             <h4 className="text-md font-semibold mb-2 text-orange-400">
                  Top 10 Hot Keno
@@ -58,14 +65,7 @@ function KenoTop10() {
                 renderDroughtBadge={renderDroughtBadge}
             />
 
-            {/*  COLD KENO */}
-            <h4 className="text-md font-semibold mt-6 mb-2 text-blue-400">
-                 Top 10 Cold Keno
-            </h4>
-            <KenoTable
-                data={top10ColdKeno}
-                renderDroughtBadge={renderDroughtBadge}
-            />
+      
         </div>
     );
 }
@@ -92,6 +92,7 @@ function KenoTable({ data, renderDroughtBadge }) {
                         <th className="p-3 text-left">Avg Drought</th>
                         <th className="p-3 text-left">Current Drought</th>
                         <th className="p-3 text-left">Longest Drought</th>
+                           <th className="p-3 text-left">Last Appeared</th>
                     </tr>
                 </thead>
 
@@ -101,7 +102,7 @@ function KenoTable({ data, renderDroughtBadge }) {
                             <td className="p-3">{item.number}</td>
                             <td className="p-3">{item.winPercentage}%</td>
                             <td className="p-3">{item.averageDrought}</td>
-
+<td className="p-3">{item.lastAppeared}</td>
                             <td className="p-3">
                                 {renderDroughtBadge(item.currentDrought)}
                             </td>

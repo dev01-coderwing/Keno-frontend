@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3000/api/v1/analytics";
+const BASE_URL = "https://api.puntdata.com.au/api/v1/analytics";
 
 /* ================= METRICS ================= */
 export const fetchAnalyticsMetrics = createAsyncThunk(
@@ -89,7 +89,7 @@ export const fetchLiveKenoResult = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await axios.get(
-        "http://localhost:3000/api/v1/keno/live-result"
+        "https://api.puntdata.com.au/api/v1/keno/live-result"
       );
       return res.data;
     } catch (err) {

@@ -121,7 +121,7 @@ const getColorByNumber = (num) => {
   <div className="flex items-center justify-between bg-[#1E40AF] px-4 py-2 rounded-lg">
     <div className="flex items-center gap-2">
       <span className="text-white font-semibold">
-        {item.headsTails.result} wins
+        {item.headsTails.result}
       </span>
     </div>
 

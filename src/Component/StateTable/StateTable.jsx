@@ -32,7 +32,7 @@ const StateTable = ({ columns, data }) => {
                 onClick={() => toggleRow(rowIdx)}
               >
                 <td className="text-white font-bold text-xl px-2 sm:px-4 py-3">
-                  {expandedRow === rowIdx ? "−" : "+"}
+               
                 </td>
                 {row.rowData.map((cell, cellIdx) => (
                   <td
@@ -43,7 +43,7 @@ const StateTable = ({ columns, data }) => {
                   </td>
                 ))}
               </tr>
-
+{/* 
               {expandedRow === rowIdx && (
                 <tr className="bg-[#101010] border-b border-[#333]">
                   <td colSpan={columns.length + 1}>
@@ -82,7 +82,7 @@ const StateTable = ({ columns, data }) => {
                     </div>
                   </td>
                 </tr>
-              )}
+              )} */}
             </React.Fragment>
           ))}
         </tbody>

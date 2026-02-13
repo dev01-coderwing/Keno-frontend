@@ -210,8 +210,16 @@ const authSlice = createSlice({
   name: "auth",
   initialState: {
     email: "",
- user: null,
-  token: localStorage.getItem("token"),
+    user: (() => {
+      try {
+        const savedUser = localStorage.getItem("user");
+        return savedUser ? JSON.parse(savedUser) : null;
+      } catch (e) {
+        console.error("Error parsing user from localStorage:", e);
+        return null;
+      }
+    })(),
+    token: localStorage.getItem("token"),
     loading: false,
     error: null,
     successMessage: "",
@@ -363,9 +371,9 @@ const authSlice = createSlice({
         state.error = action.payload?.message || "Password reset failed.";
         state.resetSuccess = false;
       });
-      
-      // ===== Fetch Current User =====
-      builder
+
+    // ===== Fetch Current User =====
+    builder
       .addCase(fetchCurrentUser.pending, (state) => {
         state.loading = true;
         state.error = null;

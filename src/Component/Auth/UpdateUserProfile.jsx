@@ -23,7 +23,7 @@ const CustomDateInput = React.forwardRef(
 
 const UpdateUserProfile = () => {
   const [dob, setDob] = useState(null);
-  const [isEditMode, setIsEditMode] = useState(false); //  NEW
+  const [isEditMode, setIsEditMode] = useState(false); 
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",

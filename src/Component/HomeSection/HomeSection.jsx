@@ -86,13 +86,12 @@ useEffect(() => {
   };
 
   const columns = [
-    "Horse",
+    "Number",
     "Entries",
-    "Win",
-    "Place",
+
     "Win %",
     "Last Win",
-    "Total Races",
+    "Total Games",
   ];
 
 
@@ -125,42 +124,80 @@ useEffect(() => {
       "550",
     ],
   }));
-  const horseImages = [
-  "/image/1.jpeg",
-  "/image/2.jpeg",
-  "/image/3.jpeg",
-  "/image/4.jpeg",
-  "/image/5.jpeg",
-  "/image/6.jpeg",
-  "/image/7.jpeg",
-  "/image/8.jpeg",
-  "/image/9.jpeg",
-  "/image/10.jpeg",
-  "/image/11.jpeg",
-  "/image/12.jpeg",
-];
+//   const horseImages = [
+//   "/image/1.jpeg",
+//   "/image/2.jpeg",
+//   "/image/3.jpeg",
+//   "/image/4.jpeg",
+//   "/image/5.jpeg",
+//   "/image/6.jpeg",
+//   "/image/7.jpeg",
+//   "/image/8.jpeg",
+//   "/image/9.jpeg",
+//   "/image/10.jpeg",
+//   "/image/11.jpeg",
+//   "/image/12.jpeg",
+// ];
 
 
   //  ADDED – API data mapping (new variable only)
-const apiTableData =
-  quickStats
-    ?.slice(0, 12)
-    ?.map((item, i) => ({
-      rowData: [
-        <img
-          src={horseImages[i]}
-          alt={`Horse ${item.number}`}
-          className="w-10 h-10 "
-        />,
+// const apiTableData =
+//   quickStats
+//     ?.slice(0, 12)
+//     ?.map((item, i) => ({
+//       rowData: [
+//         <img
+//           src={horseImages[i]}
+//           alt={`Horse ${item.number}`}
+//           className="w-10 h-10 "
+//         />,
 
+//         item.entries,
+       
+//         `${item.winPercent}%`,
+//         item.lastSeen ?? "-",
+//         item.totalRaces,
+//       ],
+//     })) || [];
+
+
+
+const numberColors = [
+  "bg-red-700",
+  "bg-black",
+  "border border-white text-white",
+  "bg-blue-800",
+  "bg-green-500",
+  "bg-green-900",
+  "bg-blue-400",
+  "bg-pink-400",
+  "bg-green-700",
+  "bg-red-500",
+  "bg-orange-500",
+  "bg-blue-300",
+];
+const getNumberColor = (index) =>
+  index % 2 === 0 ? "bg-red-600" : "bg-blue-600";
+
+const apiTableData =
+  quickStats?.map((item, i) => {
+    const num = item.number ?? i + 1;
+    const colorClass = num <= 40 ? "bg-red-600" : "bg-blue-600";
+
+    return {
+      rowData: [
+        <span
+          className={`px-3 py-1 rounded text-white ${colorClass}`}
+        >
+          {num}
+        </span>,
         item.entries,
-        "-",
-        "-",
         `${item.winPercent}%`,
         item.lastSeen ?? "-",
         item.totalRaces,
       ],
-    })) || [];
+    };
+  }) || [];
 
 
 

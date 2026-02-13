@@ -98,7 +98,8 @@ const TrackSideHeader = () => {
           className="h-14 w-14 sm:h-20 sm:w-20 object-contain"
         />
         <h1 className="text-xl sm:text-2xl font-semibold hidden sm:block">
-          PUNTMATE DATA - TrackSide RESULTS
+          PUNTDATA - TRACKSIDE RESULTS
+ 
         </h1>
       </Link>
 

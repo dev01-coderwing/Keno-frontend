@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API = "http://localhost:3000/api/v1/notification/";
+const API = "https://api.puntdata.com.au/api/v1/notification/";
 
 /* ================= FETCH ALL NOTIFICATIONS ================= */
 export const fetchNotifications = createAsyncThunk(

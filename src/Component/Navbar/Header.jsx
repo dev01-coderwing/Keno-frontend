@@ -20,29 +20,20 @@ import {
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   // UI states
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  const [userName, setUserName] = useState("");
-  const [userImage, setUserImage] = useState("");
-
   // Redux states
+  const { user, loading } = useSelector((state) => state.auth);
   const { notifications, unreadCount } = useSelector(
     (state) => state.notification
   );
 
-  // LocalStorage data
-  const userId = localStorage.getItem("userId");
-
-  /* ================= LOAD USER ================= */
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (storedUser) {
-      setUserName(storedUser.fullName);
-      setUserImage(storedUser.profileImage || "");
-    }
-  }, []);
+  // Use values directly from Redux user object
+  const userName = user?.fullName || "";
+  const userImage = user?.profileImage || "";
+  const userId = user?._id || user?.id;
 
   /* ================= INITIAL NOTIFICATION LOAD ================= */
   useEffect(() => {
@@ -63,7 +54,7 @@ const Header = () => {
           dispatch(fetchUnreadCount(userId));
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [dispatch, userId]);
 
   /* ================= BELL CLICK ================= */
@@ -81,8 +72,11 @@ const Header = () => {
 
   /* ================= LOGOUT ================= */
   const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
+    localStorage.removeItem("token");
+  localStorage.removeItem("user");
+      
+  navigate("/login");
+  window.location.reload();
   };
 
   const isLoggedIn = !!userName;
@@ -97,7 +91,8 @@ const Header = () => {
           className="h-14 w-14 sm:h-20 sm:w-20 object-contain"
         />
         <h1 className="text-xl sm:text-2xl font-semibold hidden sm:block">
-          PUNTMATE DATA - KENO RESULTS
+        PUNTDATA - KENO RESULTS
+ 
         </h1>
       </Link>
 
@@ -129,9 +124,8 @@ const Header = () => {
                     notifications.map((n) => (
                       <div
                         key={n._id}
-                        className={`border-b border-gray-700 pb-2 mb-2 ${
-                          !n.isRead ? "bg-gray-700 rounded p-2" : ""
-                        }`}
+                        className={`border-b border-gray-700 pb-2 mb-2 ${!n.isRead ? "bg-gray-700 rounded p-2" : ""
+                          }`}
                       >
                         <h4 className="font-semibold">{n.title}</h4>
                         <p className="text-gray-300 text-xs">{n.body}</p>

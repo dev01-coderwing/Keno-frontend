@@ -41,7 +41,7 @@ const handleBellClick = (combo) => {
 
   dispatch(
     createKenoAlert({
-      userId: user?.id,
+      userId: user?._id,
       gameType: "KENO",
       alertType: `Number ${combo.comboKey} Drought`,
       targetValue: combo.avgEvery,

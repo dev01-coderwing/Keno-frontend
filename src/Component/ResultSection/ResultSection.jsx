@@ -259,7 +259,7 @@ if (Array.isArray(oldResults)) {
         entries: item.numbers,
          headsTails: item.result
   ? {
-      result: item.result,   // "Tails wins"
+      result: item.result,   // "Tails "
       multiplier: item.bonus // "REG"
     }
   : null,

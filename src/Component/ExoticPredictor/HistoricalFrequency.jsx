@@ -107,6 +107,7 @@ import { fetchHistoricalFrequency } from "../../redux/historicalFrequencySlice";
 const HistoricalFrequency = () => {
   const dispatch = useDispatch();
   const { data, loading, error } = useSelector((state) => state.historical);
+const [lastFetchedEntries, setLastFetchedEntries] = useState([]);
 
   const [location, setLocation] = useState("NSW");
   const [rows, setRows] = useState([]);
@@ -119,19 +120,24 @@ const HistoricalFrequency = () => {
   };
 
   // ✅ Check if all rows have selected number
-  const allSelected =
-    rows.length === size && rows.every((r) => r.number !== null);
+const allSelected =
+  rows.length === size && rows.every((r) => r.number !== null && r.number !== 0);
+
 
   // ✅ Convert rows → entries array
-  const getEntriesArray = () => rows.map((r) => r.number);
+const getEntriesArray = () => rows.map((r) => r.numbers?.[0]);
 
   const handleFetch = () => {
     if (!allSelected) return;
+ const entriesArr = getEntriesArray();
+console.log("Rows:", rows);
+console.log("EntriesArr:", entriesArr);
 
+  setLastFetchedEntries(entriesArr);
     dispatch(
       fetchHistoricalFrequency({
         location,
-        entries: getEntriesArray(),
+entries: entriesArr,
         size,
       })
     );
@@ -140,8 +146,14 @@ const HistoricalFrequency = () => {
   // ✅ API response mapping
   const resultItems = data?.data
     ? [
-        { label: "Your Combination", value: data.data.combination },
-        { label: "Combination Size", value: data.data.size },
+{
+  label: "Your Combination",
+  value: lastFetchedEntries.length
+    ? lastFetchedEntries.join("-")
+    : "—",
+},
+
+          { label: "Combination Size", value: data.data.size },
         { label: "Total Draws", value: data.data.totalDraws },
         { label: "Occurrences", value: data.data.occurrences },
         { label: "Average Every", value: `${data.data.avgEvery} draws` },

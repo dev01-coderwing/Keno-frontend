@@ -11,17 +11,29 @@ const ChoiceSelector = () => {
   );
 
 useEffect(() => {
-  if (user?.id) {
-    dispatch(fetchUserAlerts(user.id));
+  if (user?._id) {
+    dispatch(fetchUserAlerts(user._id));
   }
-}, [user?.id, dispatch]);
+}, [user?._id, dispatch]);
 
+
+  // const handleDelete = (alertId) => {
+  //   if (window.confirm("Delete this KENO alert?")) {
+  //     dispatch(deleteAlert(alertId));
+  //   }
+  // };
 
   const handleDelete = (alertId) => {
-    if (window.confirm("Delete this KENO alert?")) {
-      dispatch(deleteAlert(alertId));
-    }
-  };
+  if (window.confirm("Delete this KENO alert?")) {
+    dispatch(deleteAlert(alertId)).then((res) => {
+      if (!res.error && user?._id) {
+        // 🔄 delete ke baad fresh list lao
+        dispatch(fetchUserAlerts(user._id));
+      }
+    });
+  }
+};
+
 
   const extractNumbers = (text = "") =>
     text.replace(/[^0-9-]/g, "");

@@ -4,13 +4,13 @@ import HorseLogo from "../../assets/horse-logo.png";
 const AboutUsSection = () => {
   return (
     <div className="flex flex-col gap-6 bg-[#262626] py-6 px-4 sm:px-6 md:px-8 rounded-lg font-poppins font-light text-white">
-      <h3 className="text-xl font-semibold">About Us</h3>
+      <h3 className="text-xl font-semibold">About Punt Data</h3>
 
       <h3 className="text-2xl font-semibold">
-        Welcome to PuntMate
+        Punt Data
         <span className="font-light text-xl">
           {" "}
-          – your smart companion for exotic betting insights.
+          – Independent data analytics for Trackside Virtual Racing & Keno
         </span>
       </h3>
 
@@ -24,100 +24,140 @@ const AboutUsSection = () => {
 
       <div className="space-y-4">
         <p>
-          At PuntMate, we believe that successful punting isn’t just about
-          luck – it’s about data, patterns, and informed choices. That’s why
-          we’ve created a platform that empowers users with intelligent tools
-          to decode exotic bet outcomes, track game results, and uncover
-          high-value combinations through a blend of statistics and simplicity.
+          Punt Data is an independent data analytics platform designed to help
+          punters better understand Trackside Virtual Racing and Keno through
+          structured historical analysis. Rather than guessing or relying on
+          opinion, Punt Data focuses on facts, numbers, and historical evidence.
+          The platform provides users with clear insights into past outcomes,
+          allowing them to identify trends, droughts, and common combinations
+          across large data sets.
         </p>
 
         <p>
-          Our platform is designed for both casual bettors and seasoned
-          punters who want to make their bets count. Whether you’re analyzing
-          historical frequency, exploring overdue combinations, or generating
-          fresh picks with our predictor tool – PuntMate brings the power of
-          data directly to your fingertips.
-        </p>
-
-        <p>
-          With an intuitive interface, smart filters, and visualized results,
-          we make sure you stay ahead of the game, race after race. We’re not
-          here to promise wins – we’re here to equip you with the insights to
-          play smarter.
-        </p>
-
-        <p>
-          As part of our commitment to transparency and responsible gambling,
-          we ensure that users have access to all their past tickets, session
-          limits, and educational insights that encourage mindful play.
-        </p>
-
-        <p>Join us at PuntMate and turn your intuition into strategy.</p>
-      </div>
-
-      <div className="space-y-2">
-        <h4 className="text-xl font-semibold">Who We Are :</h4>
-        <p>
-         PUNTMATE was founded in 2025 by a team of data scientists, betting enthusiasts, and gaming experts who saw a need for a more analytical approach to betting. Our mission is to provide players with transparent, accurate, and actionable data to help them place informed wagers. We are committed to promoting responsible gambling while giving our users the tools they need to enhance their betting experience.
-        </p>
-      </div>
-      <div className="space-y-2">
-        <h4 className="text-xl font-semibold">What We Offer:</h4>
-        <p>
-          Our platform offers a comprehensive suite of features designed to
-          give bettors an edge. The Analytics Dashboard provides real-time
-          tracking of win/loss trends, hot and cold numbers, and performance
-          comparisons between standard and exotic bets. The Exotic Predictor
-          Tool leverages machine learning to forecast outcomes for complex
-          bets like Quinella, Trifecta, and First Four.
-        </p>
-        <p>
-          Additionally, our personalized bet tracking system allows users to
-          log their tickets, monitor spending, and analyze which strategies
-          yield the best results. With real-time updates, countdowns to
-          upcoming draws, and instant result notifications, PuntMate ensures
-          you never miss an opportunity to bet wisely.
+          Punt Data is 100% Australian owned and operated, built locally for
+          Australian markets and users.
         </p>
       </div>
 
       <div className="space-y-2">
-        <h4 className="text-xl font-semibold">Our Mission:</h4>
+        <h4 className="text-xl font-semibold">What Punt Data Does</h4>
         <p>
-          Our mission is simple: to empower bettors with the knowledge and
-          tools they need to make smarter wagers. We aim to eliminate guesswork
-          by providing data-backed insights that help users refine their
-          strategies and improve their outcomes. Whether you play for fun or
-          for profit, PuntMate is your trusted partner in the world of betting.
+          Punt Data analyses historical results from Trackside Virtual Racing and
+          Keno to help users explore how outcomes have behaved over time.
+        </p>
+        <p>
+          For Trackside Virtual Racing, Punt Data examines historical results
+          across popular exotic markets, including:
+        </p>
+        <ul className="list-disc list-inside ml-4">
+          <li>Quinellas</li>
+          <li>Exactas</li>
+          <li>Trifectas</li>
+          <li>First Fours</li>
+        </ul>
+        <p>
+          Each combination is supported by detailed historical data such as:
+        </p>
+        <ul className="list-disc list-inside ml-4">
+          <li>Total number of times the combination has occurred</li>
+          <li>Average number of races between hits</li>
+          <li>Longest historical drought</li>
+          <li>Current drought</li>
+        </ul>
+        <p>
+          An Exotic Calculator allows users to enter their own combinations and
+          instantly see how often those selections have appeared historically.
+        </p>
+        <p>
+          For Keno, Punt Data tracks number frequencies and droughts across
+          extensive historical draws. Users can view:
+        </p>
+        <ul className="list-disc list-inside ml-4">
+          <li>Number frequency trends</li>
+          <li>Current and longest droughts</li>
+          <li>Historical averages</li>
+          <li>
+            Alerts when current patterns exceed historical norms
+          </li>
+        </ul>
+        <p>
+          All alerts and insights are informational only and based solely on
+          historical data.
         </p>
       </div>
 
       <div className="space-y-2">
-        <h4 className="text-xl font-semibold">Why Choose PuntMate?</h4>
+        <h4 className="text-xl font-semibold">Built for Analysis, Not Predictions</h4>
         <p>
-          PuntMate stands out because of our commitment to accuracy,
-          usability, and responsible gambling. Our platform is built on robust
-          data analysis, ensuring that every insight we provide is reliable and
-          actionable. The intuitive design makes it easy for users of all
-          experience levels to navigate and benefit from our tools.
+          Punt Data does not provide:
         </p>
+        <ul className="list-disc list-inside ml-4">
+          <li>Betting tips</li>
+          <li>Predictions</li>
+          <li>Recommendations</li>
+          <li>Guarantees</li>
+        </ul>
         <p>
-          We also prioritize ethical gambling by incorporating features like
-          session limits, loss alerts, and self-exclusion options to promote
-          safe betting practices.
+          The platform is designed to support independent decision-making by
+          giving users access to transparent historical data and statistical
+          context. Punt Data removes guesswork and replaces it with information.
+          It is a data platform — not a tipping service.
         </p>
       </div>
 
       <div className="space-y-2">
-        <h4 className="text-xl font-semibold">Join Us Today</h4>
+        <h4 className="text-xl font-semibold">Tools and Calculators</h4>
         <p>
-          Ready to take your betting to the next level? Join the PuntMate
-          community today and start making smarter, more informed wagers.
-          Explore our features, track your performance, and discover new
-          strategies to enhance your gameplay. If you have any questions, our
-          support team is always here to help.
+          In addition to racing and Keno analytics, Punt Data includes a range of
+          analytical calculators for educational purposes, including:
         </p>
+        <ul className="list-disc list-inside ml-4">
+          <li>Arbitrage Calculator</li>
+          <li>Matched Betting Calculator</li>
+          <li>Bonus Bet Calculator</li>
+        </ul>
         <p>
-          Bet smarter with PuntMate—where data meets destiny.
+          These tools use user-entered inputs and mathematical formulas to
+          demonstrate how costs, outcomes, and returns may be calculated under
+          different scenarios. All results are hypothetical and for
+          informational purposes only.
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="text-xl font-semibold">Independent and Unaffiliated</h4>
+        <p>
+          Punt Data is an independent platform. It is not affiliated with,
+          endorsed by, sponsored by, or connected to any racing, wagering,
+          lottery, or Keno operator. Any references to products, markets, or bet
+          types are used strictly for descriptive and informational purposes.
+          All trademarks and product names remain the property of their
+          respective owners.
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="text-xl font-semibold">Who Punt Data Is For</h4>
+        <p>Punt Data is built for users who:</p>
+        <ul className="list-disc list-inside ml-4">
+          <li>Prefer data over opinion</li>
+          <li>Enjoy analysing trends and probabilities</li>
+          <li>Value transparency and historical evidence</li>
+          <li>Want insights without bias or hype</li>
+        </ul>
+        <p>
+          If you like understanding what has happened rather than being told
+          what might happen, Punt Data is built for you.
+        </p>
+      </div>
+
+      <div className="space-y-2">
+        <h4 className="text-xl font-semibold">Responsible Gambling</h4>
+        <p>
+          Punt Data encourages responsible gambling. Users should always gamble
+          within their limits and only with money they can afford to lose. If
+          gambling becomes a concern, support is available via Gambling Help
+          Online or by calling 1800 858 858.
         </p>
       </div>
     </div>

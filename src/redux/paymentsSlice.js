@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../api"; // same axios instance jo tum use kar rahe ho
+import api from "../api";
 
-// 🔥 Checkout API call
+// 🔥 Checkout API call (NEW API)
 export const createCheckout = createAsyncThunk(
-  "payments/checkout",
-  async (_, { rejectWithValue }) => {
+  "payments/createCheckout",
+  async ({ plan }, { rejectWithValue }) => {
     try {
-      const res = await api.post("/payments/checkout");
+      const res = await api.post("/payments/create-checkout", { plan });
       return res.data;
     } catch (error) {
       return rejectWithValue(
@@ -32,8 +32,7 @@ const paymentsSlice = createSlice({
       })
       .addCase(createCheckout.fulfilled, (state, action) => {
         state.loading = false;
-        state.checkoutUrl = action.payload?.url; 
-        // backend se Stripe checkout URL aana chahiye
+        state.checkoutUrl = action.payload?.url;
       })
       .addCase(createCheckout.rejected, (state, action) => {
         state.loading = false;

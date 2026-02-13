@@ -101,7 +101,7 @@ const TrackSideWinningCombos = () => {
     },
   ]}
   numbers={comboNumbers}
-  userId={user?.id}
+  userId={user?._id}
 />
 
                 </div>

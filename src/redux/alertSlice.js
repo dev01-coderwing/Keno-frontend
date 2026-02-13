@@ -150,6 +150,7 @@ const alertSlice = createSlice({
   state.loading = true;
 })
 .addCase(deleteAlert.fulfilled, (state, action) => {
+  
   state.loading = false;
 
   state.tracksideAlerts = state.tracksideAlerts.filter(

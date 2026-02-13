@@ -364,22 +364,22 @@ const AnalyticsSection = () => {
 
       {/* ================= TOP CARDS ================= */}
       <div className="rounded my-4 flex flex-col lg:flex-row gap-8 justify-center">
-        <div className="bg-[#090909] rounded-xl p-4 w-full lg:w-[40%]">
+        {/* <div className="bg-[#090909] rounded-xl p-4 w-full lg:w-[40%]">
           <h3 className="text-white font-semibold text-lg mb-2">Quick Stats</h3>
           <StatsCard />
-        </div>
+        </div> */}
 
-        <div className="bg-[#131313] rounded-xl p-4 w-full lg:w-[26%]">
+        {/* <div className="bg-[#131313] rounded-xl p-4 w-full lg:w-[26%]">
           <h3 className="text-white font-semibold text-lg mb-2">Up coming Draw</h3>
           <DrawCard />
-        </div>
+        </div> */}
 
-        <div className="bg-[#131313] rounded-xl p-4 w-full lg:w-[30%]">
+        {/* <div className="bg-[#131313] rounded-xl p-4 w-full lg:w-[30%]">
           <h3 className="text-white font-semibold text-lg mb-2">
             Bet Comparison
           </h3>
           <Comparison />
-        </div>
+        </div> */}
       </div>
 
      

@@ -12,7 +12,7 @@ api.interceptors.request.use(
     const token = localStorage.getItem("token"); // login ke time save karna
 
     if (token) {
-      config.headers.Authorization = token;
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
     return config;

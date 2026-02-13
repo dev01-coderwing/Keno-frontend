@@ -123,7 +123,7 @@ const WinningCombos = () => {
     <div className="bg-[#1D1D1D] p-4 sm:p-6 rounded-lg w-full">
       <h3 className="text-lg sm:text-xl font-semibold mb-2 text-white">
         Overdue Winning Combos
-      </h3>
+      </h3>       
 
       <p className="text-xs sm:text-sm font-extralight text-gray-300 mb-4">
         These popular combos usually hit often, but they haven’t in a while.

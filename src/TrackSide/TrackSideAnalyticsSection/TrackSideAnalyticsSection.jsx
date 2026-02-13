@@ -125,20 +125,20 @@ function TrackSideAnalyticsSection() {
 
           {/* TOP CARDS SECTION */}
           <div className="rounded my-4 flex flex-col lg:flex-row gap-8 justify-center">
-            <div className="bg-[#090909] rounded-xl p-4 w-full lg:w-[40%]">
+            {/* <div className="bg-[#090909] rounded-xl p-4 w-full lg:w-[40%]">
               <h3 className="text-white font-semibold text-lg mb-2">Quick Stats</h3>
               <TracksideStatsCard />
-            </div>
-
+            </div> */}
+{/* 
             <div className="bg-[#131313] rounded-xl p-4 w-full lg:w-[26%]">
               <h3 className="text-white font-semibold text-lg mb-2">Up coming Draw</h3>
               <DrawCard />
               <div className="flex justify-center mt-5 items-center">
                 <button className="hover:underline hover:font-semibold">View All</button>
               </div>
-            </div>
+            </div> */}
 
-            <div className="bg-[#131313] rounded-xl p-4 w-full lg:w-[30%]">
+            {/* <div className="bg-[#131313] rounded-xl p-4 w-full lg:w-[30%]">
               <h3 className="text-white font-semibold text-lg mb-2">Bet Comparison</h3>
               <Comparison />
               <div className="flex justify-center gap-8">
@@ -151,7 +151,7 @@ function TrackSideAnalyticsSection() {
                   <span className="text-[#00FF7F]">$34,504</span>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* FAVORITE NUMBER SECTION */}
@@ -182,13 +182,13 @@ function TrackSideAnalyticsSection() {
             {/* 🔥 OVERDUE API DATA RENDER */}
             {/* --------------------------- */}
             <div className="p-4 bg-[#1D1D1D] rounded-b-xl">
-              {loading && (
+              {/* {loading && (
                 <p className="text-gray-300 text-sm">Loading overdue combos...</p>
-              )}
+              )} */}
 
-              {error && <p className="text-red-400 text-sm">Error: {error}</p>}
+              {/* {error && <p className="text-red-400 text-sm">Error: {error}</p>} */}
 
-              {!loading && combos?.data?.length > 0 && (
+              {/* {!loading && combos?.data?.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mt-3">
                   {combos.data.map((item, idx) => (
                     <div
@@ -207,7 +207,7 @@ function TrackSideAnalyticsSection() {
                     </div>
                   ))}
                 </div>
-              )}
+              )} */}
 
               {/* RACE CARDS SCROLLER */}
               <div className="relative p-4 bg-[#1D1D1D] pt-0 rounded-b-xl">

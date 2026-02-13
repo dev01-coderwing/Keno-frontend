@@ -7,7 +7,7 @@ export const fetchTracksideTop10 = createAsyncThunk(
   "analytics/fetchTracksideTop10",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/trackside-analytics/top-10");
+      const res = await api.get("/trackside-analytics/top-10-24h");
       console.log("TRACKSIDE RAW:", res.data);
       return res.data?.data ?? res.data;
     } catch (error) {
@@ -24,7 +24,7 @@ export const fetchKenoTop10 = createAsyncThunk(
   "analytics/fetchKenoTop10",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/keno-analytics/top-10");
+      const res = await api.get("/keno-analytics/top-10-24h");
       console.log("KENO RAW:", res.data);
       return res.data?.data ?? res.data;
     } catch (error) {

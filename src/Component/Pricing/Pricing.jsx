@@ -10,11 +10,19 @@ const Pricing = () => {
     (state) => state.payments
   );
 
+  const { user } = useSelector((state) => state.auth);
+
   const handleSubscribe = () => {
-    dispatch(createCheckout());
+    // Check if user is logged in
+    if (!user) {
+      alert("Please login first to subscribe!");
+      window.location.href = "/login";
+      return;
+    }
+
+    dispatch(createCheckout({ plan: "monthly" }));
   };
 
-  // 🔥 Stripe redirect
   useEffect(() => {
     if (checkoutUrl) {
       window.location.href = checkoutUrl;
@@ -39,7 +47,7 @@ const Pricing = () => {
             </p>
 
             <ul className="mt-4 space-y-2 text-gray-300 text-sm">
-              <li>✅ Exotic Predictor Access</li>
+              <li>✅ Exotic Calculator Access</li>
               <li>✅ Ticket Creation</li>
               <li>✅ TrackSide Analytics</li>
               <li>✅ Advanced Calculators</li>

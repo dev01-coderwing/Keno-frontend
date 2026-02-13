@@ -6,10 +6,7 @@ const links = [
     to: "/responsible-gambling",
     label: "Responsible Gambling",
   },
-  {
-    to: "/session-limit",
-    label: "Session Limit",
-  },
+
   {
     to: "/contact-us",
     label: "Contact Us",
