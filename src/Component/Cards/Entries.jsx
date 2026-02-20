@@ -65,7 +65,12 @@ React.useEffect(() => {
             {ordinal(row.position)}
           </p>
 
-          <div className="flex flex-wrap justify-center gap-1 sm:gap-2 text-[10px] sm:text-sm">
+<div
+  className="grid gap-1 sm:gap-2 text-[10px] sm:text-sm"
+  style={{
+    gridTemplateColumns: "repeat(20, minmax(0, 1fr))", // 10 columns = clean symmetry
+  }}
+>
             {numbers.map((num) => {
               const disabled = isDisabled(num, row.position);
           const selected =

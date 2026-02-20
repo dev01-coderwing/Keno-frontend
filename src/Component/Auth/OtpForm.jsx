@@ -91,7 +91,9 @@ const OtpForm = ({ onOtpVerified, purpose }) => {
           <input
             type="number"
             value={otp}
-            onChange={(e) => setOtp(e.target.value)}
+            // onChange={(e) => setOtp(e.target.value)}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))} 
+
             className="w-full bg-[#0C0C0C] border border-gray-400 rounded-md px-3 py-2 placeholder:text-xs focus:outline-none"
             placeholder="Enter OTP"
           />

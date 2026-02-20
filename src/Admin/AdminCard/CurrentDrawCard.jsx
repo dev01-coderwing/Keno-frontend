@@ -19,75 +19,74 @@ const CurrentDrawCard = () => {
   }, [dispatch]);
 
   if (hotColdLoading) {
-    return <div className="text-white p-4">Loading Current Draw...</div>;
+    return (
+      <div className="h-full flex items-center justify-center text-white">
+        Loading Current Draw...
+      </div>
+    );
   }
 
   return (
-    <div className="p-4 rounded-xl w-full max-w-2xl bg-[#191919]">
+    <div className="p-4 rounded-xl w-full bg-[#191919] text-white h-full flex flex-col">
       {/* Header */}
-      <div className="flex gap-4 items-center mb-2 pb-2 border-b border-gray-500">
-        <h3 className="text-lg font-semibold text-white">{draw}</h3>
+      <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-700">
+        <div>
+          <h3 className="text-lg font-semibold">{draw}</h3>
+          <p className="text-xs text-gray-400">Current Draw</p>
+        </div>
 
         <div className="flex gap-2">
           {hotNumbers?.length > 0 && (
-            <span className="text-sm font-semibold px-2 py-1 rounded bg-red-500 text-white">
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-red-500 text-white">
               HOT
             </span>
           )}
           {coldNumbers?.length > 0 && (
-            <span className="text-sm font-semibold px-2 py-1 rounded bg-blue-500 text-white">
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-500 text-white">
               COLD
             </span>
           )}
         </div>
       </div>
 
-      <div className="flex gap-20 max-w-sm">
+      {/* Body */}
+      <div className="flex flex-col md:flex-row gap-6">
         {/* Time */}
-        <div className="p-8 border-r border-gray-500">
-          <div className="text-sm text-gray-400 mb-1 font-semibold">
-            Time
-          </div>
-          <div className="text-white font-medium text-xl mb-3">
-            {time}
-          </div>
+        <div className="md:pr-6 md:border-r border-gray-700">
+          <p className="text-sm text-gray-400 font-semibold mb-1">Time</p>
+          <p className="text-white font-medium text-lg">{time}</p>
         </div>
 
         {/* Numbers */}
-        {/* Numbers */}
-{/* Numbers */}
-<div className="px- py- flex-5 w-80">
-  <div className="text-sm text-gray-400 mb-2 font-semibold">
-    Numbers
-  </div>
+        <div className="flex-1">
+          <p className="text-sm text-gray-400 mb-2 font-semibold">
+            Numbers
+          </p>
 
-  <div className="grid grid-cols-6 gap-2">
-  {numbers?.map((num, index) => {
-    const isHot = hotNumbers?.map(Number).includes(num);
-    const isCold = coldNumbers?.map(Number).includes(num);
+          <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-2">
+            {numbers?.map((num, index) => {
+              const isHot = hotNumbers?.map(Number).includes(num);
+              const isCold = coldNumbers?.map(Number).includes(num);
 
-    return (
-      <span
-        key={`${num}-${index}`}
-        className={`text-sm font-semibold text-center py-1 rounded-md
-          ${
-            isHot
-              ? "bg-red-500 text-white"
-              : isCold
-              ? "bg-blue-500 text-white"
-              : "bg-white text-black"
-          }
-        `}
-      >
-        {num}
-      </span>
-    );
-  })}
-</div>
-
-</div>
-
-
+              return (
+                <div
+                  key={`${num}-${index}`}
+                  className={`h-8 flex items-center justify-center rounded-md text-sm font-bold shadow
+                    ${
+                      isHot
+                        ? "bg-red-500 text-white"
+                        : isCold
+                        ? "bg-blue-500 text-white"
+                        : "bg-white text-black"
+                    }
+                  `}
+                >
+                  {num}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
     </div>
   );

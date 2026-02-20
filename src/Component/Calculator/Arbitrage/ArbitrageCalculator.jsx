@@ -165,12 +165,28 @@ export default function ArbitrageCalculator() {
                             </div>
                         </div>
 
-                        <div className="bg-[#262626] rounded p-4">
+                        {/* <div className="bg-[#262626] rounded p-4">
                             <div className="text-xs text-gray-400">Estimated min profit</div>
                             <div className={`text-lg font-medium mt-1 ${minProfit > 0 ? 'text-green-300' : 'text-yellow-300'}`}>
                                 {isNaN(minProfit) ? '—' : `${minProfit.toFixed(2)} (${((minProfit / totalStake) * 100).toFixed(2)}%)`}
                             </div>
-                        </div>
+                        </div> */}
+                        <div className="bg-[#262626] rounded p-4">
+  <div className="text-xs text-gray-400">Estimated min profit</div>
+  <div
+    className={`text-lg font-medium mt-1 ${
+      minProfit > 0 ? "text-green-300" : "text-yellow-300"
+    }`}
+  >
+    {(!totalStake || isNaN(minProfit)) ? "—" : (
+      <>
+        {minProfit.toFixed(2)} (
+        {((minProfit / Number(totalStake)) * 100).toFixed(2)}%)
+      </>
+    )}
+  </div>
+</div>
+
                     </div>
 
                     <div className="mt-6 bg-[#262626] p-4 rounded">

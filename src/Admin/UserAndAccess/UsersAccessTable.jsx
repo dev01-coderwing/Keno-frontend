@@ -26,7 +26,7 @@ const UsersAccessTable = () => {
             <th className="py-3">Email ID</th>
             <th className="py-3">DOB</th>
             <th className="py-3">Status</th>
-            <th className="py-3">Actions</th>
+            {/* <th className="py-3">Actions</th> */}
           </tr>
         </thead>
 
@@ -80,9 +80,9 @@ const UsersAccessTable = () => {
                 </button>
               </td>
 
-              <td className="py-4">
+              {/* <td className="py-4">
                 <BsThreeDotsVertical className="text-lg cursor-pointer text-gray-400 hover:text-white" />
-              </td>
+              </td> */}
             </tr>
           ))}
         </tbody>

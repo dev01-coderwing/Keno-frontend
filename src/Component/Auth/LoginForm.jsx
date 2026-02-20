@@ -188,6 +188,10 @@ const LoginForm = ({ onSwitchForm }) => {
     e.preventDefault();
     dispatch(loginUser({ email, password }));
   };
+  useEffect(() => {
+  console.log("Redux user state:", user);
+}, [user]);
+
 
   return (
     <div className="w-full flex justify-center px-4">

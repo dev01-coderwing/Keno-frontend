@@ -1,22 +1,29 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 
+// 🔥 NEW TRACKSIDE HISTORICAL (PuntData API)
 export const fetchTracksideHistorical = createAsyncThunk(
   "tracksideHistorical/fetch",
-  async ({ location, betType, entries }, { rejectWithValue }) => {
+  async ({ entries }, { rejectWithValue }) => {
     try {
-      const res = await api.post(
-        "/historical-frequency/trackside",
-        {
-          location,
-          betType,
-          entries,
-        },
-        {
-          headers: {
-            "API-KEY": "kajal",
-          },
+      // entries format expected:
+      // [
+      //   [1, 3, 5],   // pos1
+      //   [11, 5, 6],  // pos2
+      //   [7, 4, 5],   // pos3
+      //   [1, 2, 3]    // pos4
+      // ]
+
+      const params = new URLSearchParams();
+
+      entries.forEach((posArr, index) => {
+        if (Array.isArray(posArr) && posArr.length > 0) {
+          params.append(`pos${index + 1}`, posArr.join(","));
         }
+      });
+
+      const res = await api.get(
+        `/historical-frequency/trackside?${params.toString()}`
       );
 
       return res.data;

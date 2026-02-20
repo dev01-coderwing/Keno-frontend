@@ -23,11 +23,11 @@ const links = [
     icon: <img src={chart} alt="chart" className={imgClass} />,
     label: "Virtual Racing",
   },
-  {
-    to: "/analytics-dashboard",
-    icon: <Icon icon="solar:chart-linear" className="h-5 w-5" />,
-    label: "Analytics Dashboard",
-  },
+  // {
+  //   to: "/analytics-dashboard",
+  //   icon: <Icon icon="solar:chart-linear" className="h-5 w-5" />,
+  //   label: "Analytics Dashboard",
+  // },
   {
     to: "/users-access",
     icon: <Icon icon="solar:user-rounded-linear" className="h-5 w-5" />,

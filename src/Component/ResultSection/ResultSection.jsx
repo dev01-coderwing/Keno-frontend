@@ -203,6 +203,29 @@ const ResultSection = () => {
   const liveKeno = useSelector(
     (state) => state.kenoResults.data?.[location]
   );
+const formatDateDDMMYYYY = (dateStrOrDate) => {
+  if (!dateStrOrDate) return "-";
+
+  const d = new Date(dateStrOrDate);
+
+  if (isNaN(d.getTime())) {
+    // 👇 backend se agar "17-02-2026" type string aa rahi ho
+    if (typeof dateStrOrDate === "string") {
+      const parts = dateStrOrDate.split(/[-/]/); // supports 17-02-2026 or 17/02/2026
+      if (parts.length === 3) {
+        const [dd, mm, yyyy] = parts;
+        return `${dd.padStart(2, "0")}/${mm.padStart(2, "0")}/${yyyy}`;
+      }
+    }
+    return "-";
+  }
+
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+
+  return `${day}/${month}/${year}`;
+};
 
   // 📄 PAGINATED OLD DATA
   const { results: oldResults, total } = useSelector(
@@ -221,7 +244,7 @@ const ResultSection = () => {
   if (liveKeno) {
     resultData.push({
       id: `live-${location}-${liveKeno.draw}`,
-      date: new Date().toLocaleDateString("en-GB"),
+date: formatDateDDMMYYYY(new Date()),
       game: liveKeno.draw,
       entries: liveKeno.numbers,
 headsTails: liveKeno.coin_result
@@ -254,7 +277,7 @@ if (Array.isArray(oldResults)) {
     .forEach((item) => {
       resultData.push({
         id: item._id,
-        date: item.date,
+date: formatDateDDMMYYYY(item.date),
         game: item.draw,
         entries: item.numbers,
          headsTails: item.result
@@ -272,6 +295,7 @@ if (Array.isArray(oldResults)) {
       });
     });
 }
+
 
 
   return (

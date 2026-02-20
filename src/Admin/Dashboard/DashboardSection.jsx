@@ -6,7 +6,7 @@ import TrendChart from "../AdminCard/TrendChart";
 import BarChartSection from "../AdminCard/BarChartSection";
 import RecentRaceTable from "../AdminTable/RecentRaceTable";
 import ActivityLogsTable from "../AdminTable/ActivityLogsTable";
-
+import DrawHistoryTable from "../AdminTable/DrawHistoryTable";
 import { fetchDashboardStats } from "../../redux/dashboardSlice";
 
 const DashboardSection = () => {
@@ -69,7 +69,7 @@ const DashboardSection = () => {
       {/* 🔹 TABLES */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4 mt-4">
         <div className="md:col-span-8 bg-[#191919] rounded-lg overflow-x-auto">
-          <RecentRaceTable />
+          <DrawHistoryTable />
         </div>
         <div className="md:col-span-4 bg-[#191919] rounded-lg overflow-x-auto">
           <ActivityLogsTable />

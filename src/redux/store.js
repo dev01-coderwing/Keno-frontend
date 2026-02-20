@@ -25,8 +25,10 @@ import kenoAlertReducer from "./KenoAlertSlice";
 import tracksideHistoricalReducer from "./tracksideHistoricalSlice";
 import trackideCombinationReducer from "./TrackideCombinationSlice";
 import paymentsReducer from "./paymentsSlice";
+import adminAnalyticsReducer from "./adminanalyticsSlice";
 export const store = configureStore({
   reducer: {
+       adminAnalytics: adminAnalyticsReducer,  
     auth: authReducer,
     tickets: ticketReducer,
     keno: kenoReducer,
