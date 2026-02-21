@@ -204,7 +204,31 @@ export const fetchCurrentUser = createAsyncThunk(
     }
   }
 );
+// LOGOUT
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const token = localStorage.getItem("token");
 
+      const res = await api.post(
+        "/users/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Logout failed"
+      );
+    }
+  }
+);
 //  AUTH SLICE 
 const authSlice = createSlice({
   name: "auth",
@@ -389,7 +413,23 @@ const authSlice = createSlice({
       .addCase(fetchCurrentUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || action.error?.message;
-      });
+      })
+      .addCase(logoutUser.pending, (state) => {
+  state.loading = true;
+})
+.addCase(logoutUser.fulfilled, (state) => {
+  state.loading = false;
+  state.user = null;
+  state.token = null;
+
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("userId");
+})
+.addCase(logoutUser.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload || "Logout failed";
+});
   },
 });
 

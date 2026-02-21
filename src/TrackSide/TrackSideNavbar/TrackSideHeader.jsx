@@ -4,6 +4,7 @@ import { HiOutlineLogout } from "react-icons/hi";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import PuntMateLogo from "../../assets/horse-logo.png";
+import { logoutUser } from "../../redux/authSlice";
 
 // 🔔 Redux notification actions
 import {
@@ -81,10 +82,15 @@ const TrackSideHeader = () => {
   };
 
   /* ================= LOGOUT ================= */
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
-  };
+ const handleLogout = async () => {
+  try {
+    await dispatch(logoutUser()).unwrap(); //  backend logout API hit
+    navigate("/login", { replace: true }); 
+  } catch (err) {
+    console.error("Logout failed:", err);
+    navigate("/login", { replace: true }); // fallback
+  }
+};
 
   const isLoggedIn = !!userName;
 
