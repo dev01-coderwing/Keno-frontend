@@ -15,7 +15,26 @@ const horse2 =
 
 const horse3 =
   "https://res.cloudinary.com/dqacezsc5/image/upload/v1754638705/banner-horse3_dtnhjh.jpg";
+const formatDateDDMMYYYY = (dateVal) => {
+  if (!dateVal) return "-";
 
+  // Case A: "DD/MM/YYYY" → "DD-MM-YYYY"
+  if (typeof dateVal === "string" && dateVal.includes("/")) {
+    const [dd, mm, yyyy] = dateVal.split("/");
+    if (dd && mm && yyyy) {
+      return `${dd.padStart(2, "0")}-${mm.padStart(2, "0")}-${yyyy}`;
+    }
+  }
+
+  const d = new Date(dateVal);
+  if (isNaN(d.getTime())) return "-";
+
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
 const HomeSection = () => {
   const images = [horse1, horse2, horse3];
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -193,7 +212,7 @@ const apiTableData =
         </span>,
         item.entries,
         `${item.winPercent}%`,
-        item.lastSeen ?? "-",
+formatDateDDMMYYYY(item.lastSeen),
         item.totalRaces,
       ],
     };

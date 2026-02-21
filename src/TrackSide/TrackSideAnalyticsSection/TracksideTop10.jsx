@@ -156,7 +156,7 @@ const BetTypeTable = ({ title, rows }) => {
               <th className="p-3 text-left">Win %</th>
               <th className="p-3 text-left">Avg Drought</th>
               <th className="p-3 text-left">Current Drought</th>
-              <th className="p-3 text-left">Max Drought</th>
+              <th className="p-3 text-left">Longest Drought</th>
               <th className="p-3 text-left">Last Appeared</th>
               {/* <th className="p-3 text-left">Last Date</th> */}
               <th className="p-3 text-left">Dividend</th>
@@ -182,8 +182,8 @@ const BetTypeTable = ({ title, rows }) => {
 
                 <td className="p-3">
                   <div className="flex gap-2 flex-wrap">
-                    {Array.isArray(item.entries) &&
-                      item.entries.map((n, i) => (
+                    {Array.isArray(item.Entries) &&
+                      item.Entries.map((n, i) => (
                         <img
                           key={i}
                           src={`/image/${n}.jpeg`}

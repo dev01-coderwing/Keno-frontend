@@ -200,7 +200,14 @@ function TrackSideResults() {
     currentPage,
   } = useSelector((state) => state.tracksideResults);
 
-
+const formatDateDDMMYYYY = (dateStr) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+};
   /* ------------------------------ LOAD INITIAL PAGINATED DATA ------------------------------ */
   useEffect(() => {
     dispatch(fetchPaginatedTracksideResults({ location, limit, page: 1 }));
@@ -220,7 +227,7 @@ useEffect(() => {
   if (liveGame?.gameNumber) {
     resultData.push({
       id: `live-${location}-${liveGame.gameNumber}`,
-      date: new Date(liveGame.timestamp).toISOString().split("T")[0],
+date: formatDateDDMMYYYY(liveGame.timestamp),
       game: liveGame.gameName,
       entries: liveGame.numbers,
       isLive: true,
@@ -247,7 +254,7 @@ useEffect(() => {
     .forEach((item) => {
       resultData.push({
         id: item._id,
-        date: item.date,
+         date: formatDateDDMMYYYY(item.date),
         game: item.gameName,
         entries: item.numbers,
         positions: [],
@@ -315,6 +322,24 @@ const formattedDate = date.toISOString().split("T")[0];
           <h3 className="text-xl font-semibold text-white">TrackSide Results:</h3>
 
           <div className="flex flex-wrap gap-3 items-center">
+             <select
+            value={location}
+            onChange={(e) => {
+              const loc = e.target.value;
+              setLocation(loc);
+              setIsSearchMode(false); // ✅ ADD
+
+              // Load fresh data when location changes
+              dispatch(fetchTracksideResults(loc));
+              dispatch(
+                fetchPaginatedTracksideResults({ location: loc, limit, page: 1 })
+              );
+            }}
+            className="bg-[#464646] text-white text-sm px-3 py-2 rounded-lg focus:outline-none"
+          >
+            <option value="VIC">VIC-ACT</option>
+            <option value="NSW">NSW</option>
+          </select>
             <ResultInput
               placeholder="First Game No."
               width="w-[130px]"
@@ -384,24 +409,7 @@ const formattedDate = date.toISOString().split("T")[0];
             </span>
           </label>
 
-          <select
-            value={location}
-            onChange={(e) => {
-              const loc = e.target.value;
-              setLocation(loc);
-              setIsSearchMode(false); // ✅ ADD
-
-              // Load fresh data when location changes
-              dispatch(fetchTracksideResults(loc));
-              dispatch(
-                fetchPaginatedTracksideResults({ location: loc, limit, page: 1 })
-              );
-            }}
-            className="bg-[#464646] text-white text-sm px-3 py-2 rounded-lg focus:outline-none"
-          >
-            <option value="VIC">VIC-ACT</option>
-            <option value="NSW">NSW</option>
-          </select>
+         
         </div>
 
         {/* RESULTS TABLE */}

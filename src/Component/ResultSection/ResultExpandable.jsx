@@ -1,5 +1,26 @@
 import React, { useState } from "react";
+const formatDateDDMMYYYY = (dateVal) => {
+  if (!dateVal) return "-";
 
+  // Case 1: Already in DD/MM/YYYY → convert to DD-MM-YYYY
+  if (typeof dateVal === "string" && dateVal.includes("/")) {
+    const parts = dateVal.split("/");
+    if (parts.length === 3) {
+      const [dd, mm, yyyy] = parts;
+      return `${dd.padStart(2, "0")}-${mm.padStart(2, "0")}-${yyyy}`;
+    }
+  }
+
+  // Case 2: ISO or timestamp → normal Date parse
+  const d = new Date(dateVal);
+  if (isNaN(d.getTime())) return "-"; // ❌ invalid date guard
+
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
 const ResultExpandable = ({ resultData }) => {
   const [expandedId, setExpandedId] = useState(null);
 
@@ -36,8 +57,9 @@ const getColorByNumber = (num) => {
                 onClick={() => toggleExpand(item.id)}
                 className="cursor-pointer bg-[#1C1C1C] hover:bg-[#333] border-b border-gray-800"
               >
-                <td className="p-3">{item.date}</td>
-                <td className="p-3">{item.game}</td>
+<td className="p-3">
+  {item.date ? formatDateDDMMYYYY(item.date) : "-"}
+</td>                <td className="p-3">{item.game}</td>
                 <td className="p-3">
                   <div className="flex gap-2">
                     {item.entries?.map((num) => (

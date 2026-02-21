@@ -136,28 +136,31 @@ function TrackSideHistoricalFrequency() {
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
       <div className="bg-[#0E0E0E] p-3 rounded">
         <p className="text-gray-400 text-xs">Total Games</p>
-        <p className="text-lg font-semibold">{data.summary.totalGames}</p>
-      </div>
+<p className="text-lg font-semibold">
+  {data.summary.totalGamesProcessed}
+</p>      </div>
 
       <div className="bg-[#0E0E0E] p-3 rounded">
         <p className="text-gray-400 text-xs">Combined Hits</p>
-        <p className="text-lg font-semibold">{data.summary.combinedHits}</p>
-      </div>
+<p className="text-lg font-semibold">
+  {data.summary.overallHitFrequency}
+</p>      </div>
 
       <div className="bg-[#0E0E0E] p-3 rounded">
         <p className="text-gray-400 text-xs">Hits (Last 1k)</p>
-        <p className="text-lg font-semibold">{data.summary.combinedHitsLast1k}</p>
-      </div>
+<p className="text-lg font-semibold">
+  {data.summary.overallHitFrequency}
+</p>      </div>
 
       <div className="bg-[#0E0E0E] p-3 rounded">
         <p className="text-gray-400 text-xs">Avg Games</p>
-        <p className="text-lg font-semibold">{data.summary.combinedAvgGames}</p>
+        <p className="text-lg font-semibold">{data.summary.overallAvg}</p>
       </div>
     </div>
 
     <p className="text-xs text-gray-400 mt-3">
-      {data.summary.formattedSummary}
-    </p>
+  {data.summary.formattedSummary}
+</p>
   </div>
 )}
 
@@ -201,28 +204,39 @@ function TrackSideHistoricalFrequency() {
                   </thead>
                   <tbody>
                     {stats.last5Hits?.map((hit, idx) => (
-                    <tr
+ <tr
   key={idx}
   className="border-b border-gray-800 hover:bg-[#111]"
 >
   <td className="px-2 py-2">{hit.raceNumber || "-"}</td>
   <td className="px-2 py-2">{hit.date || "-"}</td>
+
   <td className="px-2 py-2">
     <ResultTiles result={hit.result} />
   </td>
-  <td className="px-2 py-2">{hit.dividend || "$0.00"}</td>
-  <td className="px-2 py-2">{hit.drought}</td>
-  <td className="px-2 py-2">{hit.avgDrought}</td>
-  <td className="px-2 py-2">{hit.longestDrought}</td>
 
-  {/*  NEW FIELDS (bet-type level stats repeated per row) */}
-  <td className="px-2 py-2">{stats.hits}</td>
-  <td className="px-2 py-2">{stats.avgGms}</td>
-  <td className="px-2 py-2">{stats.hitsLast1k}</td>
-  <td className="px-2 py-2">{stats.currentDrought}</td>
-  <td className="px-2 py-2">{stats.combos}</td>
-  <td className="px-2 py-2">{stats.flexiPercent}</td>
-  <td className="px-2 py-2">{stats.avgDiv}</td>
+  <td className="px-2 py-2">{hit.dividend || "$0.00"}</td>
+
+  {/* ✅ Correct drought at hit */}
+  <td className="px-2 py-2">{hit.droughtAtHit ?? "-"}</td>
+
+  {/* ❌ avgDrought not in hit -> use stats.avgGms */}
+  <td className="px-2 py-2">{stats.avgGms ?? "-"}</td>
+
+  {/* ❌ longestDrought not in hit -> use stats.longestDrought */}
+  <td className="px-2 py-2">{stats.longestDrought ?? "-"}</td>
+
+  {/* 🔁 Bet-type level stats */}
+  <td className="px-2 py-2">{stats.hits ?? "-"}</td>
+  <td className="px-2 py-2">{stats.avgGms ?? "-"}</td>
+
+  {/* ❌ hitsLast1k nahi, hitsLast1000 hai */}
+  <td className="px-2 py-2">{stats.hitsLast1000 ?? "-"}</td>
+
+  <td className="px-2 py-2">{stats.currentDrought ?? "-"}</td>
+  <td className="px-2 py-2">{stats.combos ?? "-"}</td>
+  <td className="px-2 py-2">{stats.flexiPercent ?? "-"}</td>
+  <td className="px-2 py-2">{stats.avgDiv ?? "-"}</td>
 </tr>
 
                     ))}
