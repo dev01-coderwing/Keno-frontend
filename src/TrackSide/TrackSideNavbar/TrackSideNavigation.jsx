@@ -30,7 +30,7 @@ const links = [
   {
     to: "/TrackSidePredictor",
     icon: <img src={auction} alt="auction" className={iconClass} />,
-    label: "Exotic Calculator",
+    label: "Trackside Exotic Calculator",
   },
   {
     to: "/TrackSideResults",

@@ -156,7 +156,7 @@ function KenoTop10() {
     const renderDroughtBadge = (value) => {
         let bgColor = "rgb(75, 85, 99)"; // gray default
 
-        if (value >= 1 && value <= 40) {
+        if (value >= 0 && value <= 40) {
             bgColor = "rgb(239, 68, 68)"; // red
         } else if (value >= 41 && value <= 90) {
             bgColor = "rgb(59, 130, 246)"; // blue

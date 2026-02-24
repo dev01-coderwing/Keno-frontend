@@ -104,14 +104,14 @@ useEffect(() => {
     );
   };
 
-  const columns = [
-    "Number",
-    "Entries",
-
-    "Win %",
-    "Last Win",
-    "Total Games",
-  ];
+const columns = [
+  "Number",
+  "Entries",
+  "Win %",
+  "Last Win",
+  "Drought",
+  "Total Games",
+];
 
 
   // ❌ ORIGINAL DUMMY DATA (UNCHANGED)
@@ -199,24 +199,20 @@ const getNumberColor = (index) =>
   index % 2 === 0 ? "bg-red-600" : "bg-blue-600";
 
 const apiTableData =
-  quickStats?.map((item, i) => {
-    const num = item.number ?? i + 1;
-    const colorClass = num <= 40 ? "bg-red-600" : "bg-blue-600";
-
-    return {
-      rowData: [
-        <span
-          className={`px-3 py-1 rounded text-white ${colorClass}`}
-        >
-          {num}
-        </span>,
-        item.entries,
-        `${item.winPercent}%`,
-formatDateDDMMYYYY(item.lastSeen),
-        item.totalRaces,
-      ],
-    };
-  }) || [];
+  quickStats?.map((item, i) => ({
+    rowData: [
+      <span className={`px-3 py-1 rounded text-white ${
+        item.number <= 40 ? "bg-red-600" : "bg-blue-600"
+      }`}>
+        {item.number}
+      </span>,
+      item.entries,
+      `${item.winPercent}%`,
+      item.lastWin,
+      item.drought,
+      item.totalRaces,
+    ],
+  })) || [];
 
 
 
