@@ -133,15 +133,18 @@ import { fetchKenoTop10 } from "../../redux/tracksideAnalyticsSlice";
 
 function KenoTop10() {
     const dispatch = useDispatch();
-
+const selectedState = useSelector((state) => state.location.state);
     const { kenoTop10, loading, error } = useSelector(
         (state) => state.tracksideAnalytics
     );
 
-    useEffect(() => {
-        dispatch(fetchKenoTop10());
-    }, [dispatch]);
-
+    // useEffect(() => {
+    //     dispatch(fetchKenoTop10());
+    // }, [dispatch]);
+useEffect(() => {
+ 
+  dispatch(fetchKenoTop10({ state: selectedState }));
+}, [dispatch, selectedState]);
     if (loading || !kenoTop10) {
         return <p className="text-gray-400">Loading Keno Analytics...</p>;
     }

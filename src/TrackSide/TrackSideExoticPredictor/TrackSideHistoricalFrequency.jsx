@@ -33,7 +33,12 @@ function TrackSideHistoricalFrequency() {
 
   const [betType, setBetType] = useState("");
   const [rows, setRows] = useState([]);
+const selectedLocation = useSelector((state) => state.location.state);
 
+const mapTracksideLocation = (uiValue) => {
+  if (uiValue === "VIC+ACT") return "ACT";
+  return uiValue;
+};
   const getEntryCount = () => {
     switch (betType) {
       case "quinella":
@@ -62,11 +67,14 @@ function TrackSideHistoricalFrequency() {
   const handleFetch = () => {
     if (!allSelected) return;
 
-    dispatch(
-      fetchTracksideHistorical({
-        entries: entriesArray,
-      })
-    );
+  const apiLocation = mapTracksideLocation(selectedLocation);
+
+dispatch(
+  fetchTracksideHistorical({
+    entries: entriesArray,
+    location: apiLocation,
+  })
+);
   };
 
   // 🔽 Auto scroll to results when data arrives
@@ -143,8 +151,8 @@ function TrackSideHistoricalFrequency() {
       <div className="bg-[#0E0E0E] p-3 rounded">
         <p className="text-gray-400 text-xs">Combined Hits</p>
 <p className="text-lg font-semibold">
-  {data.summary.overallHitFrequency}
-</p>      </div>
+  {data.summary.combinedHits}
+</p>   </div>
 
       <div className="bg-[#0E0E0E] p-3 rounded">
         <p className="text-gray-400 text-xs">Hits (Last 1k)</p>

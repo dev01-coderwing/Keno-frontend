@@ -45,7 +45,7 @@ const HomeSection = () => {
   const { combos, loading, error } = useSelector((state) => state.overdue);
   const { favoritesList } = useSelector((state) => state.favorite);
   const { user } = useSelector((state) => state.auth);
-
+const selectedState = useSelector((state) => state.location.state);
   // 🔹 ADDED – Quick Stats Redux state
   const {
     data: quickStats,
@@ -69,10 +69,14 @@ const HomeSection = () => {
   //   }
   // }, [dispatch, user]);
 
-  useEffect(() => {
-  dispatch(fetchOverdueCombos());
-  dispatch(fetchQuickStats());
-}, [dispatch]);
+//   useEffect(() => {
+//   dispatch(fetchOverdueCombos());
+//   dispatch(fetchQuickStats());
+// }, [dispatch]);
+useEffect(() => {
+  dispatch(fetchOverdueCombos({ state: selectedState }));
+  dispatch(fetchQuickStats({ state: selectedState }));
+}, [dispatch, selectedState]);
 
 useEffect(() => {
   if (user?.id) {
@@ -195,15 +199,17 @@ const numberColors = [
   "bg-orange-500",
   "bg-blue-300",
 ];
-const getNumberColor = (index) =>
-  index % 2 === 0 ? "bg-red-600" : "bg-blue-600";
+// const getNumberColor = (index) =>
+//   index % 2 === 0 ? "bg-red-600" : "bg-blue-600";
 
 const apiTableData =
   quickStats?.map((item, i) => ({
     rowData: [
-      <span className={`px-3 py-1 rounded text-white ${
-        item.number <= 40 ? "bg-red-600" : "bg-blue-600"
-      }`}>
+      <span
+        className={`px-3 py-1 rounded text-white ${
+          item.number <= 40 ? "bg-[#EF4444]" : "bg-[#60A5FA]"
+        }`}
+      >
         {item.number}
       </span>,
       item.entries,
@@ -230,10 +236,10 @@ const apiTableData =
 
   return (
     <div className="relative flex flex-col bg-[#262626] px-4 sm:px-6 md:px-8 py-4 my-4 rounded font-poppins">
-      <h3 className="text-lg sm:text-xl font-semibold mb-4">Offers we had</h3>
+      {/* <h3 className="text-lg sm:text-xl font-semibold mb-4">Offers we had</h3> */}
 
       {/* Slider */}
-      <div className="relative w-full aspect-[16/7] sm:aspect-[16/6] md:aspect-[16/5] lg:aspect-[16/4] overflow-hidden rounded-2xl">
+      {/* <div className="relative w-full aspect-[16/7] sm:aspect-[16/6] md:aspect-[16/5] lg:aspect-[16/4] overflow-hidden rounded-2xl">
         <img
           src={images[currentIndex]}
           alt="Slide"
@@ -251,7 +257,7 @@ const apiTableData =
         >
           &#10095;
         </button>
-      </div>
+      </div> */}
       <div className="bg-[#262626] mt-6 rounded-md">
    <ChoiceSelector />
 

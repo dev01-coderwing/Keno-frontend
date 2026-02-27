@@ -4,17 +4,14 @@ import api from "../api";
 // 🔥 NEW TRACKSIDE HISTORICAL (PuntData API)
 export const fetchTracksideHistorical = createAsyncThunk(
   "tracksideHistorical/fetch",
-  async ({ entries }, { rejectWithValue }) => {
+  async ({ entries, location }, { rejectWithValue }) => {
     try {
-      // entries format expected:
-      // [
-      //   [1, 3, 5],   // pos1
-      //   [11, 5, 6],  // pos2
-      //   [7, 4, 5],   // pos3
-      //   [1, 2, 3]    // pos4
-      // ]
-
       const params = new URLSearchParams();
+
+      // ✅ ADD LOCATION
+      if (location) {
+        params.append("location", location);
+      }
 
       entries.forEach((posArr, index) => {
         if (Array.isArray(posArr) && posArr.length > 0) {
@@ -47,6 +44,7 @@ const tracksideHistoricalSlice = createSlice({
     builder
       .addCase(fetchTracksideHistorical.pending, (state) => {
         state.loading = true;
+         state.data = null
         state.error = null;
       })
       .addCase(fetchTracksideHistorical.fulfilled, (state, action) => {

@@ -26,7 +26,11 @@ function TrackSideHome() {
   console.log("USER 👉", user);
 
   console.log("FAVORITES STATE 👉", favoritesList);
-
+const selectedLocation = useSelector((state) => state.location.state);
+const mapTracksideLocation = (uiValue) => {
+  if (uiValue === "VIC+ACT") return "ACT"; // backend expects ACT for VIC+ACT group
+  return uiValue; // NSW
+};
   // API call on load
   useEffect(() => {
     if (user?.id) {
@@ -40,10 +44,13 @@ function TrackSideHome() {
     loading: tsLoading,
     error: tsError,
   } = useSelector((state) => state.tracksideQuickStats);
-  useEffect(() => {
-    dispatch(fetchTracksideQuickStats());
-  }, [dispatch]);
-
+  // useEffect(() => {
+  //   dispatch(fetchTracksideQuickStats());
+  // }, [dispatch]);
+useEffect(() => {
+  const apiLocation = mapTracksideLocation(selectedLocation);
+  dispatch(fetchTracksideQuickStats({ location: apiLocation }));
+}, [dispatch, selectedLocation]);
   // Slider autoscroll
   useEffect(() => {
     const interval = setInterval(() => {
@@ -152,10 +159,10 @@ function TrackSideHome() {
       <TrackSideLayout>
         <SubscriptionGuard>
           <div className="relative flex flex-col bg-[#262626] px-4 sm:px-6 md:px-8 py-4 my-4 rounded font-poppins">
-            <h3 className="text-lg sm:text-xl font-semibold mb-4">Offers we had</h3>
+            {/* <h3 className="text-lg sm:text-xl font-semibold mb-4">Offers we had</h3> */}
 
             {/* Slider */}
-            <div className="relative w-full aspect-[16/7] sm:aspect-[16/6] md:aspect-[16/5] lg:aspect-[16/4] overflow-hidden rounded-2xl">
+            {/* <div className="relative w-full aspect-[16/7] sm:aspect-[16/6] md:aspect-[16/5] lg:aspect-[16/4] overflow-hidden rounded-2xl">
               <img
                 src={images[currentIndex]}
                 alt="Slide"
@@ -173,7 +180,7 @@ function TrackSideHome() {
               >
                 &#10095;
               </button>
-            </div>
+            </div> */}
 
 
             <div className="bg-[#262626] mt-6 rounded-md">

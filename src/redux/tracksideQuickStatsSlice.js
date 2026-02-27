@@ -1,23 +1,19 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 
-
 export const fetchTracksideQuickStats = createAsyncThunk(
   "tracksideQuickStats/fetch",
-  async (_, { rejectWithValue }) => {
+  async ({ location }, { rejectWithValue }) => {
     try {
       const requests = Array.from({ length: 12 }, (_, i) =>
-        api.get(`/trackside-analytics/horse-details/${i + 1}`)
+        api.get(`/trackside-analytics/horse-details/${i + 1}?location=${location}`)
       );
 
       const responses = await Promise.all(requests);
 
-      const allHorseData = responses.map(
-        (res) => res.data.data
-      );
+      const allHorseData = responses.map((res) => res.data.data);
 
       return allHorseData;
-
     } catch (err) {
       console.error(
         "TRACKSIDE API ERROR 👉",
@@ -46,6 +42,7 @@ const tracksideQuickStatsSlice = createSlice({
       .addCase(fetchTracksideQuickStats.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.data = [];
       })
       .addCase(fetchTracksideQuickStats.fulfilled, (state, action) => {
         state.loading = false;

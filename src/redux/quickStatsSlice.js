@@ -4,9 +4,10 @@ import api from "../api";
 
 export const fetchQuickStats = createAsyncThunk(
   "quickStats/fetch",
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
-      const res = await api.get("/keno/quick-stats", {
+      const state = getState().location.state; // 👈 get current state from Redux store
+      const res = await api.get(`/keno/quick-stats?location=${state}`, {
         headers: {
           "api-key": "kajal",
         },
@@ -36,6 +37,7 @@ const quickStatsSlice = createSlice({
       .addCase(fetchQuickStats.pending, (state) => {
         state.loading = true;
         state.error = null;
+         state.data = [];
       })
       .addCase(fetchQuickStats.fulfilled, (state, action) => {
         state.loading = false;

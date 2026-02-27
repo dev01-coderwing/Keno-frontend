@@ -76,16 +76,10 @@ const Header = () => {
  const handleLogout = async () => {
   try {
     await dispatch(logoutUser()).unwrap(); // 🔥 backend logout API hit
+    navigate("/login", { replace: true }); // 🔁 login par bhej
   } catch (err) {
     console.error("Logout failed:", err);
-    // Even if req fails, localStorage is cleared in the thunk
-  } finally {
-    // Final cleanup - ensure token is completely removed
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("userId");
-    sessionStorage.clear();
-    navigate("/login", { replace: true }); // 🔁 login par bhej
+    navigate("/login", { replace: true }); // fallback
   }
 };
 

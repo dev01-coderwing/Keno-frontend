@@ -26,8 +26,10 @@ import tracksideHistoricalReducer from "./tracksideHistoricalSlice";
 import trackideCombinationReducer from "./TrackideCombinationSlice";
 import paymentsReducer from "./paymentsSlice";
 import adminAnalyticsReducer from "./adminanalyticsSlice";
+import locationReducer from "./locationSlice";
 export const store = configureStore({
   reducer: {
+     location: locationReducer,
        adminAnalytics: adminAnalyticsReducer,  
     auth: authReducer,
     tickets: ticketReducer,

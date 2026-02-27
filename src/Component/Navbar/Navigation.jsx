@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-// import horse from "../../assets/Image/NavImg/horseNav.png";
-// import ticket from "../../assets/Image/NavImg/ticketNav.png";
-// import chart from "../../assets/Image/NavImg/chartNav.png";
 import auction from "../../assets/Image/NavImg/auctionNav.png";
 import { Icon } from "@iconify/react";
 import { NavLink } from "react-router-dom";
 import { PiHorse } from "react-icons/pi";
-import { IoTicketOutline } from "react-icons/io5";
 import { GoGraph } from "react-icons/go";
+import { useDispatch } from "react-redux";
+import { setLocation } from "../../redux/locationSlice";
+
 
 const iconClass = "h-5 w-5";
 
@@ -17,11 +16,6 @@ const links = [
     icon: <PiHorse className={iconClass} />,
     label: "Home",
   },
-  // {
-  //   to: "/tickets",
-  //   icon: <IoTicketOutline className={iconClass} />,
-  //   label: "My Tickets",
-  // },
   {
     to: "/analytics",
     icon: <GoGraph className={iconClass} />,
@@ -42,14 +36,21 @@ const links = [
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // 🔥 NEW: Calculator dropdown state
+  // Calculator dropdown
   const [showCalc, setShowCalc] = useState(false);
   const calcRef = useRef(null);
 
+  // State dropdown
+  const [showState, setShowState] = useState(false);
+  const stateRef = useRef(null);
+const dispatch = useDispatch();
   useEffect(() => {
     function handleClickOutside(e) {
       if (calcRef.current && !calcRef.current.contains(e.target)) {
         setShowCalc(false);
+      }
+      if (stateRef.current && !stateRef.current.contains(e.target)) {
+        setShowState(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -60,7 +61,6 @@ const Navigation = () => {
 
   return (
     <nav className="bg-[#262626] text-white font-poppins rounded-lg w-full px-4 pb-2 sm:px-8 sm:pb-0">
-      
       {/* Mobile Menu Button */}
       <div className="flex md:hidden justify-start">
         <button onClick={toggleMenu}>
@@ -96,14 +96,14 @@ const Navigation = () => {
           </NavLink>
         ))}
 
-        {/* 🔥 NEW: CALCULATOR DROPDOWN (ADDED ONLY, OLD CODE SAME) */}
+        {/* Calculator Dropdown */}
         <li ref={calcRef} className="relative">
           <button
             onClick={() => setShowCalc(!showCalc)}
             className="flex items-center gap-2 cursor-pointer hover:font-semibold transition"
           >
             <Icon icon="mdi:calculator" className={iconClass} />
-            Calculator
+           Betting Calculators
             <Icon
               icon={showCalc ? "mdi:chevron-up" : "mdi:chevron-down"}
               className="text-lg"
@@ -119,7 +119,6 @@ const Navigation = () => {
               >
                 Bonus Bet
               </NavLink>
-
               <NavLink
                 to="/calculator/arbitrage"
                 onClick={() => setShowCalc(false)}
@@ -127,7 +126,6 @@ const Navigation = () => {
               >
                 Arbitrage
               </NavLink>
-
               <NavLink
                 to="/calculator/matched-betting"
                 onClick={() => setShowCalc(false)}
@@ -139,6 +137,37 @@ const Navigation = () => {
           )}
         </li>
 
+        {/* State Dropdown */}
+        <li ref={stateRef} className="relative">
+          <button
+            onClick={() => setShowState(!showState)}
+            className="flex items-center gap-2 cursor-pointer hover:font-semibold transition"
+          >
+            <Icon icon="mdi:map-marker" className={iconClass} />
+            State
+            <Icon
+              icon={showState ? "mdi:chevron-up" : "mdi:chevron-down"}
+              className="text-lg"
+            />
+          </button>
+
+          {showState && (
+            <div className="absolute left-0 mt-2 w-40 bg-[#333] border border-gray-600 rounded-md shadow-lg z-50">
+            {["NSW", "VIC", "ACT/SA/TAS/NT"].map((st) => (
+  <button
+    key={st}
+    onClick={() => {
+      dispatch(setLocation(st));   // 🔥 GLOBAL STATE SET
+      setShowState(false);
+    }}
+    className="block w-full text-left px-4 py-2 hover:bg-[#444]"
+  >
+    {st}
+  </button>
+))}
+            </div>
+          )}
+        </li>
       </ul>
     </nav>
   );

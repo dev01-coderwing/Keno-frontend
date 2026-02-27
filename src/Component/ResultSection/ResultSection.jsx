@@ -317,8 +317,8 @@ date: formatDateDDMMYYYY(item.date),
           >
             <option value="NSW">NSW</option>
             <option value="VIC">VIC</option>
-            <option value="ACT">ACT</option>
-             <option value="SA">SA</option>
+            <option value="ACT">ACT/SA/TAS/NT</option>
+             {/* <option value="SA">SA</option> */}
           </select>
 
           <ResultInput placeholder="First Game No." width="w-[130px]" />
