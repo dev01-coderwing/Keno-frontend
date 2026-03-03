@@ -257,11 +257,22 @@ const authSlice = createSlice({
     setEmail: (state, action) => {
       state.email = action.payload;
     },
-    logout: (state) => {
-      state.user = null;
-      state.token = null;
-      localStorage.clear();
-    },
+ logout: (state) => {
+  state.user = null;
+  state.token = null;
+  state.email = "";
+  state.error = null;
+  state.loading = false;
+  state.successMessage = "";
+  state.passwordSuccess = false;
+  state.changePasswordMessage = "";
+  state.otpMessage = "";
+  state.otpVerified = false;
+  state.resetSuccess = false;
+
+  localStorage.clear();
+  sessionStorage.clear();
+},
     resetPasswordState: (state) => {
       state.passwordSuccess = false;
       state.error = null;
@@ -414,22 +425,15 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload || action.error?.message;
       })
-      .addCase(logoutUser.pending, (state) => {
+     .addCase(logoutUser.pending, (state) => {
   state.loading = true;
 })
 .addCase(logoutUser.fulfilled, (state) => {
   state.loading = false;
-  state.user = null;
-  state.token = null;
-
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  localStorage.removeItem("userId");
 })
-.addCase(logoutUser.rejected, (state, action) => {
+.addCase(logoutUser.rejected, (state) => {
   state.loading = false;
-  state.error = action.payload || "Logout failed";
-});
+})
   },
 });
 

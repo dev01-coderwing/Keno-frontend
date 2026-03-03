@@ -177,7 +177,10 @@ const App = () => {
 
 
         {/* Public Pages */}
-        <Route path='/' element={<Home />} />
+           <Route path='/' element={
+          <ProtectedRoute><Home /></ProtectedRoute>
+        } />
+        {/* <Route path='/' element={<Home />} /> */}
         <Route path='/TracksideTop10' element={<TracksideTop10 />} />
         <Route path='/results' element={<Results />} />
         <Route path='/about-us' element={<AboutUs />} />

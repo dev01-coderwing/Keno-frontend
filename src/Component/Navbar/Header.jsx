@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import PuntMateLogo from "../../assets/horse-logo.png";
 import { logoutUser } from "../../redux/authSlice";
-
+import { logout } from "../../redux/authSlice";
 // 🔔 Redux notification actions
 import {
   fetchNotifications,
@@ -73,16 +73,25 @@ const Header = () => {
   };
 
   /* ================= LOGOUT ================= */
- const handleLogout = async () => {
+//  const handleLogout = async () => {
+//   try {
+//     await dispatch(logoutUser()).unwrap(); // 🔥 backend logout API hit
+//     navigate("/login", { replace: true }); // 🔁 login par bhej
+//   } catch (err) {
+//     console.error("Logout failed:", err);
+//     navigate("/login", { replace: true }); // fallback
+//   }
+// };
+const handleLogout = async () => {
   try {
-    await dispatch(logoutUser()).unwrap(); // 🔥 backend logout API hit
-    navigate("/login", { replace: true }); // 🔁 login par bhej
+    await dispatch(logoutUser()).unwrap();
   } catch (err) {
-    console.error("Logout failed:", err);
-    navigate("/login", { replace: true }); // fallback
+    console.log("Backend logout failed");
+  } finally {
+    dispatch(logout());   // 🔥 Always clear redux + storage
+    window.location.replace("/login");
   }
 };
-
   const isLoggedIn = !!userName;
 
   return (

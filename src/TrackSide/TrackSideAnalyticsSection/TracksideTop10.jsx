@@ -133,7 +133,7 @@ const BetTypeTable = ({ title, rows, selectedLocation }) => {
     return (
       <div className="bg-[#1D1D1D] rounded-xl mt-6 p-4">
         <h3 className="text-lg font-semibold mb-3">
-          Top 10 {title} Combinations
+          Top 10 {title} Combo’s 
         </h3>
         <p className="text-gray-500 text-sm">No data available</p>
       </div>
@@ -176,7 +176,7 @@ const BetTypeTable = ({ title, rows, selectedLocation }) => {
   return (
     <div className="bg-[#1D1D1D] rounded-xl mt-6 p-4">
       <h3 className="text-lg font-semibold mb-1">
-        Top 10 {title} Combinations
+        Top 10 {title} Combo’s 
       </h3>
 
       {getDescription() && (
@@ -185,19 +185,20 @@ const BetTypeTable = ({ title, rows, selectedLocation }) => {
 
       <div className="overflow-x-auto">
         <table className="w-full border border-gray-700 rounded-lg text-sm">
-          <thead className="bg-[#090909]">
+          <thead className="bg-[#090909] text-center">
             <tr>
-              <th className="p-3 text-left">Rank</th>
-              <th className="p-3 text-left">Hits</th>
-              <th className="p-3 text-left">Hits (24Hr)</th>
+              <th className="p-3 ">Rank</th>
+              <th className="p-3 ">Hits</th>
+              <th className="p-3 ">AvgHitsDay</th>
+              <th className="p-3 ">AvgGames</th>
               {/* <th className="p-3 text-left">Avg (24Hr)</th> */}
-              <th className="p-3 text-left">Win %</th>
-              <th className="p-3 text-left">Avg Drought</th>
-              <th className="p-3 text-left">Current Drought</th>
-              <th className="p-3 text-left">Longest Drought</th>
+              <th className="p-3 ">Win %</th>
+              {/* <th className="p-3 text-left">Avg Drought</th> */}
+              <th className="p-3 ">Current Drought</th>
+              <th className="p-3 ">Longest Drought</th>
               {/* <th className="p-3 text-left">Last Appeared</th> */}
-              <th className="p-3 text-left">Dividend</th>
-              <th className="p-3 text-left">Entries</th>
+              <th className="p-3 ">Dividend</th>
+              <th className="p-3 ">Entries</th>
             </tr>
           </thead>
 
@@ -206,10 +207,13 @@ const BetTypeTable = ({ title, rows, selectedLocation }) => {
               <tr key={idx} className="border-t border-gray-700 text-center">
                 <td className="p-3">{item.rank || item.Rank || item.RNK}</td>
                 <td className="p-3">{item.hits}</td>
-                <td className="p-3">{item.hits360}</td>
+            <td className="p-3">{item.avgHitsDay}</td>
+             <td className="p-3">{item.avgGames}</td>
                 {/* <td className="p-3">{item.avg360}</td> */}
-                <td className="p-3">{item.winPercentage}%</td>
-                <td className="p-3">{item.avgDrought}</td>
+              <td className="p-3">
+  {parseFloat(item.winPercentage).toFixed(2)}%
+</td>
+                {/* <td className="p-3">{item.avgDrought}</td> */}
                 <td className="p-3">{item.currentDrought}</td>
                 <td className="p-3">{item.longestDrought}</td>
                 {/* <td className="p-3">{item.lastAppeared}</td> */}
@@ -272,33 +276,33 @@ function TracksideTop10() {
     return <p className="text-gray-500">No Top 10 data</p>;
   }
 
-  return (
-    <div className="space-y-6">
-      <BetTypeTable
-        title="Quinella"
-        rows={tracksideTop10?.Quinella}
-        selectedLocation={selectedLocation}
-      />
+return (
+  <div className="space-y-6">
+    <BetTypeTable
+      title="Quinella"
+      rows={tracksideTop10?.Quinella}
+      selectedLocation={selectedLocation}
+    />
 
-      <BetTypeTable
-        title="Exacta"
-        rows={tracksideTop10?.Exacta}
-        selectedLocation={selectedLocation}
-      />
+    <BetTypeTable
+      title="Exacta"
+      rows={tracksideTop10?.Exacta}
+      selectedLocation={selectedLocation}
+    />
 
-      <BetTypeTable
-        title="Trifecta"
-        rows={tracksideTop10?.Trifecta}
-        selectedLocation={selectedLocation}
-      />
+    <BetTypeTable
+      title="Trifecta"
+      rows={tracksideTop10?.Trifecta}
+      selectedLocation={selectedLocation}
+    />
 
-      <BetTypeTable
-        title="First Four"
-        rows={tracksideTop10?.["First Four"]}
-        selectedLocation={selectedLocation}
-      />
-    </div>
-  );
+    <BetTypeTable
+      title="First Four"
+      rows={tracksideTop10?.["First Four"]}
+      selectedLocation={selectedLocation}
+    />
+  </div>
+);
 }
 
 export default TracksideTop10;

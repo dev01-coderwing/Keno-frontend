@@ -71,12 +71,48 @@ export const fetchTracksideLeastFeatured = createAsyncThunk(
     }
   }
 );
+export const createKenoAlert = createAsyncThunk(
+  "kenoalert/createKenoAlert",
+  async (alertData, { getState, rejectWithValue }) => {
+    try {
+      const state = getState();
+
+      // 🔥 yaha se userId nikalna hai
+      const userId = state.auth.user?._id;
+
+      if (!userId) {
+        return rejectWithValue("User not logged in");
+      }
+
+      const res = await api.post(
+        "/alerts",
+        {
+          ...alertData,
+          userId: userId,  // ✅ ADD THIS
+        },
+        {
+          headers: {
+            "api-key": "kajal",
+          },
+        }
+      );
+
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to create alert"
+      );
+    }
+  }
+);
 
 const overdueSlice = createSlice({
   name: "overdue",
   initialState: {
     combos: [],
-
+ alerts: [],
+  createLoading: false,
+  createError: null,
     topFeatured: null,
     leastFeatured: null,
 
@@ -166,7 +202,21 @@ const overdueSlice = createSlice({
       .addCase(fetchTracksideLeastFeatured.rejected, (state, action) => {
         state.tracksideLeastLoading = false;
         state.error = action.payload;
-      });
+      })
+        .addCase(createKenoAlert.pending, (state) => {
+      state.createLoading = true;
+      state.createError = null;
+    })
+
+    .addCase(createKenoAlert.fulfilled, (state, action) => {
+      state.createLoading = false;
+      state.alerts.push(action.payload); // optional
+    })
+
+    .addCase(createKenoAlert.rejected, (state, action) => {
+      state.createLoading = false;
+      state.createError = action.payload;
+    });
   },
 });
 

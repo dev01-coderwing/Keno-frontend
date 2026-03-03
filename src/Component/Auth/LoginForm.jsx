@@ -173,16 +173,42 @@ const LoginForm = ({ onSwitchForm }) => {
   }, [email, dispatch]);
 
   // ✅ Navigate when user login success
+  // useEffect(() => {
+  //   if (user) {
+  //     // alert("Login successful!");
+  //     setTimeout(() => {
+  //       console.log(`This is the user role ${user.role}`);
+  //       if (user.role === "admin") navigate("/dashboard");
+  //       else navigate("/");
+  //     }, 1000);
+  //   }
+  // }, [user, navigate]);
+
+
+
+
   useEffect(() => {
-    if (user) {
-      // alert("Login successful!");
-      setTimeout(() => {
-        console.log(`This is the user role ${user.role}`);
-        if (user.role === "admin") navigate("/dashboard");
-        else navigate("/UserProfile");
-      }, 1000);
-    }
-  }, [user, navigate]);
+  if (user) {
+    setTimeout(() => {
+      const today = new Date();
+      const expiry = new Date(user.subscriptionExpiry);
+
+      const isExpired = expiry < today;
+
+      if (isExpired) {
+        navigate("/subscription"); // 👈 Expired → subscription page
+        return;
+      }
+
+      if (user.role === "admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/");
+      }
+
+    }, 1000);
+  }
+}, [user, navigate]);
 
   const handleSubmit = (e) => {
     e.preventDefault();

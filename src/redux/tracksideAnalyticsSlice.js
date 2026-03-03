@@ -7,9 +7,9 @@ export const fetchTracksideTop10 = createAsyncThunk(
   "analytics/fetchTracksideTop10",
   async ({ location }, { rejectWithValue }) => {
     try {
-      const res = await api.get(`/trackside-analytics/top-10-24h?location=${location}`);
+      const res = await api.get(`trackside-analytics/top-10?location=${location}`);
       console.log("TRACKSIDE RAW:", res.data);
-      return res.data?.data ?? res.data;
+      return res.data.data;
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || error.message
@@ -56,7 +56,7 @@ const tracksideAnalyticsSlice = createSlice({
      .addCase(fetchTracksideTop10.fulfilled, (state, action) => {
   state.loading = false;
   state.tracksideTop10 = action.payload;
-  state.top10 = action.payload; // 🔥 BACKWARD COMPATIBLE
+  
 })
 
       .addCase(fetchTracksideTop10.rejected, (state, action) => {
