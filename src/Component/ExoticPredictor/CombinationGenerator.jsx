@@ -153,9 +153,9 @@ import RaceCard from "../Cards/RaceCard";
 const CombinationGenerator = () => {
   const dispatch = useDispatch();
 
-  const { combinations, loading, errorMsg } = useSelector(
-    (state) => state.combinations
-  );
+  const { combinations, loading, errorMsg, successMsg } = useSelector(
+  (state) => state.combinations
+);
 
   // ✅ API based states
   const [location, setLocation] = useState("NSW");
@@ -173,7 +173,14 @@ const handleSubmit = (e) => {
       minDraws,
       numCombinations,
     })
-  );
+  )
+    .unwrap()
+    .then((res) => {
+      console.log("✅ Combinations Generated:", res);
+    })
+    .catch((err) => {
+      console.error("❌ Error:", err);
+    });
 };
 
 
@@ -254,6 +261,10 @@ const handleSubmit = (e) => {
                 {loading ? "Generating..." : "Generate"}
               </button>
             </div>
+
+            {successMsg && (
+  <p className="text-green-400 text-center mt-2">{successMsg}</p>
+)}
           </form>
         </div>
       </div>

@@ -106,32 +106,28 @@ export const fetchFilteredResults = createAsyncThunk(
         location = "NSW",
         page = 1,
         limit = 10,
-        combination,
+        firstGameNumber,
+        lastGameNumber,
         date,
-        fromGame,
-        toGame,
       } = filters;
 
-      // pick correct base endpoint (always applyfilters)
       const base = endpoints[location] || endpoints.NSW;
 
-      // build query params safely
       const params = new URLSearchParams();
+
       params.append("page", page);
       params.append("limit", limit);
 
-      if (combination !== undefined && combination !== "") {
-        params.append("combination", combination);
+      if (firstGameNumber) {
+        params.append("firstGameNumber", firstGameNumber);
       }
+
+      if (lastGameNumber) {
+        params.append("lastGameNumber", lastGameNumber);
+      }
+
       if (date) {
-        // ensure date in YYYY-MM-DD if backend expects that
         params.append("date", date);
-      }
-      if (fromGame !== undefined && fromGame !== "") {
-        params.append("fromGame", fromGame);
-      }
-      if (toGame !== undefined && toGame !== "") {
-        params.append("toGame", toGame);
       }
 
       const endpoint = `${base}?${params.toString()}`;
@@ -145,7 +141,9 @@ export const fetchFilteredResults = createAsyncThunk(
         limit: res.data.limit,
       };
     } catch (err) {
-      return rejectWithValue(err.response?.data?.message || "Failed to fetch filtered results");
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch filtered results"
+      );
     }
   }
 );

@@ -225,8 +225,8 @@ const [termsAccepted, setTermsAccepted] = useState(false);
 
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
-
-
+const [state, setState] = useState("");
+const [gender, setGender] = useState("");
 
   //  Calculate age
   const getAge = (birthDate) => {
@@ -241,7 +241,7 @@ const [termsAccepted, setTermsAccepted] = useState(false);
   };
 
   const handleSignup = async () => {
-    if (!fullName || !dob || !email) {
+    if (!fullName || !dob || !email || !state|| !gender) {
       setAlert({ message: "Please fill in all fields.", type: "error" });
       return;
     }
@@ -271,7 +271,8 @@ const [termsAccepted, setTermsAccepted] = useState(false);
     fullName,
     dob,
     email,
-    default_state: "NSW", 
+      gender,
+default_state: state
   })
 ).unwrap();
 
@@ -289,6 +290,7 @@ const [termsAccepted, setTermsAccepted] = useState(false);
       console.error(error);
     }
   };
+
 
   return (
     <div className="w-full flex justify-center px-4">
@@ -362,6 +364,35 @@ const [termsAccepted, setTermsAccepted] = useState(false);
             placeholder="username@gmail.com"
           />
         </div>
+        {/* Gender */}
+<div className="flex flex-col gap-1">
+  <label className="text-sm sm:text-base">Gender</label>
+  <select
+    value={gender}
+    onChange={(e) => setGender(e.target.value)}
+    className="w-full bg-[#0C0C0C] border border-gray-400 rounded-md px-3 py-2 text-sm focus:outline-none"
+  >
+    <option value="">Select Gender</option>
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+    <option value="other">Other</option>
+  </select>
+</div>
+        {/* State */}
+<div className="flex flex-col gap-1">
+  <label className="text-sm sm:text-base">Select State</label>
+  <select
+    value={state}
+    onChange={(e) => setState(e.target.value)}
+    className="w-full bg-[#0C0C0C] border border-gray-400 rounded-md px-3 py-2 text-sm focus:outline-none"
+  >
+    <option value="">Select State</option>
+    <option value="NSW">NSW</option>
+    <option value="VIC">VIC</option>
+    <option value="ACT">ACT</option>
+ 
+  </select>
+</div>
 
 {/* PIN */}
 {/* <div className="flex flex-col gap-1">

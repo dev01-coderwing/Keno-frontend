@@ -6,7 +6,7 @@ import { fetchTracksideHistorical } from "../../redux/tracksideHistoricalSlice";
 // 🔹 Result tiles component
 const ResultTiles = ({ result }) => {
   return (
-    <div className="flex gap-1">
+    <div className="flex justify-center gap-1">
       {result?.map((num, i) => (
         <div
           key={i}
@@ -33,12 +33,12 @@ function TrackSideHistoricalFrequency() {
 
   const [betType, setBetType] = useState("");
   const [rows, setRows] = useState([]);
-const selectedLocation = useSelector((state) => state.location.state);
+  const selectedLocation = useSelector((state) => state.location.state);
 
-const mapTracksideLocation = (uiValue) => {
-  if (uiValue === "VIC+ACT") return "ACT";
-  return uiValue;
-};
+  const mapTracksideLocation = (uiValue) => {
+    if (uiValue === "VIC+ACT") return "ACT";
+    return uiValue;
+  };
   const getEntryCount = () => {
     switch (betType) {
       case "quinella":
@@ -67,14 +67,14 @@ const mapTracksideLocation = (uiValue) => {
   const handleFetch = () => {
     if (!allSelected) return;
 
-  const apiLocation = mapTracksideLocation(selectedLocation);
+    const apiLocation = mapTracksideLocation(selectedLocation);
 
-dispatch(
-  fetchTracksideHistorical({
-    entries: entriesArray,
-    location: apiLocation,
-  })
-);
+    dispatch(
+      fetchTracksideHistorical({
+        entries: entriesArray,
+        location: apiLocation,
+      })
+    );
   };
 
   // 🔽 Auto scroll to results when data arrives
@@ -137,40 +137,40 @@ dispatch(
           )}
         </>
       )}
-{data?.summary && (
-  <div className="mt-6 mb-4 bg-[#101010] border border-gray-800 rounded-lg p-4 text-white">
-    <h4 className="font-semibold mb-2">Summary</h4>
+      {data?.summary && (
+        <div className="mt-6 mb-4 bg-[#101010] border border-gray-800 rounded-lg p-4 text-white">
+          <h4 className="font-semibold mb-2">Summary</h4>
 
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-      <div className="bg-[#0E0E0E] p-3 rounded">
-        <p className="text-gray-400 text-xs">Total Games</p>
-<p className="text-lg font-semibold">
-  {data.summary.totalGamesProcessed}
-</p>      </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+            <div className="bg-[#0E0E0E] p-3 rounded">
+              <p className="text-gray-400 text-xs">Total Games</p>
+              <p className="text-lg font-semibold">
+                {data.summary.totalGamesProcessed}
+              </p>      </div>
 
-      <div className="bg-[#0E0E0E] p-3 rounded">
-        <p className="text-gray-400 text-xs">Combined Hits</p>
-<p className="text-lg font-semibold">
-  {data.summary.combinedHits}
-</p>   </div>
+            <div className="bg-[#0E0E0E] p-3 rounded">
+              <p className="text-gray-400 text-xs">Combined Hits</p>
+              <p className="text-lg font-semibold">
+                {data.summary.combinedHits}
+              </p>   </div>
 
-      <div className="bg-[#0E0E0E] p-3 rounded">
-        <p className="text-gray-400 text-xs">Hits (Last 1k)</p>
-<p className="text-lg font-semibold">
-  {data.summary.overallHitFrequency}
-</p>      </div>
+            <div className="bg-[#0E0E0E] p-3 rounded">
+              <p className="text-gray-400 text-xs">Hits (Last 1k)</p>
+              <p className="text-lg font-semibold">
+                {data.summary.overallHitFrequency}
+              </p>      </div>
 
-      <div className="bg-[#0E0E0E] p-3 rounded">
-        <p className="text-gray-400 text-xs">Avg Games</p>
-        <p className="text-lg font-semibold">{data.summary.overallAvg}</p>
-      </div>
-    </div>
+            <div className="bg-[#0E0E0E] p-3 rounded">
+              <p className="text-gray-400 text-xs">Avg Games</p>
+              <p className="text-lg font-semibold">{data.summary.overallAvg}</p>
+            </div>
+          </div>
 
-    <p className="text-xs text-gray-400 mt-3">
-  {data.summary.formattedSummary}
-</p>
-  </div>
-)}
+          <p className="text-xs text-gray-400 mt-3">
+            {data.summary.formattedSummary}
+          </p>
+        </div>
+      )}
 
       {/* Results - Screenshot Style UI */}
       {data?.data && (
@@ -179,92 +179,98 @@ dispatch(
             LAST 5 HITS BY BET TYPE
           </h3>
 
-        {Object.entries(data.data)
-  .filter(([_, stats]) => stats?.last5Hits && stats.last5Hits.length > 0)
-  .map(([betTypeKey, stats]) => (
-            <div
-              key={betTypeKey}
-              className="bg-[#0E0E0E] rounded-lg p-4 border border-gray-800"
-            >
-              <h4 className="text-white font-semibold mb-3">
-                {betTypeKey}
-              </h4>
+          {Object.entries(data.data)
+            .filter(([_, stats]) => stats?.last5Hits && stats.last5Hits.length > 0)
+            .map(([betTypeKey, stats]) => {
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs text-gray-300 border-collapse">
-                  <thead className="bg-[#151515]">
-                    <tr>
-                      <th className="px-2 py-2 text-left">Race #</th>
-                      <th className="px-2 py-2 text-left">Date</th>
-                      <th className="px-2 py-2 text-left">Result</th>
-                      <th className="px-2 py-2 text-left">Div $1</th>
-                      <th className="px-2 py-2 text-left">Drought</th>
-                      <th className="px-2 py-2 text-left">Avg Drought</th>
-                      <th className="px-2 py-2 text-left">Longest Drought</th>
-                      <th className="px-2 py-2 text-left">Hits</th>
-    <th className="px-2 py-2 text-left">Avg Games</th>
-    <th className="px-2 py-2 text-left">Hits (Last 1k)</th>
-    <th className="px-2 py-2 text-left">Current Drought</th>
-    <th className="px-2 py-2 text-left">Combos</th>
-    <th className="px-2 py-2 text-left">Flexi %</th>
-    <th className="px-2 py-2 text-left">Avg Div</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stats.last5Hits?.map((hit, idx) => (
- <tr
-  key={idx}
-  className="border-b border-gray-800 hover:bg-[#111]"
->
-  <td className="px-2 py-2">{hit.raceNumber || "-"}</td>
-  <td className="px-2 py-2">{hit.date || "-"}</td>
+              console.log("Stats:", stats);   // 👈 yaha lagao
 
-  <td className="px-2 py-2">
-    <ResultTiles result={hit.result} />
-  </td>
+              return (
+                <div
+                  key={betTypeKey}
+                  className="bg-[#0E0E0E] rounded-lg p-4 border border-gray-800"
+                >
+                  <h4 className="text-white font-semibold mb-3">
+                    {betTypeKey}
+                  </h4>
 
-  <td className="px-2 py-2">{hit.dividend || "$0.00"}</td>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs text-gray-300 border-collapse text-center">
+                      <thead className="bg-[#151515]">
+                        <tr>
+                          <th className="px-2 py-2 text-center">Race #</th>
+                          <th className="px-2 py-2 text-center">Date</th>
+                          <th className="px-2 py-2 text-center">Result</th>
+                          <th className="px-2 py-2 text-center">Div $1</th>
+                          <th className="px-2 py-2 text-center">Drought</th>
+                          <th className="px-2 py-2 text-center">Avg Drought</th>
+                          <th className="px-2 py-2 text-center">Longest Drought</th>
+                          <th className="px-2 py-2 text-center">Hits</th>
+                          <th className="px-2 py-2 text-center">Avg Games</th>
+                          {/* <th className="px-2 py-2 text-center">Hits (Last 1k)</th> */}
+                          <th className="px-2 py-2 text-center">Current Drought</th>
+                          {/* <th className="px-2 py-2 text-center">Combos</th> */}
+                          <th className="px-2 py-2 text-center">Flexi %</th>
+                          <th className="px-2 py-2 text-center">Avg Div</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {stats.last5Hits?.map((hit, idx) => (
 
-  {/* ✅ Correct drought at hit */}
-  <td className="px-2 py-2">{hit.droughtAtHit ?? "-"}</td>
+                          <tr
+                            key={idx}
+                            className="border-b border-gray-800 hover:bg-[#111]"
+                          >
+                            <td className="px-2 py-2">{hit.raceNumber || "-"}</td>
+                            <td className="px-2 py-2">{hit.date || "-"}</td>
 
-  {/* ❌ avgDrought not in hit -> use stats.avgGms */}
-  <td className="px-2 py-2">{stats.avgGms ?? "-"}</td>
+                            <td className="px-2 py-2">
+                              <ResultTiles result={hit.result} />
+                            </td>
 
-  {/* ❌ longestDrought not in hit -> use stats.longestDrought */}
-  <td className="px-2 py-2">{stats.longestDrought ?? "-"}</td>
+                            <td className="px-2 py-2">{hit.dividend || "$0.00"}</td>
 
-  {/* 🔁 Bet-type level stats */}
-  <td className="px-2 py-2">{stats.hits ?? "-"}</td>
-  <td className="px-2 py-2">{stats.avgGms ?? "-"}</td>
+                            {/* ✅ Correct drought at hit */}
+                            <td className="px-2 py-2">{hit.droughtAtHit ?? "-"}</td>
 
-  {/* ❌ hitsLast1k nahi, hitsLast1000 hai */}
-  <td className="px-2 py-2">{stats.hitsLast1000 ?? "-"}</td>
+                            {/* ❌ avgDrought not in hit -> use stats.avgGms */}
+                            <td className="px-2 py-2">{stats.avgGms ?? "-"}</td>
 
-  <td className="px-2 py-2">{stats.currentDrought ?? "-"}</td>
-  <td className="px-2 py-2">{stats.combos ?? "-"}</td>
-  <td className="px-2 py-2">{stats.flexiPercent ?? "-"}</td>
-  <td className="px-2 py-2">{stats.avgDiv ?? "-"}</td>
-</tr>
+                            {/* ❌ longestDrought not in hit -> use stats.longestDrought */}
+                            <td className="px-2 py-2">{stats.longestDrought ?? "-"}</td>
 
-                    ))}
+                            {/* 🔁 Bet-type level stats */}
+                            <td className="px-2 py-2">{stats.hits ?? "-"}</td>
+                            <td className="px-2 py-2">{stats.avgGms ?? "-"}</td>
 
-                    {(!stats.last5Hits ||
-                      stats.last5Hits.length === 0) && (
-                      <tr>
-                        <td
-                          colSpan={7}
-                          className="text-center py-3 text-gray-500"
-                        >
-                          No data available
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ))}
+                            {/* ❌ hitsLast1k nahi, hitsLast1000 hai */}
+                            {/* <td className="px-2 py-2">{stats.hitsLast1000 ?? "-"}</td> */}
+
+                            <td className="px-2 py-2">{stats.currentDrought ?? "-"}</td>
+                            {/* <td className="px-2 py-2">{stats.combos ?? "-"}</td> */}
+                            <td className="px-2 py-2"> {hit.flexiPercentage ?? hit.flexiPercent ?? "-"}</td>
+                            <td className="px-2 py-2">{stats.avgDiv ?? "-"}</td>
+                          </tr>
+
+                        ))}
+
+                        {(!stats.last5Hits ||
+                          stats.last5Hits.length === 0) && (
+                            <tr>
+                              <td
+                                colSpan={7}
+                                className="text-center py-3 text-gray-500"
+                              >
+                                No data available
+                              </td>
+                            </tr>
+                          )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              );
+            })}
         </div>
       )}
 

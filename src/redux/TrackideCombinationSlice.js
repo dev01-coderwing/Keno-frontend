@@ -33,18 +33,25 @@ const trackideCombinationSlice = createSlice({
     trackside: [],
     loading: false,
     errorMsg: "",
+    successMsg: ""
   },
+
   reducers: {},
+
   extraReducers: (builder) => {
     builder
       .addCase(generateTracksideCombinations.pending, (state) => {
         state.loading = true;
         state.errorMsg = "";
+        state.successMsg = "";
       })
+
       .addCase(generateTracksideCombinations.fulfilled, (state, action) => {
         state.loading = false;
         state.trackside = action.payload;
+        state.successMsg = "Trackside combinations generated successfully";
       })
+
       .addCase(generateTracksideCombinations.rejected, (state, action) => {
         state.loading = false;
         state.errorMsg = action.payload;

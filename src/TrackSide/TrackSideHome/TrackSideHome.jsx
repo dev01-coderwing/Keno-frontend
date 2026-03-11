@@ -84,7 +84,7 @@ useEffect(() => {
     "Current Drought",
     "Avg Drought",
     "Longest Drought",
-    "Last 5 Races",
+    // "Last 5 Races",
   ];
 
 
@@ -146,7 +146,7 @@ useEffect(() => {
       item.currentDrought,
       item.averageDrought,
       item.longestDrought,
-      item.last5Results.length,
+      // item.last5Results.length,
     ],
     expandedData: item.last5Results,
   }));

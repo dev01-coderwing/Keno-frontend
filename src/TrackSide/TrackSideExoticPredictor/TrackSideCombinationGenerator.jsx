@@ -8,27 +8,33 @@ import RaceCard from "../../Component/Cards/RaceCard";
 function TrackSideCombinationGenerator() {
   const dispatch = useDispatch();
 
-  const { trackside, loading, errorMsg } = useSelector(
-    (state) => state.trackideCombination
-  );
+const { trackside, loading, errorMsg, successMsg } = useSelector(
+  (state) => state.trackideCombination
+);
 
   const [betType, setBetType] = useState("Quinella");
   const [minRaces, setMinRaces] = useState(50);
   const [numCombinations, setNumCombinations] = useState(5);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = (e) => {
+  e.preventDefault();
 
-    dispatch(
-      generateTracksideCombinations({
-        location: "NSW",
-        betType,
-        minRaces,
-        numCombinations,
-      })
-    );
-  };
-
+  dispatch(
+    generateTracksideCombinations({
+      location: "NSW",
+      betType,
+      minRaces,
+      numCombinations,
+    })
+  )
+    .unwrap()
+    .then((res) => {
+      console.log("✅ Trackside combinations:", res);
+    })
+    .catch((err) => {
+      console.error("❌ Trackside error:", err);
+    });
+};
   return (
     <div className="bg-[#1d1d1d] p-4 sm:p-6 rounded-xl w-full mx-auto">
       <h3 className="text-lg sm:text-xl font-semibold mb-2">
@@ -95,7 +101,11 @@ function TrackSideCombinationGenerator() {
                 {loading ? "Generating..." : "Generate"}
               </button>
             </div>
+            {successMsg && (
+  <p className="text-green-400 text-center mt-3">{successMsg}</p>
+)}
           </form>
+          
         </div>
       </div>
 

@@ -95,21 +95,19 @@ const UpdateUserProfile = () => {
 {/* --- EXTRA BUTTONS ADDED WITH LINK --- */}
 <div className="mt-6 flex flex-col gap-3">
   
-  {/* Keno Result Button */}
   <Link
-    to="/"
+    to="/UserProfile"
     className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg py-3 transition shadow text-center block"
   >
-    Keno Result
+    Profile Details
   </Link>
 
-  {/* TrackSide Result Button */}
-  <Link
+  {/* <Link
     to="/TrackSideHome"
     className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg py-3 transition shadow text-center block"
   >
     TrackSide Result
-  </Link>
+  </Link> */}
 
 </div>
 

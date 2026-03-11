@@ -3,31 +3,20 @@ import api from "../api";
 
 //                                                                                                                          Async thunk to generate combinations
 export const generateCombinations = createAsyncThunk(
-  "combinations/keno",
-  async (
-    { location, size, minDraws, numCombinations },
-    { rejectWithValue }
-  ) => {
+  "combinations/generate",
+  async ({ location, size, minDraws, numCombinations }, { rejectWithValue }) => {
     try {
-      const res = await api.post(
-        "/combinations/keno",
-        {
-          location, // ✅ dynamic
-          size,
-          minDrawsSinceLastOccurrence: minDraws,
-          noOfCombinations: numCombinations,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await api.post("/combinations/keno", {
+        location,
+        size,
+        minDrawsSinceLastOccurrence: minDraws,
+        noOfCombinations: numCombinations,
+      });
 
-      return res.data?.data || [];
-    } catch (err) {
+      return res.data.data;
+    } catch (error) {
       return rejectWithValue(
-        err?.response?.data?.message || "Keno API failed"
+        error.response?.data?.message || "Failed to generate combinations"
       );
     }
   }
@@ -41,6 +30,8 @@ const combinationSlice = createSlice({
     combinations: [],
     loading: false,
     errorMsg: "",
+      successMsg: ""
+
   },
 
   reducers: {
@@ -54,24 +45,16 @@ const combinationSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(generateCombinations.pending, (state) => {
-        state.loading = true;
-        state.errorMsg = "";
-      })
+  state.loading = true;
+  state.errorMsg = "";
+  state.successMsg = "";
+})
 
 .addCase(generateCombinations.fulfilled, (state, action) => {
   state.loading = false;
-
-  state.combinations = action.payload.map((item) => ({
-    numbers: item.combination,
-    betType: "Keno",
-    combination: item.key,
-    racesSince: item.currentDrought,
-    percentage: 0,
-    occurrences: 0,
-    averageInterval: 0,
-  }));
+  state.combinations = action.payload;
+  state.successMsg = "Combinations generated successfully";
 })
-
 
 
       .addCase(generateCombinations.rejected, (state, action) => {

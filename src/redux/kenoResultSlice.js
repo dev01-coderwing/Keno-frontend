@@ -32,7 +32,7 @@ const kenoResultSlice = createSlice({
           draw,
           numbers,
           location,
-          updatedAt: Date.now(), // 🔥 force change
+          updatedAt: Date.now(), 
         },
       };
     }, 

@@ -6,7 +6,7 @@ import { PiHorse } from "react-icons/pi";
 import { GoGraph } from "react-icons/go";
 import { useDispatch } from "react-redux";
 import { setLocation } from "../../redux/locationSlice";
-
+import { useNavigate } from "react-router-dom";
 
 const iconClass = "h-5 w-5";
 
@@ -35,7 +35,7 @@ const links = [
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
-
+const navigate = useNavigate();
   // Calculator dropdown
   const [showCalc, setShowCalc] = useState(false);
   const calcRef = useRef(null);
@@ -168,6 +168,12 @@ const dispatch = useDispatch();
             </div>
           )}
         </li>
+        <button
+  onClick={() => navigate("/TrackSideHome")}
+  className="px-3 py-1 bg-[#444] rounded-md hover:bg-[#555] transition"
+>
+  Trackside 
+</button>
       </ul>
     </nav>
   );

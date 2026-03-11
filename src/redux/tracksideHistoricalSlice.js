@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 
-// 🔥 NEW TRACKSIDE HISTORICAL (PuntData API)
+// NEW TRACKSIDE HISTORICAL (PuntData API)
 export const fetchTracksideHistorical = createAsyncThunk(
   "tracksideHistorical/fetch",
   async ({ entries, location }, { rejectWithValue }) => {

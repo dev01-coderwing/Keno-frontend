@@ -187,7 +187,7 @@ import { PiCalendarDotsBold } from "react-icons/pi";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../CustomDatePicker.css";
-import { fetchKenoResults } from "../../redux/kenoSlice";
+import { fetchKenoResults ,fetchFilteredResults } from "../../redux/kenoSlice";
 
 const ResultSection = () => {
   const dispatch = useDispatch();
@@ -198,27 +198,33 @@ const ResultSection = () => {
   const [limit] = useState(10);
   const [date, setDate] = useState(null);
   const [open, setOpen] = useState(false);
-
+const [firstGameNumber, setFirstGameNumber] = useState("");
+const [lastGameNumber, setLastGameNumber] = useState("");
   // 🔥 LIVE SOCKET DATA (latest only)
+const formatDateForAPI = (date) => {
+  if (!date) return "";
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
   const liveKeno = useSelector(
     (state) => state.kenoResults.data?.[location]
   );
 const formatDateDDMMYYYY = (dateStrOrDate) => {
   if (!dateStrOrDate) return "-";
 
-  const d = new Date(dateStrOrDate);
-
-  if (isNaN(d.getTime())) {
-    // 👇 backend se agar "17-02-2026" type string aa rahi ho
-    if (typeof dateStrOrDate === "string") {
-      const parts = dateStrOrDate.split(/[-/]/); // supports 17-02-2026 or 17/02/2026
-      if (parts.length === 3) {
-        const [dd, mm, yyyy] = parts;
-        return `${dd.padStart(2, "0")}/${mm.padStart(2, "0")}/${yyyy}`;
-      }
+  if (typeof dateStrOrDate === "string") {
+    const parts = dateStrOrDate.split("-");
+    if (parts.length === 3) {
+      const [yyyy, mm, dd] = parts;
+      return `${dd}/${mm}/${yyyy}`;
     }
-    return "-";
   }
+
+  const d = new Date(dateStrOrDate);
 
   const day = String(d.getDate()).padStart(2, "0");
   const month = String(d.getMonth() + 1).padStart(2, "0");
@@ -231,6 +237,23 @@ const formatDateDDMMYYYY = (dateStrOrDate) => {
   const { results: oldResults, total } = useSelector(
     (state) => state.keno
   );
+
+useEffect(() => {
+  if (firstGameNumber || lastGameNumber || date) {
+    dispatch(
+      fetchFilteredResults({
+        location,
+        page,
+        limit,
+        firstGameNumber,
+        lastGameNumber,
+        date: formatDateForAPI(date),
+      })
+    );
+  } else {
+    dispatch(fetchKenoResults({ location, page, limit }));
+  }
+}, [dispatch, location, page, firstGameNumber, lastGameNumber, date]);
 
   // 🔁 pagination API call
   useEffect(() => {
@@ -321,8 +344,19 @@ date: formatDateDDMMYYYY(item.date),
              {/* <option value="SA">SA</option> */}
           </select>
 
-          <ResultInput placeholder="First Game No." width="w-[130px]" />
-          <ResultInput placeholder="Last Game No." width="w-[130px]" />
+         <ResultInput
+  placeholder="First Game No."
+  width="w-[130px]"
+  value={firstGameNumber}
+  onChange={(e) => setFirstGameNumber(e.target.value)}
+/>
+
+<ResultInput
+  placeholder="Last Game No."
+  width="w-[130px]"
+  value={lastGameNumber}
+  onChange={(e) => setLastGameNumber(e.target.value)}
+/>
           <ResultInput
             placeholder="Search by combinations"
             width="w-[220px]"

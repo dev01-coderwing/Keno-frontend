@@ -4,9 +4,8 @@ import { store } from "./redux/store";
 import { socketLatestKenoUpdate } from "./redux/kenoResultSlice";
 import { socketTracksideResultsUpdate } from "./redux/tracksideResultsSlice";
 
-// 🔥 Single event: newResult
 socket.on("newResult", (data) => {
-  console.log("🔥 LIVE SOCKET DATA:", data);
+  console.log("LIVE SOCKET DATA:", data);
 
   // =========================
   // KENO LIVE RESULT

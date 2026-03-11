@@ -151,10 +151,7 @@ const TrackSideHeader = () => {
             {/* 👤 PROFILE IMAGE */}
             <Link to="/UserProfile">
               <img
-                src={
-                  userImage ||
-                  "https://res.cloudinary.com/dqacezsc5/image/upload/v1754648053/user_ciq5pr.jpg"
-                }
+              src={userImage || PuntMateLogo}
                 alt="user-img"
                 className="h-10 w-10 rounded-2xl object-cover cursor-pointer"
               />

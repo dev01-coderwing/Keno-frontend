@@ -8,12 +8,7 @@ export const fetchUsers = createAsyncThunk(
   "users/fetchUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api.get("/profile/users", {
-        headers: {
-          "API-KEY": "kajal",
-          "Content-Type": "application/json",
-        },
-      });
+      const res = await api.get("/profile/users"); // headers remove
       return res.data;
     } catch (err) {
       return rejectWithValue(
@@ -30,20 +25,15 @@ export const toggleUserStatus = createAsyncThunk(
   "users/toggleStatus",
   async ({ userId, currentStatus }, { rejectWithValue }) => {
     const newStatus = currentStatus === "active" ? "inactive" : "active";
+
     try {
-      await api.patch(
-        `/profile/status/${userId}`,
-        { status: newStatus },
-        {
-          headers: {
-            "API-KEY": "kajal",
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      await api.put(`/profile/status/${userId}`, {
+        status: newStatus,
+      });
 
       return { userId, newStatus };
     } catch (err) {
+      console.log("STATUS ERROR:", err);
       return rejectWithValue(
         err.response?.data?.message || "Failed to update status"
       );

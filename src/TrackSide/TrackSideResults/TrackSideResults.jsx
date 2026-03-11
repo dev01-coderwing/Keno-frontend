@@ -200,15 +200,29 @@ function TrackSideResults() {
     currentPage,
   } = useSelector((state) => state.tracksideResults);
 
+// const formatDateDDMMYYYY = (dateStr) => {
+//   if (!dateStr) return "";
+//   const d = new Date(dateStr);
+//   const day = String(d.getDate()).padStart(2, "0");
+//   const month = String(d.getMonth() + 1).padStart(2, "0");
+//   const year = d.getFullYear();
+//   return `${day}-${month}-${year}`;
+// };
+ 
 const formatDateDDMMYYYY = (dateStr) => {
   if (!dateStr) return "";
+
   const d = new Date(dateStr);
+
+  if (isNaN(d.getTime())) return "";
+
   const day = String(d.getDate()).padStart(2, "0");
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const year = d.getFullYear();
+
   return `${day}-${month}-${year}`;
 };
-  /* ------------------------------ LOAD INITIAL PAGINATED DATA ------------------------------ */
+/* ------------------------------ LOAD INITIAL PAGINATED DATA ------------------------------ */
   useEffect(() => {
     dispatch(fetchPaginatedTracksideResults({ location, limit, page: 1 }));
   }, [dispatch, location, limit]);
@@ -224,20 +238,36 @@ useEffect(() => {
   // 1️⃣ LIVE DATA (SOCKET) — TOP PE
   const liveGame = live?.[location];
 
-  if (liveGame?.gameNumber) {
-    resultData.push({
-      id: `live-${location}-${liveGame.gameNumber}`,
-date: formatDateDDMMYYYY(liveGame.timestamp),
-      game: liveGame.gameName,
-      entries: liveGame.numbers,
-      isLive: true,
-      positions: [],
-      win: null,
-      place: [],
-      exotic: {},
-      dividends: {},
-    });
-  }
+//   if (liveGame?.gameNumber) {
+//     resultData.push({
+//       id: `live-${location}-${liveGame.gameNumber}`,
+// date: formatDateDDMMYYYY(liveGame.timestamp),
+//       game: liveGame.gameName,
+//       entries: liveGame.numbers,
+//       isLive: true,
+//       positions: [],
+//       win: null,
+//       place: [],
+//       exotic: {},
+//       dividends: {},
+//     });
+//   }
+
+
+if (!isSearchMode && liveGame?.gameNumber) {
+  resultData.push({
+    id: `live-${location}-${liveGame.gameNumber}`,
+    date: formatDateDDMMYYYY(liveGame.timestamp),
+    game: liveGame.gameName,
+    entries: liveGame.numbers,
+    isLive: true,
+    positions: [],
+    win: null,
+    place: [],
+    exotic: {},
+    dividends: {},
+  });
+} 
 
   // 2️⃣ OLD PAGINATED DATA — NICHE
   // 2️⃣ OLD RESULTS — SORT DESC (LATEST FIRST)
@@ -268,22 +298,29 @@ date: formatDateDDMMYYYY(liveGame.timestamp),
 
 
   /* ------------------------------ HANDLE SEARCH ------------------------------ */
-  const handleSearch = () => {
-    if (!date) return alert("Please select a date");
-    if (!firstGame || !lastGame) return alert("Please enter game range");
-const formattedDate = date.toISOString().split("T")[0];
-    const filters = {
-      startDate: formattedDate,
-      endDate: formattedDate,
-      startGameNo: Number(firstGame),
-      endGameNo: Number(lastGame),
-    };
-  setIsSearchMode(true); 
+const handleSearch = () => {
+  if (!date) return alert("Please select a date");
+  if (!firstGame || !lastGame) return alert("Please enter game range");
 
-    dispatch(fetchFilteredResultsByLocation({ location, filters })).catch(
-      (err) => console.log("FILTER ERROR:", err)
-    );
+const formatDateForAPI = (date) => {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+
+  return `${day}-${month}-${year}`;
+};
+const formattedDate = formatDateForAPI(date);
+  const filters = {
+    startDate: formattedDate,
+    endDate: formattedDate,
+    startGameNo: Number(firstGame),
+    endGameNo: Number(lastGame),
   };
+
+  setIsSearchMode(true);
+
+  dispatch(fetchFilteredResultsByLocation({ location, filters }));
+};
 
   const handleNext = () => {
     if (currentPage < totalPages) {

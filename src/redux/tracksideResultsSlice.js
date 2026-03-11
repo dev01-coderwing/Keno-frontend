@@ -180,9 +180,8 @@ const tracksideResultsSlice = createSlice({
       ACT: null,
     },
 
-    // 📄 OLD / PAGINATED DATA
     results: [],
-    totalCount: 0,
+    totalCount: 0,         
     totalPages: 0,
     currentPage: 1,
     error: null,
@@ -197,7 +196,7 @@ const tracksideResultsSlice = createSlice({
         [location]: {
           ...latestGame,
           location,
-          updatedAt: Date.now(), // 👈 force rerender
+          updatedAt: Date.now(), 
         },
       };
     },

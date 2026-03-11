@@ -150,16 +150,23 @@ const handleLogout = async () => {
             </div>
 
             {/* 👤 PROFILE IMAGE */}
-            <Link to="/UserProfile">
+            {/* <Link to="/UserProfile">
               <img
                 src={
                   userImage ||
-                  "https://res.cloudinary.com/dqacezsc5/image/upload/v1754648053/user_ciq5pr.jpg"
+                 {PuntMateLogo}
                 }
                 alt="user-img"
                 className="h-10 w-10 rounded-2xl object-cover cursor-pointer"
               />
-            </Link>
+            </Link> */}
+            <Link to="/UserProfile">
+  <img
+    src={userImage || PuntMateLogo}
+    alt="user-img"
+    className="h-10 w-10 rounded-2xl object-cover cursor-pointer"
+  />
+</Link>
 
             {/* 👤 USER NAME + DROPDOWN */}
             <div className="relative">

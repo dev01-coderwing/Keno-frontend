@@ -223,7 +223,7 @@ function KenoTable({ data, renderDroughtBadge }) {
                         <th className="p-3 text-center">Avg Drought</th>
                         <th className="p-3 text-center">Current Drought</th>
                         <th className="p-3 text-center">Longest Drought</th>
-                        <th className="p-3 text-center">Last Appeared</th>
+                      
                     </tr>
                 </thead>
 
@@ -239,7 +239,7 @@ function KenoTable({ data, renderDroughtBadge }) {
                             <td className="p-3 text-center">
                                 {renderDroughtBadge(item.longestDrought)}
                             </td>
-                            <td className="p-3 text-center">{item.lastAppeared}</td>
+                            {/* <td className="p-3 text-center">{item.lastAppeared}</td> */}
                         </tr>
                     ))}
                 </tbody>
