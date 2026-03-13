@@ -199,8 +199,8 @@ const App = () => {
         <Route path='/UserProfile' element={<UserProfile />} />
         <Route path='/Analytics' element={<Analytics />} />
         <Route path='/ComingSoon' element={<ComingSoon />} />
-        <Route path="/payment-success" element={<PaymentSuccess />} />
-        <Route path="/payment-cancel" element={<PaymentCancel />} />
+        <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
+        <Route path="/payment-cancel" element={<ProtectedRoute><PaymentCancel /></ProtectedRoute>} />
         <Route path="/pricing" element={<Pricing />} />
 
         {/* <Route path='/Dashboard' element={<Dashboard />} />

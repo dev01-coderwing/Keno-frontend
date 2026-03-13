@@ -78,12 +78,12 @@ const PaymentSuccess = () => {
         <CheckCircleIcon className="h-16 w-16 text-green-500 mx-auto mb-4" />
 
         <h2 className="text-2xl font-bold text-gray-800 mb-2">
-          Trial Started Successfully
+          Subscription Activated Successfully
         </h2>
 
         <p className="text-gray-600 mb-6">
-          Your <span className="font-semibold">7-day free trial</span> is now
-          active. Enjoy full access to all features.
+          Your <span className="font-semibold">subscription is now active.</span>Enjoy full access to all features.
+
         </p>
 
         <a
@@ -94,7 +94,7 @@ const PaymentSuccess = () => {
         </a>
 
         <p className="text-xs text-gray-400 mt-4">
-          You’ll be charged only after the trial ends.
+         Thank you for subscribing.
         </p>
       </div>
     </div>

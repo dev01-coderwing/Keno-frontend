@@ -82,16 +82,16 @@ const TrackSideHeader = () => {
   };
 
   /* ================= LOGOUT ================= */
- const handleLogout = async () => {
+const handleLogout = async () => {
   try {
-    await dispatch(logoutUser()).unwrap(); //  backend logout API hit
-    navigate("/login", { replace: true }); 
+    await dispatch(logoutUser()).unwrap();
   } catch (err) {
-    console.error("Logout failed:", err);
-    navigate("/login", { replace: true }); // fallback
+    console.log("Backend logout failed");
+  } finally {
+    dispatch(logout());   // 🔥 Always clear redux + storage
+    window.location.replace("/login");
   }
 };
-
   const isLoggedIn = !!userName;
 
   return (

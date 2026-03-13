@@ -91,13 +91,13 @@ const AuthPage = () => {
         backgroundImage: `linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.7)), url(${signupBg})`,
       }}
     >
-      <div className="mb-6 md:mb-0">
+      {/* <div className="mb-6 md:mb-0">
         <img
           src={horseLogo}
           alt="horseLogo"
           className="h-32 sm:h-40 md:h-60 object-contain"
         />
-      </div>
+      </div> */}
       <div className="w-full sm:w-auto">{renderForm()}</div>
     </div>
   );
